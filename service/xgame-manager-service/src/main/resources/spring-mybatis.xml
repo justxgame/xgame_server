@@ -7,7 +7,7 @@
     <context:annotation-config/>
     <context:property-placeholder location="classpath:db.properties"/>
 
-    <context:component-scan base-package="com.advdsp.service.manager"/>
+    <context:component-scan base-package="com.xgame.service.manager"/>
 
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
           destroy-method="close">
@@ -43,7 +43,7 @@
 
 
     <bean id="mybatisMapperScanner" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="com.advdsp.service.manager.db.dao"/>
+        <property name="basePackage" value="com.xgame.service.manager.db.dao"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
 

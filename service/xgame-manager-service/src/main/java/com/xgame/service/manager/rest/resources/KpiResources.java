@@ -1,14 +1,17 @@
 package com.xgame.service.manager.rest.resources;
 
 import com.xgame.service.common.rest.model.WrapResponseModel;
+import com.xgame.service.manager.rest.model.kpi.KpiDataModel;
 import com.xgame.service.manager.rest.model.kpi.KpiMetaModel;
 import com.xgame.service.manager.rest.model.kpi.KpiNavModel;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +49,29 @@ public class KpiResources extends BaseResources {
 
         WrapResponseModel wrapResponseModel = new WrapResponseModel();
         wrapResponseModel.setData(kpiNavModels);
-        wrapResponseModel.setCode(0);
+        wrapResponseModel.setCode(successCode);
         return wrapResponseModel;
+    }
+
+    @GET
+    @Path("/getData")
+    @Produces(MediaType.APPLICATION_JSON)
+    public WrapResponseModel getKpiData(@QueryParam("id") String kpiId){
+        logger.info("getKpiData,kipid:"+kpiId);
+        if(StringUtils.isEmpty(kpiId)){
+            throw new IllegalArgumentException("navId is empty");
+        }
+        WrapResponseModel wrapResponseModel = new WrapResponseModel();
+        KpiDataModel kpiDataModel = new KpiDataModel();
+        List<String> columns = new ArrayList<>();
+        columns.add("在线人数");
+        List<Object> objects = new ArrayList<>();
+        objects.add(100);
+        kpiDataModel.setColumns(columns);
+        kpiDataModel.setData(objects);
+        wrapResponseModel.setData(kpiDataModel);
+        wrapResponseModel.setCode(successCode);
+        return wrapResponseModel;
+
     }
 }
