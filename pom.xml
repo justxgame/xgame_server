@@ -15,6 +15,7 @@
     </properties>
 
     <modules>
+         <module>service/xgame-service-common</module>
         <module>service/xgame-manager-service</module>
     </modules>
 
