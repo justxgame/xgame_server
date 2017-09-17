@@ -65,10 +65,26 @@ public class KpiResources extends BaseResources {
         KpiDataModel kpiDataModel = new KpiDataModel();
         List<String> columns = new ArrayList<>();
         columns.add("在线人数");
-        List<Object> objects = new ArrayList<>();
-        objects.add(100);
+        columns.add("离线人数");
+
+        List<Object> result = new ArrayList<>();
+        List<Object> dataList1 = new ArrayList<>();
+        dataList1.add(100);
+        dataList1.add(200);
+       // activeMans.add(200);
+        result.add(dataList1);
+        List<Object> dataList2 = new ArrayList<>();
+        dataList2.add(300);
+        dataList2.add(400);
+        result.add(dataList2);
+
+        List<Object> columObjects = new ArrayList<>();
+        columObjects.add(result);
+
+
+
         kpiDataModel.setColumns(columns);
-        kpiDataModel.setData(objects);
+        kpiDataModel.setData(columObjects);
         wrapResponseModel.setData(kpiDataModel);
         wrapResponseModel.setCode(successCode);
         return wrapResponseModel;
