@@ -11,3 +11,6 @@ disnotice.db
 .project
 .classpath
 *settings*
+
+.DS_Store
+log/

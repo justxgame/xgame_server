@@ -25,7 +25,7 @@
 
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpcore</artifactId>
+            <artifactId>httpclient</artifactId>
             <version>4.4.1</version>
         </dependency>
 
@@ -191,6 +191,36 @@
             <version>1.6</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>WEB-INF</exclude>
+                        <exclude>*.xml</exclude>
+                        <exclude>*.properties</exclude>
+                        <exclude>*.js</exclude>
+                        <exclude>*.css</exclude>
+                        <exclude>*.html</exclude>
+                        <exclude>static</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

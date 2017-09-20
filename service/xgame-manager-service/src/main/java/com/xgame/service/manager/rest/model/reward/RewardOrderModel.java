@@ -7,6 +7,7 @@ public class RewardOrderModel {
    private Integer uid;
    private Integer rewardType;
    private String rewardName;
+   private Integer rewardId;
    private Integer rewardCount;
    private String phoneNo;
    private String address;
@@ -110,5 +111,13 @@ public class RewardOrderModel {
 
     public void setSupplierOrderId(String supplierOrderId) {
         this.supplierOrderId = supplierOrderId;
+    }
+
+    public Integer getRewardId() {
+        return rewardId;
+    }
+
+    public void setRewardId(Integer rewardId) {
+        this.rewardId = rewardId;
     }
 }

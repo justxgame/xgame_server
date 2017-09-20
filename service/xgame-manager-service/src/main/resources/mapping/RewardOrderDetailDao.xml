@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xgame.service.manager.db.dao.RewardOrderDetailDao">
+
+
+
+
+
+    <select id="getAllByQuery" parameterType="java.util.Map" resultType="com.xgame.service.manager.db.dto.RewardOrderDetailDto">
+          <![CDATA[
+             SELECT order_id,o.server_id,o.uid,item_id,item_type,item_count,order_status,order_exception,
+             indate,phone_no,address,memo FROM order_info o inner join user_info u on o.uid=u.uid and
+              o.indate >#{dateFrom} and o.indate<#{dateTo} and o.order_status=#{orderType} inner join reward_info r on o.item_id =r.id
+              and r.id =#{rewardType};
+        ]]>
+
+    </select>
+
+</mapper>

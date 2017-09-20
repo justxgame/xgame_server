@@ -1,6 +1,9 @@
 package com.xgame.service.game.receive;
 
 import com.xgame.service.game.receive.service.RewardOrderService;
+import com.xgame.service.game.receive.service.ServerStatusService;
+import com.xgame.service.game.receive.service.UserAddressService;
+import com.xgame.service.game.receive.service.UserStatusService;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -14,6 +17,9 @@ public class ServiceContextFactory {
 
     private static ApplicationContext applicationContext = new ClassPathXmlApplicationContext("spring-mybatis.xml");
     public static RewardOrderService rewardOrderService;
+    public static UserStatusService userStatusService;
+    public static UserAddressService userAddressService;
+    public static ServerStatusService serverStatusService;
 //    public static AdxConfigManagerService adxConfigManagerService;
 //    public static AppConfigService appConfigService;
 //    public static ChannelConfigService channelConfigService;
@@ -35,6 +41,9 @@ public class ServiceContextFactory {
 //        tokenService = (TokenService) applicationContext.getBean("tokenService");
 //        userService = (UserService) applicationContext.getBean("userService");
         rewardOrderService = (RewardOrderService) applicationContext.getBean("rewardOrderService");
+        userAddressService = (UserAddressService) applicationContext.getBean("userAddressService");
+        userStatusService = (UserStatusService) applicationContext.getBean("userStatusService");
+        serverStatusService = (ServerStatusService) applicationContext.getBean("serverStatusService");
     }
     public static ApplicationContext getApplicationContext() {
         return applicationContext;

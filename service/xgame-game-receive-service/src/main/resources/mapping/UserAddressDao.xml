@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xgame.service.game.receive.db.dao.UserAddressDao">
+
+
+
+    <insert id="saveObject" parameterType="com.xgame.service.game.receive.rest.model.user.UserAddressReportModel">
+        <![CDATA[
+            replace into user_info(uid,server_id,user_name,address,phone_no)
+             values(#{uid},#{server_id},#{name},#{address},#{phone_number})
+        ]]>
+    </insert>
+
+
+
+</mapper>

@@ -26,7 +26,9 @@
           <property name="breakAfterAcquireFailure" value="true"/>
           <property name="testConnectionOnCheckout" value="false"/>
     </bean>
-
+    <bean name="rewardOrderDetailService" class="com.xgame.service.manager.service.RewardOrderDetailService"></bean>
+    <bean name="rewardBoxService" class="com.xgame.service.manager.service.RewardBoxService"></bean>
+    <bean name="serverStatusService" class="com.xgame.service.manager.service.ServerStatusService"></bean>
     <!--<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
             <property name="driverClassName" value="${jdbc.driverClassName}" />
             <property name="url" value="${jdbc.url}" />

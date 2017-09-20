@@ -2,6 +2,7 @@ package com.xgame.service.manager.rest.model.server;
 
 public class ServerInfoModel {
     private Integer actionId = new Integer(0);
+    private String serverId;
     private String serverName;
     private String ipPort;
     private Integer status;
@@ -13,6 +14,14 @@ public class ServerInfoModel {
 
     public void setActionId(Integer actionId) {
         this.actionId = actionId;
+    }
+
+    public String getServerId() {
+        return serverId;
+    }
+
+    public void setServerId(String serverId) {
+        this.serverId = serverId;
     }
 
     public String getServerName() {

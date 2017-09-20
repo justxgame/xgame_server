@@ -17,6 +17,10 @@
     <modules>
          <module>service/xgame-service-common</module>
         <module>service/xgame-manager-service</module>
+
+        <module>service/xgame-game-receive-service</module>
+
+        <module>application/xgame-order-consumer</module>
     </modules>
 
     <dependencies>
@@ -56,6 +60,10 @@
                         <exclude>WEB-INF</exclude>
                         <exclude>*.xml</exclude>
                         <exclude>*.properties</exclude>
+                        <exclude>*.js</exclude>
+                        <exclude>*.css</exclude>
+                        <exclude>*.html</exclude>
+                        <exclude>static</exclude>
                     </excludes>
                 </configuration>
             </plugin>
@@ -112,10 +120,10 @@
             </plugin>
         </plugins>
     </build>
-    <repositories>
-        <repository>
-            <id>cloudera</id>
-            <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
-        </repository>
-    </repositories>
+    <!--<repositories>-->
+        <!--<repository>-->
+            <!--<id>cloudera</id>-->
+            <!--<url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>-->
+        <!--</repository>-->
+    <!--</repositories>-->
 </project>

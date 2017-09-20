@@ -12,5 +12,9 @@
         <mapper resource="mapping/AdvStatisticDao.xml"/>
         <mapper resource="mapping/TokenDao.xml"/>
         <mapper resource="mapping/UserDao.xml"/>-->
+        <mapper resource="mapping/RewardBoxDao.xml"/>
+        <mapper resource="mapping/RewardOrderDetailDao.xml"/>
+        <mapper resource="mapping/ServerStatusDao.xml"/>
     </mappers>
+
 </configuration>

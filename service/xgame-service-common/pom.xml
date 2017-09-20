@@ -14,5 +14,13 @@
     <groupId>com.xgame</groupId>
     <artifactId>xgame-service-common</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>20.0</version>
+        </dependency>
+    </dependencies>
+
 
 </project>

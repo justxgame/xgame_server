@@ -1,26 +1,36 @@
 package com.xgame.service.game.receive.rest.model.reward;
 
-public class RewardInfo {
-    private String server_id;
-    private String uid;
+import com.alibaba.fastjson.annotation.JSONField;
+
+public class RewardReportModel {
+    @JSONField(name = "Server_id")
+    private Integer server_id;
+    @JSONField(name = "Uid")
+    private Integer uid;
+    @JSONField(name = "Id")
     private Integer id;
+    @JSONField(name = "Type")
     private Integer type;
+    @JSONField(name = "Count")
     private Integer count;
+    @JSONField(name = "IsReorder")
     private Integer isReorder;
 
-    public String getServer_id() {
+
+    public Integer getServer_id() {
         return server_id;
     }
 
-    public void setServer_id(String server_id) {
+
+    public void setServer_id(Integer server_id) {
         this.server_id = server_id;
     }
 
-    public String getUid() {
+    public Integer getUid() {
         return uid;
     }
 
-    public void setUid(String uid) {
+    public void setUid(Integer uid) {
         this.uid = uid;
     }
 
@@ -54,5 +64,11 @@ public class RewardInfo {
 
     public void setIsReorder(Integer isReorder) {
         this.isReorder = isReorder;
+    }
+
+    @Override
+    public String toString(){
+        return "rewardReportModel[server_id=" + server_id + " uid=" + uid + " id=" + id + " type="
+                + type + " count=" + count + " isReorder=" + isReorder + "]";
     }
 }

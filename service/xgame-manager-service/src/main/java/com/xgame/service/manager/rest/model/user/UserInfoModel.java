@@ -7,6 +7,9 @@ public class UserInfoModel {
     private String userName;
     private Integer money;
     private Integer ticket;
+    private Integer points;
+    private Integer coins;
+    private Integer status;
 
     public String getServerId() {
         return serverId;
@@ -54,5 +57,29 @@ public class UserInfoModel {
 
     public void setActionId(Integer actionId) {
         this.actionId = actionId;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Integer getPoints() {
+        return points;
+    }
+
+    public void setPoints(Integer points) {
+        this.points = points;
+    }
+
+    public Integer getCoins() {
+        return coins;
+    }
+
+    public void setCoins(Integer coins) {
+        this.coins = coins;
     }
 }

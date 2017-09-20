@@ -11,6 +11,7 @@ public class CommonUtils {
     private final static FastDateFormat dsDateFormat = FastDateFormat.getInstance(dsPatterns);
 
 
+
     public static String hashingMD5(String str) {
         if (null == str) {
             return null;

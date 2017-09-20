@@ -24,11 +24,14 @@ public class GameSettingModel {
     private Integer remainPlayerNum;
     private Integer secondRoundPlayerNumber;
     private Integer phase2GameRounds;
+    private Integer earlyExamMinute;
     private Integer dayMonDay;
     private Integer dateWeekDay;
     private Integer dateDayHour;
     private Integer dateHourMinute;
     private Integer allowLateMinutes;
+    private Integer openFlag;
+    private Integer serverId;
 
 
     public Integer getId() {
@@ -237,5 +240,29 @@ public class GameSettingModel {
 
     public void setAllowLateMinutes(Integer allowLateMinutes) {
         this.allowLateMinutes = allowLateMinutes;
+    }
+
+    public Integer getEarlyExamMinute() {
+        return earlyExamMinute;
+    }
+
+    public void setEarlyExamMinute(Integer earlyExamMinute) {
+        this.earlyExamMinute = earlyExamMinute;
+    }
+
+    public Integer getOpenFlag() {
+        return openFlag;
+    }
+
+    public void setOpenFlag(Integer openFlag) {
+        this.openFlag = openFlag;
+    }
+
+    public Integer getServerId() {
+        return serverId;
+    }
+
+    public void setServerId(Integer serverId) {
+        this.serverId = serverId;
     }
 }

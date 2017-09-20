@@ -1,5 +1,8 @@
 package com.xgame.service.manager;
 
+import com.xgame.service.manager.service.RewardBoxService;
+import com.xgame.service.manager.service.RewardOrderDetailService;
+import com.xgame.service.manager.service.ServerStatusService;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -21,6 +24,9 @@ public class ServiceContextFactory {
 //    public static AdvStatisticService advStatisticService;
 //    public static TokenService tokenService;
 //    public static UserService userService;
+    public static RewardOrderDetailService rewardOrderDetailService;
+    public static RewardBoxService rewardBoxService;
+    public static ServerStatusService serverStatusService;
 
     static {
 //        adxConfigManagerService = (AdxConfigManagerService) applicationContext.getBean("adxConfigManagerService");
@@ -32,6 +38,9 @@ public class ServiceContextFactory {
 //        advStatisticService  = (AdvStatisticService) applicationContext.getBean("advStatisticService");
 //        tokenService = (TokenService) applicationContext.getBean("tokenService");
 //        userService = (UserService) applicationContext.getBean("userService");
+        rewardOrderDetailService = (RewardOrderDetailService) applicationContext.getBean("rewardOrderDetailService");
+        rewardBoxService = (RewardBoxService) applicationContext.getBean("rewardBoxService");
+        serverStatusService = (ServerStatusService) applicationContext.getBean("serverStatusService");
     }
     public static ApplicationContext getApplicationContext() {
         return applicationContext;
