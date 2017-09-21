@@ -1,9 +1,12 @@
 package com.xgame.service.manager.rest.resources;
 
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xgame.service.common.rest.model.WrapResponseModel;
 import com.xgame.service.manager.ServiceConfiguration;
 import com.xgame.service.manager.db.dto.ServerStatusDto;
+import com.xgame.service.manager.rest.model.response.ServerRes;
+import com.xgame.service.manager.rest.model.response.UserRes;
 import com.xgame.service.manager.rest.model.user.UserBanModel;
 import com.xgame.service.manager.rest.model.user.UserInfoModel;
 import com.xgame.service.manager.rest.model.user.UserSearchModel;
@@ -30,7 +33,7 @@ public class UserResources extends BaseResources {
     @GET
     @Path("/search")
     @Produces(MediaType.APPLICATION_JSON)
-    public WrapResponseModel searchUser(@QueryParam("serverId")String serverId,@QueryParam("uid")String uid,
+    public WrapResponseModel searchUser(@QueryParam("serverId")String serverId,@QueryParam("userId")String uid,
                                         @QueryParam("userName")String userName){
         logger.info("search user");
         WrapResponseModel responseModel = new WrapResponseModel();
@@ -42,7 +45,7 @@ public class UserResources extends BaseResources {
                 responseModel.setMessage("Can't find server by id "+serverId +" please make sure server exist");
                 return responseModel;
             }
-            String sendUrl = dto.getUrl()+"/get_player_info";
+            String sendUrl = HTTP_PREFIX+dto.getUrl()+"/get_player_info";
             HttpPost post = new HttpPost(sendUrl);
             UserSearchModel searchModel = new UserSearchModel();
             searchModel.setServer_id(Integer.valueOf(serverId));
@@ -59,7 +62,8 @@ public class UserResources extends BaseResources {
                 response = httpclient.execute(post);
                 entity = response.getEntity();
                 String res = EntityUtils.toString(entity, "UTF-8");
-                logger.info("call server response:"+res);
+                UserRes userRes =JSONObject.parseObject(res, UserRes.class);
+                responseModel.setData(userRes);
                 responseModel.setCode(successCode);
             }catch (Throwable t){
 
@@ -75,24 +79,25 @@ public class UserResources extends BaseResources {
                 }
             }
         }catch (Throwable t){
-
+            responseModel.setCode(errorCode);
+            responseModel.setMessage(ExceptionUtils.getStackTrace(t));
         }
 
-        List<UserInfoModel> userInfoModels = new ArrayList<>();
-        UserInfoModel userInfoModel =new UserInfoModel();
-        userInfoModel.setServerId("999");
-        userInfoModel.setUserName(userName);
-        userInfoModel.setUid("1");
-        userInfoModel.setMoney(100);
-        userInfoModel.setTicket(1000);
-        userInfoModel.setActionId(0);
-        userInfoModel.setStatus(1);
-        userInfoModel.setPoints(10);
-        userInfoModel.setCoins(10);
-
-        userInfoModels.add(userInfoModel);
-        responseModel.setCode(successCode);
-        responseModel.setData(userInfoModels);
+//        List<UserInfoModel> userInfoModels = new ArrayList<>();
+//        UserInfoModel userInfoModel =new UserInfoModel();
+//        userInfoModel.setServerId("999");
+//        userInfoModel.setUserName(userName);
+//        userInfoModel.setUid("1");
+//        userInfoModel.setMoney(100);
+//        userInfoModel.setTicket(1000);
+//        userInfoModel.setActionId(0);
+//        userInfoModel.setStatus(1);
+//        userInfoModel.setPoints(10);
+//        userInfoModel.setCoins(10);
+//
+//        userInfoModels.add(userInfoModel);
+//        responseModel.setCode(successCode);
+//        responseModel.setData(userInfoModels);
 
         return responseModel;
     }
@@ -103,70 +108,87 @@ public class UserResources extends BaseResources {
     public WrapResponseModel updateUser(List<UserInfoModel> userInfoModels){
         logger.info("user update");
         UserInfoModel userInfoModel = userInfoModels.get(0);
-        int actionId = userInfoModel.getActionId();
-        String serverId = userInfoModel.getServerId();
         WrapResponseModel responseModel = new WrapResponseModel();
-        List<ServerStatusDto> dtos = statusService.getAll();
-        ServerStatusDto dto = getDtoById(serverId, dtos);
-        if (dto==null){
-            responseModel.setCode(errorCode);
-            responseModel.setMessage("Can't find server by id "+serverId +" please make sure server exist");
-            return responseModel;
-        }
-        String sendUrl = dto.getUrl();
-
-        String jsonStr =null;
-        if (1==actionId||2==actionId){
-            sendUrl=sendUrl+"/ban";
-            UserBanModel banModel = new UserBanModel();
-            banModel.setServer_id(Integer.valueOf(userInfoModel.getServerId()));
-            banModel.setUid(Integer.valueOf(userInfoModel.getUid()));
-            banModel.setOp_code(actionId);
-            jsonStr = JSONObject.toJSONString(banModel);
-        }else if(3==actionId||4==actionId){
-            if (3==actionId){
-                sendUrl=sendUrl+"/alter_player_info";
-            }else {
-                sendUrl=sendUrl+"/mail";
-            }
-
-            UserUpdateModel userUpdateModel = new UserUpdateModel();
-            userUpdateModel.setUid(Integer.valueOf(userInfoModel.getUid()));
-            userUpdateModel.setServer_id(Integer.valueOf(userInfoModel.getServerId()));
-            userUpdateModel.setCoins(userInfoModel.getCoins());
-            userUpdateModel.setMoney(userInfoModel.getMoney());
-            userUpdateModel.setTicket(userInfoModel.getTicket());
-            userUpdateModel.setPoints(userInfoModel.getPoints());
-            jsonStr = JSONObject.toJSONString(userUpdateModel);
-        }
-        StringEntity reqEntity = new StringEntity(jsonStr, Charset.forName("UTF-8"));
-        reqEntity.setContentEncoding("UTF-8");
-        reqEntity.setContentType("application/json");
-        HttpPost post = new HttpPost(sendUrl);
-        post.setEntity(reqEntity);
-        CloseableHttpResponse response =null;
-        HttpEntity entity=null;
         try {
-            response = httpclient.execute(post);
-            entity = response.getEntity();
-            String res = EntityUtils.toString(entity, "UTF-8");
-            logger.info("call server response:"+res);
-            responseModel.setCode(successCode);
-        }catch (Throwable t){
+            int actionId = userInfoModel.getActionId();
+            String serverId = userInfoModel.getServerId();
 
+            List<ServerStatusDto> dtos = statusService.getAll();
+            ServerStatusDto dto = getDtoById(serverId, dtos);
+            if (dto==null){
+                responseModel.setCode(errorCode);
+                responseModel.setMessage("Can't find server by id "+serverId +" please make sure server exist");
+                return responseModel;
+            }
+            String sendUrl = HTTP_PREFIX+dto.getUrl();
+
+            String jsonStr =null;
+            if (1==actionId||2==actionId){
+                sendUrl=sendUrl+"/ban";
+                UserBanModel banModel = new UserBanModel();
+                banModel.setServer_id(Integer.valueOf(userInfoModel.getServerId()));
+                banModel.setUid(Integer.valueOf(userInfoModel.getUid()));
+                banModel.setOp_code(actionId);
+                jsonStr = JSONObject.toJSONString(banModel);
+            }else if(3==actionId||4==actionId){
+                //TODO 需测试,暂时注释
+                responseModel.setCode(successCode);
+                return responseModel;
+//                if (3==actionId){
+//                    sendUrl=sendUrl+"/alter_player_info";
+//                }else {
+//                    sendUrl=sendUrl+"/mail";
+//                }
+//
+//                UserUpdateModel userUpdateModel = new UserUpdateModel();
+//                userUpdateModel.setUid(Integer.valueOf(userInfoModel.getUid()));
+//                userUpdateModel.setServer_id(Integer.valueOf(userInfoModel.getServerId()));
+//                userUpdateModel.setCoins(userInfoModel.getCoins());
+//                userUpdateModel.setDiamond(userInfoModel.getDiamond());
+//                userInfoModel.setCoupon(userInfoModel.getCoupon());
+//
+//                userUpdateModel.setTicket(userInfoModel.getTicket());
+//
+//                jsonStr = JSONObject.toJSONString(userUpdateModel);
+//            }
+//            StringEntity reqEntity = new StringEntity(jsonStr, Charset.forName("UTF-8"));
+//            reqEntity.setContentEncoding("UTF-8");
+//            reqEntity.setContentType("application/json");
+//            HttpPost post = new HttpPost(sendUrl);
+//            post.setEntity(reqEntity);
+//            CloseableHttpResponse response =null;
+//            HttpEntity entity=null;
+//            try {
+//                response = httpclient.execute(post);
+//                entity = response.getEntity();
+//                String res = EntityUtils.toString(entity, "UTF-8");
+//                ServerRes serverRes = JSONObject.parseObject(res, ServerRes.class);
+//                if (serverRes.getCode()==0){
+//                    responseModel.setCode(successCode);
+//                }else {
+//                    responseModel.setCode(errorCode);
+//                    responseModel.setMessage("call game server get error");
+//                }
+//
+//            }catch (Throwable t){
+//
+//                responseModel.setCode(errorCode);
+//                responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+//            }finally {
+//                try {
+//                    response.close();
+//                    EntityUtils.consume(entity);
+//
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+            }
+        }catch (Throwable t){
             responseModel.setCode(errorCode);
             responseModel.setMessage(ExceptionUtils.getStackTrace(t));
-        }finally {
-            try {
-                response.close();
-                EntityUtils.consume(entity);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
 
-        responseModel.setCode(successCode);
+
         return responseModel;
     }
 }

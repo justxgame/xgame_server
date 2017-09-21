@@ -10,6 +10,7 @@ import com.xgame.service.manager.rest.model.reward.RewardItemTypeModel;
 import com.xgame.service.manager.rest.model.reward.RewardOrderModel;
 import com.xgame.service.manager.rest.model.server.ServerBoxModel;
 import com.xgame.service.manager.rest.model.server.ServerInfoModel;
+import com.xgame.service.manager.service.BroadcastService;
 import com.xgame.service.manager.service.RewardBoxService;
 import com.xgame.service.manager.service.RewardOrderDetailService;
 import com.xgame.service.manager.service.ServerStatusService;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BaseResources {
+    protected static final String HTTP_PREFIX="http://";
     protected static CloseableHttpClient httpclient;
     {
         RequestConfig config = RequestConfig.custom()
@@ -34,6 +36,7 @@ public class BaseResources {
                 HttpClientBuilder.create().setDefaultRequestConfig(config).build();
 
     }
+
 //    protected AdxConfigManagerService adxConfigManagerService = ServiceContextFactory.adxConfigManagerService;
 //    protected AppConfigService appConfigService = ServiceContextFactory.appConfigService;
 //    protected ChannelConfigService channelConfigService = ServiceContextFactory.channelConfigService;
@@ -46,7 +49,7 @@ public class BaseResources {
     protected RewardOrderDetailService rewardOrderDetailService = ServiceContextFactory.rewardOrderDetailService;
     protected RewardBoxService rewardBoxService = ServiceContextFactory.rewardBoxService;
     protected ServerStatusService statusService = ServiceContextFactory.serverStatusService;
-
+    protected BroadcastService broadcastService = ServiceContextFactory.broadcastService;
 
     @Inject
     ContainerRequestContext requestContext;
@@ -115,6 +118,19 @@ public class BaseResources {
         }
         return models;
     }
+    protected  ServerStatusDto parseServerInfoModel2StatusDto(ServerInfoModel model){
+        ServerStatusDto dto = new ServerStatusDto();
+        dto.setServer_id(Integer.valueOf(model.getServerId()));
+        dto.setGm_port(model.getGmPort());
+        String[] ipPort = model.getIpPort().split(":");
+        dto.setIp(ipPort[0]);
+        dto.setPort(Integer.valueOf(ipPort[1]));
+        dto.setUrl(model.getIpPort());
+        dto.setStatus(model.getStatus());
+        dto.setIndate(CommonUtil.getFormatDateByNow());
+        return dto;
+    }
+
     protected ServerStatusDto getDtoById(String serverId, List<ServerStatusDto> dtos){
         for(ServerStatusDto dto:dtos){
             if (dto.getServer_id().equals(Integer.valueOf(serverId))){

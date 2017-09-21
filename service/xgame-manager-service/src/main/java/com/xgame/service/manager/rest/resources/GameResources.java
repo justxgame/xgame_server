@@ -2,6 +2,7 @@ package com.xgame.service.manager.rest.resources;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.xgame.service.common.rest.model.WrapResponseModel;
 import com.xgame.service.manager.ServiceConfiguration;
 import com.xgame.service.manager.db.dto.ServerStatusDto;
@@ -9,6 +10,8 @@ import com.xgame.service.manager.rest.model.game.GameSettingModel;
 import com.xgame.service.manager.rest.model.game.GameSignCostModel;
 import com.xgame.service.manager.rest.model.game.GameWinnerRewardsModel;
 import com.xgame.service.manager.rest.model.game.send.GameSettingSendModel;
+import com.xgame.service.manager.rest.model.response.ServerRes;
+import com.xgame.service.manager.rest.model.response.UserRes;
 import com.xgame.service.manager.rest.model.server.ServerBoxModel;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpEntity;
@@ -122,7 +125,6 @@ public class GameResources extends BaseResources {
         model1.setDateHourMinute(2);
         model1.setAllowLateMinutes(2);
         gameSettingModels.add(model1);
-        gameSettingModels.add(model1);
         responseModel.setData(gameSettingModels);
 
 
@@ -135,45 +137,70 @@ public class GameResources extends BaseResources {
     @Produces(MediaType.APPLICATION_JSON)
     public WrapResponseModel update(GameSettingModel model){
         WrapResponseModel responseModel = new WrapResponseModel();
+        try {
+            String serverId = String.valueOf(model.getServerId());
+            List<ServerStatusDto> serverStatusDtos =statusService.getAll();
+            ServerStatusDto dto = getDtoById(serverId, serverStatusDtos);
+            String sendUrl = HTTP_PREFIX+dto.getUrl()+"/match_config_update";
+            GameSettingSendModel sendModel = parse2SendSetting(model);
+            String jsonStr = JSONObject.toJSONString(sendModel);
+            HttpPost post = new HttpPost(sendUrl);
+            StringEntity reqEntity = new StringEntity(jsonStr, Charset.forName("UTF-8"));
+            reqEntity.setContentEncoding("UTF-8");
+            reqEntity.setContentType("application/json");
+
+            post.setEntity(reqEntity);
+            CloseableHttpResponse response =null;
+            HttpEntity entity=null;
+            try {
+                response = httpclient.execute(post);
+                entity = response.getEntity();
+                String res = EntityUtils.toString(entity, "UTF-8");
+                ServerRes serverRes = JSONObject.parseObject(res, ServerRes.class);
+                if (serverRes.getCode()==successCode){
+                    responseModel.setCode(successCode);
+                }else {
+                    responseModel.setCode(errorCode);
+                    responseModel.setMessage("call game server get error code");
+                }
+
+            }catch (Throwable t){
+
+                responseModel.setCode(errorCode);
+                responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+            }finally {
+                try {
+                    response.close();
+                    EntityUtils.consume(entity);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            responseModel.setCode(successCode);
+        }catch (Throwable t){
+
+        }
+
         GameSettingSendModel sendModel = parse2SendSetting(model);
         String jsonStr = JSONObject.toJSONString(sendModel);
         String sendUrl = ServiceConfiguration.getInstance().getConfig().getString("xgame.game.send.url");
         sendUrl =sendUrl+"/match_config_update";
-        HttpPost post = new HttpPost(sendUrl);
-        StringEntity reqEntity = new StringEntity(jsonStr, Charset.forName("UTF-8"));
-        reqEntity.setContentEncoding("UTF-8");
-        reqEntity.setContentType("application/json");
 
-        post.setEntity(reqEntity);
-        CloseableHttpResponse response =null;
-        HttpEntity entity=null;
-        try {
-            response = httpclient.execute(post);
-            entity = response.getEntity();
-            String res = EntityUtils.toString(entity, "UTF-8");
-            logger.info("call server response:"+res);
-            responseModel.setCode(successCode);
-        }catch (Throwable t){
-
-            responseModel.setCode(errorCode);
-            responseModel.setMessage(ExceptionUtils.getStackTrace(t));
-        }finally {
-            try {
-                response.close();
-                EntityUtils.consume(entity);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        //responseModel.setData();
         return  responseModel;
 
     }
 
     private GameSettingSendModel parse2SendSetting(GameSettingModel model){
         GameSettingSendModel sendModel = new GameSettingSendModel();
-        sendModel.setSign_cost(model.getSignCost());
-        sendModel.setWinner_rewards(model.getWinnerRewards());
+        List<GameWinnerRewardsModel> winnerRewardsModels = model.getWinnerRewards();
+        String winnerStr = parse2WinnerRewardStr(winnerRewardsModels);
+        List<GameSignCostModel> gameSignCostModels = model.getSignCost();
+        String signCostStr = parse2SignCostStr(gameSignCostModels);
+        sendModel.setSign_cost(signCostStr);
+
+        sendModel.setWinner_rewards(winnerStr);
         sendModel.setId(model.getId());
         sendModel.setMatch_iterm_type(model.getMatchItemType());
         sendModel.setGame_type(model.getGmaeType());
@@ -202,6 +229,26 @@ public class GameResources extends BaseResources {
         sendModel.setOpen_flag(model.getOpenFlag());
         sendModel.setServer_id(model.getServerId());
         return sendModel;
+    }
+
+    private String parse2WinnerRewardStr(List<GameWinnerRewardsModel> models){
+        StringBuilder sb = new StringBuilder();
+        for (GameWinnerRewardsModel model:models){
+            sb.append(model.getGtype()).append("|").append(model.getGid())
+                    .append("|").append(model.getCount()).append("|").append(model.getWeight())
+                    .append(";");
+        }
+        return sb.toString();
+    }
+
+    private String parse2SignCostStr( List<GameSignCostModel> models){
+        StringBuilder sb = new StringBuilder();
+        for(GameSignCostModel model:models){
+            sb.append(model.getGtype()).append("|").append(model.getGid()).append("|")
+                    .append(model.getCount()).append(";");
+
+        }
+        return sb.toString();
     }
 
 }

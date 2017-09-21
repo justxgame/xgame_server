@@ -5,15 +5,31 @@
 
 <mapper namespace="com.xgame.service.manager.db.dao.ServerStatusDao">
 
-
-
-
-
     <select id="getAll" resultType="com.xgame.service.manager.db.dto.ServerStatusDto">
           <![CDATA[
             SELECT server_id,ip,port,gm_port,status,url from server_info
         ]]>
 
     </select>
+    <insert id="saveObject" parameterType="com.xgame.service.manager.db.dto.ServerStatusDto">
+            <![CDATA[
+           INSERT  into server_info (server_id,ip,port,gm_port,url,status,indate)
+           values(#{server_id},#{ip},#{port},#{gm_port},#{url},#{status},#{indate})
+        ]]>
+    </insert>
+    <update id="updateObjectById" parameterType="com.xgame.service.manager.db.dto.ServerStatusDto">
+         <![CDATA[
+
+           update  server_info  set server_id=#{server_id},ip=#{ip},port=#{port},gm_port=#{gm_port},status=#{status},url=#{url}
+           where server_id =#{server_id}
+        ]]>
+
+    </update>
+
+    <delete id="deleteById">
+        <![CDATA[
+            delete from server_info where server_id=#{server_id}
+        ]]>
+    </delete>
 
 </mapper>

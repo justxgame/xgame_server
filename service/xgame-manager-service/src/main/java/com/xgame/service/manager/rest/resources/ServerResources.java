@@ -106,18 +106,57 @@ public class ServerResources extends BaseResources {
 
         int actionId = serverInfoModel.getActionId();
         WrapResponseModel responseModel = new WrapResponseModel();
-        //TODO 1 2 3
-        if (actionId<4){
-            responseModel.setCode(successCode);
+        ServerStatusDto statusDto = parseServerInfoModel2StatusDto(serverInfoModel);
+
+        if (actionId==1){
+            try {
+
+                statusService.saveDto(statusDto);
+                responseModel.setCode(successCode);
+            }catch (Throwable t){
+                responseModel.setCode(errorCode);
+                responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+            }
             return responseModel;
+        }else if(actionId==2){
+            try {
+                statusService.updateDto(statusDto);
+                responseModel.setCode(successCode);
+            }catch (Throwable t){
+                responseModel.setCode(errorCode);
+                responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+            }
+            return responseModel;
+
+        }else if(actionId==3){
+
+            try {
+                statusService.deleteById(statusDto.getServer_id());
+                responseModel.setCode(successCode);
+
+            }catch (Throwable t){
+                responseModel.setCode(errorCode);
+                responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+            }
+            return responseModel;
+
         }
         List<ServerStatusDto> dtos = statusService.getAll();
         String serverId = serverInfoModel.getServerId();
-        if ("all".equalsIgnoreCase(serverInfoModel.getServerId())) {
-            for (ServerStatusDto dto:dtos){
 
-                updateServer(dto,httpclient,actionId,serverId);
+        //全服操作
+        if ("all".equalsIgnoreCase(serverInfoModel.getServerId())) {
+            try {
+                for (ServerStatusDto dto:dtos){
+
+                    updateServer(dto,httpclient,actionId,serverId);
+                }
+                responseModel.setCode(successCode);
+            }catch (Throwable t){
+                responseModel.setCode(errorCode);
+                responseModel.setMessage(ExceptionUtils.getStackTrace(t));
             }
+
 
         }else {
             ServerStatusDto dto = getDtoById(serverId,dtos);
@@ -125,39 +164,41 @@ public class ServerResources extends BaseResources {
                 responseModel.setCode(errorCode);
                 responseModel.setMessage("Server "+serverId+" not exist.can't update");
                 return responseModel;
+            }try {
+                updateServer(dto,httpclient,actionId,serverId);
+                responseModel.setCode(successCode);
+            }catch (Throwable t){
+                responseModel.setCode(successCode);
+                responseModel.setMessage(ExceptionUtils.getStackTrace(t));
             }
-            updateServer(dto,httpclient,actionId,serverId);
-            responseModel.setCode(successCode);
+
         }
-
-
-
 
         return responseModel;
     }
 
 
-    private void updateServer(ServerStatusDto dto,CloseableHttpClient httpclient,int actionId,String serverId){
+    private void updateServer(ServerStatusDto dto,CloseableHttpClient httpclient,int actionId,String serverId) throws IOException {
         ServerUpdateModel updateModel = new ServerUpdateModel();
         String jsonStr=null;
-        String sendUrl = dto.getUrl();
-        updateModel.setService(serverId);
+        String sendUrl = HTTP_PREFIX+dto.getUrl();
+        updateModel.setService("all");
         jsonStr= JSONObject.toJSONString(updateModel);
 
 
         HttpPost post =null;
         if (4==actionId){
-            logger.info("start server");
+            logger.info("start server "+dto.getServer_id());
             sendUrl = sendUrl+"/server_start";
             post = new HttpPost(sendUrl);
 
         }else if(5==actionId){
-            logger.info("stop server");
+            logger.info("stop server "+dto.getServer_id());
             sendUrl = sendUrl+"/server_stop";
             post = new HttpPost(sendUrl);
 
         }else if(6==actionId){
-            logger.info("restart server");
+            logger.info("restart server "+dto.getServer_id());
             sendUrl = sendUrl+"/server_restart";
             post = new HttpPost(sendUrl);
         }
@@ -174,11 +215,9 @@ public class ServerResources extends BaseResources {
             String restr = EntityUtils.toString(entity, "UTF-8");
             ServerRes res = JSONObject.parseObject(restr,ServerRes.class);
             if (res.getCode() == 1) {
-                logger.warn("update server get error");
+                logger.error("update server get error");
             }
 
-        }catch (Throwable t){
-            logger.error("update server error"+t.getMessage());
         }finally {
             try {
                 response.close();

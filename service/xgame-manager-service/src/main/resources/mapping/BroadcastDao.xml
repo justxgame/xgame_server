@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xgame.service.manager.db.dao.BroadcastDao">
+
+
+    <select id="getAll" resultType="com.xgame.service.manager.db.dto.BroadCastDto">
+          <![CDATA[
+            SELECT transection,server_id,msg,send_user,indate from broadcast_info
+        ]]>
+
+    </select>
+    <insert id="saveObject" parameterType="com.xgame.service.manager.db.dto.BroadCastDto"  keyProperty="tansection" useGeneratedKeys="true">
+            <![CDATA[
+           INSERT  into broadcast_info (server_id,msg,send_user,indate)
+           values(#{server_id},#{msg},#{send_user},#{indate})
+        ]]>
+    </insert>
+
+
+    <delete id="deleteById">
+        <![CDATA[
+            delete from broadcast_info where transection=#{transection}
+        ]]>
+    </delete>
+
+</mapper>

@@ -3,10 +3,12 @@ package com.xgame.service.manager.rest.model.user;
 public class UserUpdateModel {
     private Integer server_id;
     private Integer uid;
-    private Integer money;
+    private Integer diamond;
+    private Integer counpon;
+
     private Integer coins;
     private Integer ticket;
-    private Integer points;
+
 
     public Integer getServer_id() {
         return server_id;
@@ -24,13 +26,6 @@ public class UserUpdateModel {
         this.uid = uid;
     }
 
-    public Integer getMoney() {
-        return money;
-    }
-
-    public void setMoney(Integer money) {
-        this.money = money;
-    }
 
     public Integer getCoins() {
         return coins;
@@ -48,11 +43,19 @@ public class UserUpdateModel {
         this.ticket = ticket;
     }
 
-    public Integer getPoints() {
-        return points;
+    public Integer getDiamond() {
+        return diamond;
     }
 
-    public void setPoints(Integer points) {
-        this.points = points;
+    public void setDiamond(Integer diamond) {
+        this.diamond = diamond;
+    }
+
+    public Integer getCounpon() {
+        return counpon;
+    }
+
+    public void setCounpon(Integer counpon) {
+        this.counpon = counpon;
     }
 }

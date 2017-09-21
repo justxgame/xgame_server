@@ -15,6 +15,8 @@
         <mapper resource="mapping/RewardBoxDao.xml"/>
         <mapper resource="mapping/RewardOrderDetailDao.xml"/>
         <mapper resource="mapping/ServerStatusDao.xml"/>
+        <mapper resource="mapping/BroadcastDao.xml"/>
     </mappers>
+
 
 </configuration>

@@ -1,6 +1,7 @@
 package com.xgame.service.manager.rest.model.broadcast;
 
-public class BroadCastModel {
+public class   BroadCastModel {
+    private Long transection;
     private String serverId;
     private String message;
     private String sendUserName;
@@ -36,5 +37,13 @@ public class BroadCastModel {
 
     public void setSendDate(Long sendDate) {
         this.sendDate = sendDate;
+    }
+
+    public Long getTransection() {
+        return transection;
+    }
+
+    public void setTransection(Long transection) {
+        this.transection = transection;
     }
 }

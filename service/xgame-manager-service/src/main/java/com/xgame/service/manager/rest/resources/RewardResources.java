@@ -38,18 +38,16 @@ public class RewardResources extends BaseResources {
         logger.info("getAllBox");
         WrapResponseModel responseModel = new WrapResponseModel();
 
+        try {
+
+        }catch (Throwable t){
+
+        }
         List<RewardBoxDto> dtos = rewardBoxService.getAll();
         RewardItemTypeBoxModel itemTypeNavModel = new RewardItemTypeBoxModel();
 
         List<RewardItemTypeModel> rewardItemTypeModels = parseRewardBoxDto2Model(dtos);
-//        RewardItemTypeModel itemTypeModel = new RewardItemTypeModel();
-//        itemTypeModel.setItemTypeId(1);
-//        itemTypeModel.setItemTypeName("50加油卡");
-//        RewardItemTypeModel itemTypeModel2 = new RewardItemTypeModel();
-//        itemTypeModel2.setItemTypeId(2);
-//        itemTypeModel2.setItemTypeName("100加油卡");
-//        rewardItemTypeModels.add(itemTypeModel);
-//        rewardItemTypeModels.add(itemTypeModel2);
+
         itemTypeNavModel.setItemTypeModelList(rewardItemTypeModels);
 
         RewardOrderTypeBoxModel orderTypeNavModel = new RewardOrderTypeBoxModel();
@@ -86,8 +84,15 @@ public class RewardResources extends BaseResources {
         Map<String, Object> query = new HashMap<>();
         query.put("rewardType",rewardType);
         query.put("orderType", orderType);
+        if (dateFrom==0&&dateTo==0){
+            //1970
+            dateFrom=838861000l;
+            //2100
+            dateTo=4103283661000l;
+        }
         query.put("dateFrom", CommonUtil.getDsFromUnixTimestamp(dateFrom));
         query.put("dateTo", CommonUtil.getDsFromUnixTimestamp(dateTo));
+
 
         WrapResponseModel responseModel = new WrapResponseModel();
         try {

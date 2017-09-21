@@ -5,6 +5,7 @@ public class ServerInfoModel {
     private String serverId;
     private String serverName;
     private String ipPort;
+    private Integer gmPort;
     private Integer status;
 
 
@@ -46,5 +47,13 @@ public class ServerInfoModel {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Integer getGmPort() {
+        return gmPort;
+    }
+
+    public void setGmPort(Integer gmPort) {
+        this.gmPort = gmPort;
     }
 }

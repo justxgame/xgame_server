@@ -15,4 +15,13 @@ public class ServerStatusService {
     public List<ServerStatusDto> getAll(){
         return serverStatusDao.getAll();
     }
+    public void saveDto(ServerStatusDto dto){
+        serverStatusDao.saveObject(dto);
+    }
+    public void updateDto(ServerStatusDto dto){
+        serverStatusDao.updateObjectById(dto);
+    }
+    public void deleteById(Object id){
+        serverStatusDao.deleteById(id);
+    }
 }

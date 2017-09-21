@@ -1,13 +1,15 @@
 package com.xgame.service.manager.rest.model.user;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 public class UserInfoModel {
     private Integer actionId;
     private String serverId;
     private String uid;
     private String userName;
-    private Integer money;
     private Integer ticket;
-    private Integer points;
+    private Integer diamond;
+    private Integer coupon;
     private Integer coins;
     private Integer status;
 
@@ -23,6 +25,7 @@ public class UserInfoModel {
         return uid;
     }
 
+    @JSONField(name = "pid")
     public void setUid(String uid) {
         this.uid = uid;
     }
@@ -33,14 +36,6 @@ public class UserInfoModel {
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    public Integer getMoney() {
-        return money;
-    }
-
-    public void setMoney(Integer money) {
-        this.money = money;
     }
 
     public Integer getTicket() {
@@ -67,12 +62,20 @@ public class UserInfoModel {
         this.status = status;
     }
 
-    public Integer getPoints() {
-        return points;
+    public Integer getDiamond() {
+        return diamond;
     }
 
-    public void setPoints(Integer points) {
-        this.points = points;
+    public void setDiamond(Integer diamond) {
+        this.diamond = diamond;
+    }
+
+    public Integer getCoupon() {
+        return coupon;
+    }
+
+    public void setCoupon(Integer coupon) {
+        this.coupon = coupon;
     }
 
     public Integer getCoins() {

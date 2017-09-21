@@ -1,5 +1,6 @@
 package com.xgame.service.manager;
 
+import com.xgame.service.manager.service.BroadcastService;
 import com.xgame.service.manager.service.RewardBoxService;
 import com.xgame.service.manager.service.RewardOrderDetailService;
 import com.xgame.service.manager.service.ServerStatusService;
@@ -27,6 +28,7 @@ public class ServiceContextFactory {
     public static RewardOrderDetailService rewardOrderDetailService;
     public static RewardBoxService rewardBoxService;
     public static ServerStatusService serverStatusService;
+    public static BroadcastService broadcastService;
 
     static {
 //        adxConfigManagerService = (AdxConfigManagerService) applicationContext.getBean("adxConfigManagerService");
@@ -41,6 +43,7 @@ public class ServiceContextFactory {
         rewardOrderDetailService = (RewardOrderDetailService) applicationContext.getBean("rewardOrderDetailService");
         rewardBoxService = (RewardBoxService) applicationContext.getBean("rewardBoxService");
         serverStatusService = (ServerStatusService) applicationContext.getBean("serverStatusService");
+        broadcastService = (BroadcastService) applicationContext.getBean("broadcastService");
     }
     public static ApplicationContext getApplicationContext() {
         return applicationContext;
