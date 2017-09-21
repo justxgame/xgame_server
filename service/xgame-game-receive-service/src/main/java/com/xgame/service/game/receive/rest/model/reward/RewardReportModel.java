@@ -1,19 +1,20 @@
 package com.xgame.service.game.receive.rest.model.reward;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class RewardReportModel {
-    @JSONField(name = "Server_id")
+    @JsonProperty("Server_id")
     private Integer server_id;
-    @JSONField(name = "Uid")
+    @JsonProperty("Uid")
     private Integer uid;
-    @JSONField(name = "Id")
+    @JsonProperty("Id")
     private Integer id;
-    @JSONField(name = "Type")
+    @JsonProperty("Type")
     private Integer type;
-    @JSONField(name = "Count")
+    @JsonProperty("Count")
     private Integer count;
-    @JSONField(name = "IsReorder")
+    @JsonProperty("IsReorder")
     private Integer isReorder;
 
 

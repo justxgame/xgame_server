@@ -1,17 +1,18 @@
 package com.xgame.service.game.receive.rest.model.server;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ServerStatusReportModel {
-    @JSONField(name = "Server_id")
+    @JsonProperty("Server_id")
     private Integer server_id;
-    @JSONField(name = "IP")
+    @JsonProperty("IP")
     private String ip;
-    @JSONField(name = "Port")
+    @JsonProperty("Port")
     private Integer port;
-    @JSONField(name = "Gm_port")
+    @JsonProperty("Gm_port")
     private Integer gm_port;
-    @JSONField(name = "Status")
+    @JsonProperty("Status")
     private Boolean status;
 
     public Integer getServer_id() {

@@ -20,11 +20,11 @@ public class ServerStatusResources extends BaseResources {
     @POST
     @Path("/status/report")
     @Produces(MediaType.APPLICATION_JSON)
-    public WrapResponseModel serverReport(String str){
+    public WrapResponseModel serverReport(ServerStatusReportModel model){
         logger.info("server status report");
-        logger.info("model:"+str);
+        logger.info("model:"+model);
         WrapResponseModel responseModel = new WrapResponseModel();
-        ServerStatusReportModel model = JSONObject.parseObject(str, ServerStatusReportModel.class);
+       // ServerStatusReportModel model = JSONObject.parseObject(str, ServerStatusReportModel.class);
         ServerStatusDto dto = parseServerStatusModel2Dto(model);
         try {
             serverStatusService.saveObject(dto);
@@ -33,9 +33,6 @@ public class ServerStatusResources extends BaseResources {
             responseModel.setCode(errorCode);
             responseModel.setMessage(ExceptionUtils.getStackTrace(t));
         }
-
-
-
 
 
         return responseModel;

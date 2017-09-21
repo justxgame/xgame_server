@@ -6,6 +6,7 @@ import com.xgame.service.common.rest.model.WrapResponseModel;
 import com.xgame.service.game.receive.db.dto.RewardOrderDto;
 import com.xgame.service.game.receive.rest.model.reward.RewardReportModel;
 import com.xgame.service.game.receive.util.CommonUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,18 +20,24 @@ public class ExchangeResources extends BaseResources{
     @POST
     @Path("/report")
     @Produces(MediaType.APPLICATION_JSON)
-    public WrapResponseModel getOrderInfo(String  str){
+    public WrapResponseModel getOrderInfo(RewardReportModel  model){
 
         logger.info("receive");
-
-        logger.info("model"+ str);
-        //TODO check param && async use queue
-        RewardReportModel rewardReportModel = JSONObject.parseObject(str, RewardReportModel.class);
-        RewardOrderDto orderInfo = getRewardOrder(rewardReportModel);
-
-        rewardOrderService.saveObject(orderInfo);
-
         WrapResponseModel wrapResponseModel = new WrapResponseModel();
+
+        logger.info("mode"+model);
+        RewardOrderDto orderInfo = getRewardOrder(model);
+
+        try {
+            rewardOrderService.saveObject(orderInfo);
+            wrapResponseModel.setCode(successCode);
+        }catch (Throwable t){
+            wrapResponseModel.setCode(errorCode);
+            wrapResponseModel.setMessage(ExceptionUtils.getStackTrace(t));
+        }
+
+
+
         wrapResponseModel.setCode(successCode);
 
         return wrapResponseModel;

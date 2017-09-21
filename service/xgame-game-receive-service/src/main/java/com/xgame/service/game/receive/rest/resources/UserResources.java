@@ -21,12 +21,11 @@ public class UserResources extends BaseResources {
     @POST
     @Path("/address/report")
     @Produces(MediaType.APPLICATION_JSON)
-    public WrapResponseModel userAddressReport(String str){
+    public WrapResponseModel userAddressReport(UserAddressReportModel model){
         logger.info("user address report");
-        logger.info("model:"+str);
         WrapResponseModel responseModel = new WrapResponseModel();
-        UserAddressReportModel model = JSONObject.parseObject(str, UserAddressReportModel.class);
         try {
+            logger.info(model.toString());
             userAddressService.saveObject(model);
             responseModel.setCode(successCode);
         }catch (Throwable t){
@@ -42,11 +41,11 @@ public class UserResources extends BaseResources {
     @POST
     @Path("/status/report")
     @Produces(MediaType.APPLICATION_JSON)
-    public WrapResponseModel userStatusReport(String str){
+    public WrapResponseModel userStatusReport(UserStatusReportModel model){
         logger.info("user status report");
-        logger.info("model:"+str);
+
+        logger.info(model.toString());
         WrapResponseModel responseModel = new WrapResponseModel();
-        UserStatusReportModel model = JSONObject.parseObject(str, UserStatusReportModel.class);
         UserStatusDto dto = parseUserStatusMode2Dto(model);
         try {
             userStatusService.saveObjet(dto);
@@ -55,8 +54,6 @@ public class UserResources extends BaseResources {
             responseModel.setCode(errorCode);
             responseModel.setMessage(ExceptionUtils.getStackTrace(t));
         }
-
-
 
         return responseModel;
     }

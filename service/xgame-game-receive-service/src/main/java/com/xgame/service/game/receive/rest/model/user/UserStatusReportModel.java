@@ -1,15 +1,16 @@
 package com.xgame.service.game.receive.rest.model.user;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class UserStatusReportModel {
-    @JSONField(name = "Uid")
+    @JsonProperty("Uid")
     private Integer uid;
-    @JSONField(name = "Server_id")
+    @JsonProperty("Server_id")
     private Integer server_id;
-    @JSONField(name = "Name")
+    @JsonProperty("Name")
     private String nick_name;
-    @JSONField(name = "Online_flag")
+    @JsonProperty("Online_flag")
     private Boolean online_flag;
 
     public Integer getUid() {
