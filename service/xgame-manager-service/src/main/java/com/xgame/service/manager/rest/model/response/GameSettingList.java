@@ -1,11 +1,14 @@
 package com.xgame.service.manager.rest.model.response;
 
 
+import com.xgame.service.manager.rest.model.game.GameSettingResModel;
+
+
 import java.util.List;
 
 public class GameSettingList {
     private Integer code;
-    private List<GameSettingSendModel> list;
+    private List<GameSettingResModel> list;
 
 
     public Integer getCode() {
@@ -16,11 +19,11 @@ public class GameSettingList {
         this.code = code;
     }
 
-    public List<GameSettingSendModel> getList() {
+    public List<GameSettingResModel> getList() {
         return list;
     }
 
-    public void setList(List<GameSettingSendModel> list) {
+    public void setList(List<GameSettingResModel> list) {
         this.list = list;
     }
 }

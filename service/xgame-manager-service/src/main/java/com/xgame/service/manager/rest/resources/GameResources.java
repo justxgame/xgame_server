@@ -3,6 +3,7 @@ package com.xgame.service.manager.rest.resources;
 import com.alibaba.fastjson.JSONObject;
 import com.xgame.service.common.rest.model.WrapResponseModel;
 import com.xgame.service.manager.db.dto.ServerStatusDto;
+import com.xgame.service.manager.rest.model.game.GameSettingResModel;
 import com.xgame.service.manager.rest.model.game.GameSignCostModel;
 import com.xgame.service.manager.rest.model.game.GameWinnerRewardsModel;
 import com.xgame.service.manager.rest.model.response.GameSettingList;
@@ -164,7 +165,7 @@ public class GameResources extends BaseResources {
     @POST
     @Path("/update")
     @Produces(MediaType.APPLICATION_JSON)
-    public WrapResponseModel update(GameSettingSendModel model){
+    public WrapResponseModel update(GameSettingResModel model){
         WrapResponseModel responseModel = new WrapResponseModel();
         try {
             String serverId = String.valueOf(model.getServer_id());
