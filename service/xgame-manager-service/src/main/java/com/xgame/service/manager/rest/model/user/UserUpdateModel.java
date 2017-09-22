@@ -1,32 +1,35 @@
 package com.xgame.service.manager.rest.model.user;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 public class UserUpdateModel {
     private Integer server_id;
-    private Integer uid;
+    private Integer pid;
     private Integer diamond;
     private Integer counpon;
 
     private Integer coins;
     private Integer ticket;
 
-
+    @JSONField(name = "Server_id")
     public Integer getServer_id() {
         return server_id;
     }
+
 
     public void setServer_id(Integer server_id) {
         this.server_id = server_id;
     }
 
-    public Integer getUid() {
-        return uid;
+    @JSONField(name = "Pid")
+    public Integer getPid() {
+        return pid;
     }
 
-    public void setUid(Integer uid) {
-        this.uid = uid;
+    public void setPid(Integer pid) {
+        this.pid = pid;
     }
-
-
+    @JSONField(name = "Coins")
     public Integer getCoins() {
         return coins;
     }
@@ -34,7 +37,7 @@ public class UserUpdateModel {
     public void setCoins(Integer coins) {
         this.coins = coins;
     }
-
+    @JSONField(name = "Ticket")
     public Integer getTicket() {
         return ticket;
     }
@@ -42,7 +45,7 @@ public class UserUpdateModel {
     public void setTicket(Integer ticket) {
         this.ticket = ticket;
     }
-
+    @JSONField(name = "Diamond")
     public Integer getDiamond() {
         return diamond;
     }
@@ -50,7 +53,7 @@ public class UserUpdateModel {
     public void setDiamond(Integer diamond) {
         this.diamond = diamond;
     }
-
+    @JSONField(name = "Counpon")
     public Integer getCounpon() {
         return counpon;
     }

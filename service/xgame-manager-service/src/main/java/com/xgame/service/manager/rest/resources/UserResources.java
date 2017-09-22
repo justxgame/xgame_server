@@ -49,6 +49,11 @@ public class UserResources extends BaseResources {
             HttpPost post = new HttpPost(sendUrl);
             UserSearchModel searchModel = new UserSearchModel();
             searchModel.setServer_id(Integer.valueOf(serverId));
+            if (null==uid){
+                responseModel.setCode(errorCode);
+                responseModel.setMessage("uid is null");
+                return responseModel;
+            }
             searchModel.setUid(Integer.valueOf(uid));
             String jsonStr = JSONObject.toJSONString(searchModel);
             StringEntity reqEntity = new StringEntity(jsonStr, Charset.forName("UTF-8"));
@@ -127,61 +132,59 @@ public class UserResources extends BaseResources {
                 sendUrl=sendUrl+"/ban";
                 UserBanModel banModel = new UserBanModel();
                 banModel.setServer_id(Integer.valueOf(userInfoModel.getServerId()));
-                banModel.setUid(Integer.valueOf(userInfoModel.getUid()));
+                banModel.setUid(Integer.valueOf(userInfoModel.getPid()));
                 banModel.setOp_code(actionId);
                 jsonStr = JSONObject.toJSONString(banModel);
             }else if(3==actionId||4==actionId){
-                //TODO 需测试,暂时注释
-                responseModel.setCode(successCode);
-                return responseModel;
-//                if (3==actionId){
-//                    sendUrl=sendUrl+"/alter_player_info";
-//                }else {
-//                    sendUrl=sendUrl+"/mail";
-//                }
-//
-//                UserUpdateModel userUpdateModel = new UserUpdateModel();
-//                userUpdateModel.setUid(Integer.valueOf(userInfoModel.getUid()));
-//                userUpdateModel.setServer_id(Integer.valueOf(userInfoModel.getServerId()));
-//                userUpdateModel.setCoins(userInfoModel.getCoins());
-//                userUpdateModel.setDiamond(userInfoModel.getDiamond());
-//                userInfoModel.setCoupon(userInfoModel.getCoupon());
-//
-//                userUpdateModel.setTicket(userInfoModel.getTicket());
-//
-//                jsonStr = JSONObject.toJSONString(userUpdateModel);
-//            }
-//            StringEntity reqEntity = new StringEntity(jsonStr, Charset.forName("UTF-8"));
-//            reqEntity.setContentEncoding("UTF-8");
-//            reqEntity.setContentType("application/json");
-//            HttpPost post = new HttpPost(sendUrl);
-//            post.setEntity(reqEntity);
-//            CloseableHttpResponse response =null;
-//            HttpEntity entity=null;
-//            try {
-//                response = httpclient.execute(post);
-//                entity = response.getEntity();
-//                String res = EntityUtils.toString(entity, "UTF-8");
-//                ServerRes serverRes = JSONObject.parseObject(res, ServerRes.class);
-//                if (serverRes.getCode()==0){
-//                    responseModel.setCode(successCode);
-//                }else {
-//                    responseModel.setCode(errorCode);
-//                    responseModel.setMessage("call game server get error");
-//                }
-//
-//            }catch (Throwable t){
-//
-//                responseModel.setCode(errorCode);
-//                responseModel.setMessage(ExceptionUtils.getStackTrace(t));
-//            }finally {
-//                try {
-//                    response.close();
-//                    EntityUtils.consume(entity);
-//
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
+
+                if (3==actionId){
+                    sendUrl=sendUrl+"/alter_player_info";
+                }else {
+                    sendUrl=sendUrl+"/mail";
+                }
+
+                UserUpdateModel userUpdateModel = new UserUpdateModel();
+                userUpdateModel.setPid(Integer.valueOf(userInfoModel.getPid()));
+                userUpdateModel.setServer_id(Integer.valueOf(userInfoModel.getServerId()));
+                userUpdateModel.setCoins(userInfoModel.getCoins());
+                userUpdateModel.setDiamond(userInfoModel.getDiamond());
+                userUpdateModel.setCounpon(userInfoModel.getCoupon());
+
+                userUpdateModel.setTicket(userInfoModel.getTicket());
+
+                jsonStr = JSONObject.toJSONString(userUpdateModel);
+            }
+            StringEntity reqEntity = new StringEntity(jsonStr, Charset.forName("UTF-8"));
+            reqEntity.setContentEncoding("UTF-8");
+            reqEntity.setContentType("application/json");
+            HttpPost post = new HttpPost(sendUrl);
+            post.setEntity(reqEntity);
+            CloseableHttpResponse response =null;
+            HttpEntity entity=null;
+            try {
+                response = httpclient.execute(post);
+                entity = response.getEntity();
+                String res = EntityUtils.toString(entity, "UTF-8");
+                ServerRes serverRes = JSONObject.parseObject(res, ServerRes.class);
+                if (serverRes.getCode()==0){
+                    responseModel.setCode(successCode);
+                }else {
+                    responseModel.setCode(errorCode);
+                    responseModel.setMessage("call game server get error code");
+                }
+
+            }catch (Throwable t){
+
+                responseModel.setCode(errorCode);
+                responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+            }finally {
+                try {
+                    response.close();
+                    EntityUtils.consume(entity);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }catch (Throwable t){
             responseModel.setCode(errorCode);

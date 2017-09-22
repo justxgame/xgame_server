@@ -5,7 +5,8 @@ import com.alibaba.fastjson.annotation.JSONField;
 public class UserInfoModel {
     private Integer actionId;
     private String serverId;
-    private String uid;
+
+    private String pid;
     private String userName;
     private Integer ticket;
     private Integer diamond;
@@ -21,13 +22,12 @@ public class UserInfoModel {
         this.serverId = serverId;
     }
 
-    public String getUid() {
-        return uid;
+    public String getPid() {
+        return pid;
     }
 
-    @JSONField(name = "pid")
-    public void setUid(String uid) {
-        this.uid = uid;
+    public void setPid(String pid) {
+        this.pid = pid;
     }
 
     public String getUserName() {
