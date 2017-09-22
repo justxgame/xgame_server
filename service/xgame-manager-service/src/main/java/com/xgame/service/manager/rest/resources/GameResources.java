@@ -1,18 +1,12 @@
 package com.xgame.service.manager.rest.resources;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
 import com.xgame.service.common.rest.model.WrapResponseModel;
-import com.xgame.service.manager.ServiceConfiguration;
 import com.xgame.service.manager.db.dto.ServerStatusDto;
-import com.xgame.service.manager.rest.model.game.GameSettingModel;
 import com.xgame.service.manager.rest.model.game.GameSignCostModel;
 import com.xgame.service.manager.rest.model.game.GameWinnerRewardsModel;
-import com.xgame.service.manager.rest.model.game.send.GameSettingSendModel;
 import com.xgame.service.manager.rest.model.response.GameSettingList;
 import com.xgame.service.manager.rest.model.response.ServerRes;
-import com.xgame.service.manager.rest.model.response.UserRes;
 import com.xgame.service.manager.rest.model.server.ServerBoxModel;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpEntity;
@@ -28,7 +22,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.List;
 
 @Path("/gameSetting")
