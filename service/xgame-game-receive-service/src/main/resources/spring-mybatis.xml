@@ -30,6 +30,8 @@
     <bean name="serverStatusService" class="com.xgame.service.game.receive.service.ServerStatusService"></bean>
     <bean name="userAddressService" class="com.xgame.service.game.receive.service.UserAddressService"></bean>
     <bean name="userStatusService" class="com.xgame.service.game.receive.service.UserStatusService"></bean>
+    <!--<bean name="userStatusService" class="com.xgame.service.game.receive.service.UserStatusService"></bean>-->
+    <!--<bean name="userStatusService" class="com.xgame.service.game.receive.service.UserStatusService"></bean>-->
 
     <!--<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
             <property name="driverClassName" value="${jdbc.driverClassName}" />

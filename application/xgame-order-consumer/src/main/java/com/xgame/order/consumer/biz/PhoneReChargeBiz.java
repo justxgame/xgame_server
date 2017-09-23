@@ -6,7 +6,10 @@ import com.xgame.order.consumer.db.dao.RewardUserDao;
 import com.xgame.order.consumer.db.dto.RewardBoxDto;
 import com.xgame.order.consumer.db.dto.RewardOrderInfoDto;
 import com.xgame.order.consumer.db.dto.RewardOrderLogDto;
+import com.xgame.service.common.conf.ConfigHolder;
+import com.xgame.service.common.conf.OrderInfo;
 import com.xgame.service.common.util.CommonUtil;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -45,7 +48,7 @@ public class PhoneReChargeBiz extends BaseBiz {
         String userId = Configuration.getInstance().getConfig().getString("phone.charge.userId");
         String userPw = Configuration.getInstance().getConfig().getString("phone.charge.userPw");
         String recalUrl = Configuration.getInstance().getConfig().getString("phone.charge.recall.url");
-        CloseableHttpClient httpclient = HttpClients.createDefault();
+
         RewardOrderLogDao rewardOrderLogDao = sqlSession.getMapper(RewardOrderLogDao.class);
         String md5Pw = CommonUtil.hashingMD5(userPw);
         RewardUserDao userDao = sqlSession.getMapper(RewardUserDao.class);
@@ -74,8 +77,9 @@ public class PhoneReChargeBiz extends BaseBiz {
             String date= null;
             try {
                 date = CommonUtil.getNormalDate(dto.getIndate());
-            } catch (ParseException e) {
-                e.printStackTrace();
+            } catch (Throwable t) {
+               logger.error(ExceptionUtils.getMessage(t));
+               continue;
             }
 
             String orderId = dto.getOrder_id();
@@ -103,22 +107,32 @@ public class PhoneReChargeBiz extends BaseBiz {
             URI uri = new URIBuilder(request.getURI()).addParameters(nameValuePairs).build();
             CloseableHttpResponse response = null;
             request.setURI(uri);
+            HttpEntity entity=null;
+            int status = 0;
+            String exception = "";
             try {
                 response = httpclient.execute(request);
-                HttpEntity entity = response.getEntity();
-                System.out.println("phone call result:" +EntityUtils.toString(entity));
-                EntityUtils.consume(entity);
-            } catch (IOException e) {
-                e.printStackTrace();
+                entity = response.getEntity();
+                String res = EntityUtils.toString(entity);
+                OrderInfo orderInfo = ConfigHolder.getPhoneChargeXml(res);
+                if (0!=orderInfo.getReqcode()){
+                    status=1;
+                    exception = orderInfo.getMsg();
+                }
+
+
+            } catch (Throwable t) {
+               logger.error(ExceptionUtils.getMessage(t));
             }finally {
                 try {
                     response.close();
+                    EntityUtils.consume(entity);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                   logger.error(e.getMessage());
                 }
             }
             rewardOrderLogDao.updateObjectById(dto);
-            RewardOrderInfoDto orderInfoDto = parsOrderLog2OrderInfo(dto, "", "");
+            RewardOrderInfoDto orderInfoDto = parsOrderLog2OrderInfo(dto, status, exception);
             result.add(orderInfoDto);
 
         }

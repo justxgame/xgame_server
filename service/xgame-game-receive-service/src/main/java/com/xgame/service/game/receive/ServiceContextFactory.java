@@ -1,9 +1,6 @@
 package com.xgame.service.game.receive;
 
-import com.xgame.service.game.receive.service.RewardOrderService;
-import com.xgame.service.game.receive.service.ServerStatusService;
-import com.xgame.service.game.receive.service.UserAddressService;
-import com.xgame.service.game.receive.service.UserStatusService;
+import com.xgame.service.game.receive.service.*;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -20,6 +17,8 @@ public class ServiceContextFactory {
     public static UserStatusService userStatusService;
     public static UserAddressService userAddressService;
     public static ServerStatusService serverStatusService;
+    public static RecallFuelService recallFuelService;
+    public static RecallPhoneService recallPhoneService;
 //    public static AdxConfigManagerService adxConfigManagerService;
 //    public static AppConfigService appConfigService;
 //    public static ChannelConfigService channelConfigService;
@@ -44,6 +43,8 @@ public class ServiceContextFactory {
         userAddressService = (UserAddressService) applicationContext.getBean("userAddressService");
         userStatusService = (UserStatusService) applicationContext.getBean("userStatusService");
         serverStatusService = (ServerStatusService) applicationContext.getBean("serverStatusService");
+        recallFuelService = (RecallFuelService) applicationContext.getBean("recallFuelService");
+        recallPhoneService = (RecallPhoneService) applicationContext.getBean("recallPhoneService");
     }
     public static ApplicationContext getApplicationContext() {
         return applicationContext;

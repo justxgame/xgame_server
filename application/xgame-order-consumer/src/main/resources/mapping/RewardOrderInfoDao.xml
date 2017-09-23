@@ -10,7 +10,7 @@
 
     <insert id="saveObject" parameterType="com.xgame.order.consumer.db.dto.RewardOrderInfoDto">
            <![CDATA[
-            insert into xgame.order_info(order_id,req_id,server_id,uid,item_id,item_type,item_count,order_status,order_exception,
+            insert into order_info(order_id,req_id,server_id,uid,item_id,item_type,item_count,order_status,order_exception,
             is_reorder,indate)
              values(#{orderId},#{reqId},#{serverId},#{uid},#{itemId},#{itemType},#{itemCount},#{orderStatus},#{orderException},
              #{isReorder},#{indate})
@@ -18,7 +18,7 @@
     </insert>
     <insert id="saveObjects" parameterType="java.util.List">
         <![CDATA[
-            insert into xgame.order_info(order_id,req_id,server_id,uid,item_id,item_type,item_count,order_status,order_exception,
+            insert into order_info(order_id,req_id,server_id,uid,item_id,item_type,item_count,order_status,order_exception,
             is_reorder,indate)
              values
         ]]>

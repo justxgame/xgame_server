@@ -11,13 +11,13 @@
     <select id="getAll" resultType="com.xgame.order.consumer.db.dto.RewardOrderLogDto">
           <![CDATA[
             select server_id,uid,item_id,item_type,item_count,order_type,order_id,is_reorder,indate
-          from xgame.order_log where order_type=0
+          from order_log where order_type=0
         ]]>
 
     </select>
     <update id="updateObjectById" parameterType="com.xgame.order.consumer.db.dto.RewardOrderLogDto">
         <![CDATA[
-            update xgame.order_log set order_type=1
+            update order_log set order_type=1
              where order_id=${order_id}
         ]]>
     </update>

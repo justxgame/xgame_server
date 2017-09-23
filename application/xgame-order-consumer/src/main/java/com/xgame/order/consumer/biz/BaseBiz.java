@@ -42,7 +42,7 @@ public class BaseBiz {
         return rewardInfo.substring(0, position+1);
     }
 
-    protected RewardOrderInfoDto parsOrderLog2OrderInfo(RewardOrderLogDto dto,String status,String exception){
+    protected RewardOrderInfoDto parsOrderLog2OrderInfo(RewardOrderLogDto dto,int status,String exception){
         RewardOrderInfoDto orderInfoDto = new RewardOrderInfoDto();
         orderInfoDto.setServerId(dto.getServer_id());
         orderInfoDto.setUid(dto.getUid());
@@ -52,9 +52,9 @@ public class BaseBiz {
         orderInfoDto.setItemType(dto.getItem_type());
         orderInfoDto.setIndate(dto.getIndate());
         orderInfoDto.setOrderId(dto.getOrder_id());
-        orderInfoDto.setOrderStatus(0);
+        orderInfoDto.setOrderStatus(status);
         orderInfoDto.setReqId(dto.getOrder_id());
-        orderInfoDto.setOrderException("");
+        orderInfoDto.setOrderException(exception);
         return orderInfoDto;
     }
 

@@ -45,25 +45,26 @@ class ConsumerTimerTask extends TimerTask{
 
             RewardOrderLogDao rewardOrderLogDao = sqlSession.getMapper(RewardOrderLogDao.class);
             List<RewardOrderLogDto> rewardOrderLogDtos = rewardOrderLogDao.getAll();
-            if (rewardOrderLogDtos==null||rewardOrderLogDtos.isEmpty()){
-                logger.info("[ConsumerTimerTask] get data from db empty");
-            }
-            List<RewardOrderLogDto> phoneDtos = getPhoneRechargeDto(rewardOrderLogDtos);
-            List<RewardOrderLogDto> fuelCardDtos = getFuelCardRechargeDto(rewardOrderLogDtos);
+            if (rewardOrderLogDtos!=null||!rewardOrderLogDtos.isEmpty()){
+                logger.info("[ConsumerTimerTask] get order from db.size "+rewardBoxDtos.size());
+                List<RewardOrderLogDto> phoneDtos = getPhoneRechargeDto(rewardOrderLogDtos);
+                List<RewardOrderLogDto> fuelCardDtos = getFuelCardRechargeDto(rewardOrderLogDtos);
 
-            FuelCardRechargeBiz fuelCardRechargeBiz = new FuelCardRechargeBiz(sqlSession,rewardBoxDtos);
-            PhoneReChargeBiz phoneReChargeBiz = new PhoneReChargeBiz(sqlSession,rewardBoxDtos);
+                FuelCardRechargeBiz fuelCardRechargeBiz = new FuelCardRechargeBiz(sqlSession,rewardBoxDtos);
+                PhoneReChargeBiz phoneReChargeBiz = new PhoneReChargeBiz(sqlSession,rewardBoxDtos);
 
-            List<RewardOrderInfoDto> fuelOrderInfoDtos = fuelCardRechargeBiz.getProcessedResult(fuelCardDtos);
-            List<RewardOrderInfoDto> phoneOrderInfoDtos = phoneReChargeBiz.getProcessedResult(phoneDtos);
+                List<RewardOrderInfoDto> fuelOrderInfoDtos = fuelCardRechargeBiz.getProcessedResult(fuelCardDtos);
+                List<RewardOrderInfoDto> phoneOrderInfoDtos = phoneReChargeBiz.getProcessedResult(phoneDtos);
 
-            RewardOrderInfoDao rewardOrderInfoDao = sqlSession.getMapper(RewardOrderInfoDao.class);
-            if (!fuelOrderInfoDtos.isEmpty()){
-                rewardOrderInfoDao.saveObjects(fuelOrderInfoDtos);
+                RewardOrderInfoDao rewardOrderInfoDao = sqlSession.getMapper(RewardOrderInfoDao.class);
+                if (!fuelOrderInfoDtos.isEmpty()){
+                    rewardOrderInfoDao.saveObjects(fuelOrderInfoDtos);
+                }
+                if(!phoneOrderInfoDtos.isEmpty()){
+                    rewardOrderInfoDao.saveObjects(phoneOrderInfoDtos);
+                }
             }
-            if(!phoneOrderInfoDtos.isEmpty()){
-                rewardOrderInfoDao.saveObjects(phoneOrderInfoDtos);
-            }
+
 
         }catch (Exception e){
             logger.error("get data from db error");
@@ -75,7 +76,7 @@ class ConsumerTimerTask extends TimerTask{
     private  List<RewardOrderLogDto> getPhoneRechargeDto( List<RewardOrderLogDto> rewardOrderLogDtos) {
         List<RewardOrderLogDto> dtos = new ArrayList<>();
         for (RewardOrderLogDto dto : rewardOrderLogDtos) {
-            if (dto.getOrder_type() == 100) {
+            if (dto.getItem_type() == 100) {
                 dtos.add(dto);
             }
         }
@@ -85,7 +86,7 @@ class ConsumerTimerTask extends TimerTask{
     private  List<RewardOrderLogDto> getFuelCardRechargeDto( List<RewardOrderLogDto> rewardOrderLogDtos) {
         List<RewardOrderLogDto> dtos = new ArrayList<>();
         for (RewardOrderLogDto dto : rewardOrderLogDtos) {
-            if (dto.getOrder_type() == 200) {
+            if (dto.getItem_type() == 200) {
                 dtos.add(dto);
             }
         }
