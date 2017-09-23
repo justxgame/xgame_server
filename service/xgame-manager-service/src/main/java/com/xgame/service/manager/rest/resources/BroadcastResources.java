@@ -37,8 +37,12 @@ public class BroadcastResources extends BaseResources {
         logger.info("send");
         WrapResponseModel responseModel = new WrapResponseModel();
         try {
-            BroadCastDto broadCastDto = parseBroadcastMode2Dto(broadCastModel);
+            String token = requestContext.getHeaderString("token");
+            String userName = tokenService.getUserNameByToken(token);
+            BroadCastDto broadCastDto = parseBroadcastMode2Dto(broadCastModel,userName);
             List<ServerStatusDto> dtos = statusService.getAll();
+
+
             if ("all".equalsIgnoreCase(broadCastModel.getServerId())){
                 for (ServerStatusDto dto:dtos){
                     sendBroadcast(dto, broadCastModel.getMessage());
@@ -109,8 +113,8 @@ public class BroadcastResources extends BaseResources {
     public WrapResponseModel delete(BroadCastModel model){
         WrapResponseModel responseModel = new WrapResponseModel();
         try {
-            BroadCastDto dto = parseBroadcastMode2Dto(model);
-            broadcastService.deleteMsg(dto.getTransection());
+
+            broadcastService.deleteMsg(model.getTransection());
             responseModel.setCode(successCode);
         }catch (Throwable t){
             responseModel.setCode(errorCode);
@@ -126,6 +130,7 @@ public class BroadcastResources extends BaseResources {
         HttpPost post = new HttpPost(sendUrl);
         BroadCastSendModel sendModel = new BroadCastSendModel();
         sendModel.setServer_id(dto.getServer_id());
+
         sendModel.setMsg(message);
         String jsonStr = JSONObject.toJSONString(sendModel);
         StringEntity reqEntity = new StringEntity(jsonStr, Charset.forName("UTF-8"));
@@ -158,12 +163,12 @@ public class BroadcastResources extends BaseResources {
         }
     }
 
-    private BroadCastDto parseBroadcastMode2Dto(BroadCastModel model){
+    private BroadCastDto parseBroadcastMode2Dto(BroadCastModel model,String userName){
         BroadCastDto dto = new BroadCastDto();
         dto.setTransection(model.getTransection());
-        dto.setIndate(CommonUtil.getDsFromUnixTimestamp(model.getSendDate()));
+        dto.setIndate(CommonUtil.getFormatDateByNow());
         dto.setMsg(model.getMessage());
-        dto.setSend_user(model.getSendUserName());
+        dto.setSend_user(userName);
         dto.setServer_id(model.getServerId());
         return dto;
     }

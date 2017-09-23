@@ -30,6 +30,8 @@
     <bean name="rewardBoxService" class="com.xgame.service.manager.service.RewardBoxService"></bean>
     <bean name="serverStatusService" class="com.xgame.service.manager.service.ServerStatusService"></bean>
     <bean name="broadcastService" class="com.xgame.service.manager.service.BroadcastService"></bean>
+    <bean name="userService" class="com.xgame.service.manager.service.UserService"></bean>
+    <bean name="tokenService" class="com.xgame.service.manager.service.TokenService"></bean>
     <!--<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
             <property name="driverClassName" value="${jdbc.driverClassName}" />
             <property name="url" value="${jdbc.url}" />

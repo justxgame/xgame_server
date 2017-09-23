@@ -12,11 +12,43 @@
     <select id="getAllByQuery" parameterType="java.util.Map" resultType="com.xgame.service.manager.db.dto.RewardOrderDetailDto">
           <![CDATA[
              SELECT order_id,o.server_id,o.uid,item_id,item_type,item_count,order_status,order_exception,
-             indate,phone_no,address,memo FROM order_info o inner join user_info u on o.uid=u.uid and
+             indate,phone_no,address,memo FROM order_info o inner join user_info u on o.uid=u.uid and o.server_id=u.server_id and
               o.indate >#{dateFrom} and o.indate<#{dateTo} and o.order_status=#{orderType} inner join reward_info r on o.item_id =r.id
-              and r.id =#{rewardType};
+              and r.id =#{rewardType} order by indate desc;
         ]]>
 
     </select>
+    <select id="getAllStatus" parameterType="java.util.Map" resultType="com.xgame.service.manager.db.dto.RewardOrderDetailDto">
+          <![CDATA[
+             SELECT order_id,o.server_id,o.uid,item_id,item_type,item_count,order_status,order_exception,
+             indate,phone_no,address,memo FROM order_info o inner join user_info u on o.uid=u.uid and o.server_id=u.server_id and
+              o.indate >#{dateFrom} and o.indate<#{dateTo}  inner join reward_info r on o.item_id =r.id
+              and r.id =#{rewardType} order by indate desc;
+        ]]>
+
+    </select>
+    <select id="getAll" resultType="com.xgame.service.manager.db.dto.RewardOrderDetailDto">
+         <![CDATA[
+             SELECT o.order_id,o.server_id,o.uid,item_id,item_type,item_count,order_status,order_exception,
+             indate,phone_no,address,memo FROM order_info o inner join user_info u on o.uid=u.uid and o.server_id=u.server_id inner join reward_info r on o.item_id =r.id
+             order by indate desc
+        ]]>
+
+    </select>
+    <select id="getAllType" resultType="com.xgame.service.manager.db.dto.RewardOrderDetailDto">
+        <![CDATA[
+            SELECT order_id,o.server_id,o.uid,item_id,item_type,item_count,order_status,order_exception,
+             indate,phone_no,address,memo FROM order_info o inner join user_info u on o.uid=u.uid and o.server_id=u.server_id and
+              o.indate >#{dateFrom} and o.indate<#{dateTo} and o.order_status=#{orderType}  inner join reward_info r on o.item_id =r.id
+               order by indate desc;
+        ]]>
+
+    </select>
+
+    <update id="updateRecallOrder" >
+           <![CDATA[
+            UPDATE order_inf set order_status=0 WHERE order_id = #{order_id}
+        ]]>
+    </update>
 
 </mapper>

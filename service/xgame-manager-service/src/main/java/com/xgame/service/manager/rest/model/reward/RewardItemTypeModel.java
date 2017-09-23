@@ -1,15 +1,15 @@
 package com.xgame.service.manager.rest.model.reward;
 
 public class RewardItemTypeModel {
-    private Integer itemTypeId;
+    private String itemTypeId;
     private String itemTypeName;
 
 
-    public Integer getItemTypeId() {
+    public String getItemTypeId() {
         return itemTypeId;
     }
 
-    public void setItemTypeId(Integer itemTypeId) {
+    public void setItemTypeId(String itemTypeId) {
         this.itemTypeId = itemTypeId;
     }
 

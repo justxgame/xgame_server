@@ -7,20 +7,21 @@
 
     <select id="getAll" resultType="com.xgame.service.manager.db.dto.ServerStatusDto">
           <![CDATA[
-            SELECT server_id,ip,port,gm_port,status,url from server_info
+            SELECT server_id,ip,port,gm_port,status,url,server_name,indate from server_info order by
+            indate desc
         ]]>
 
     </select>
     <insert id="saveObject" parameterType="com.xgame.service.manager.db.dto.ServerStatusDto">
             <![CDATA[
-           INSERT  into server_info (server_id,ip,port,gm_port,url,status,indate)
-           values(#{server_id},#{ip},#{port},#{gm_port},#{url},#{status},#{indate})
+           INSERT  into server_info (server_id,ip,port,gm_port,url,status,indate,server_name)
+           values(#{server_id},#{ip},#{port},#{gm_port},#{url},#{status},#{indate},#{server_name})
         ]]>
     </insert>
     <update id="updateObjectById" parameterType="com.xgame.service.manager.db.dto.ServerStatusDto">
          <![CDATA[
 
-           update  server_info  set server_id=#{server_id},ip=#{ip},port=#{port},gm_port=#{gm_port},status=#{status},url=#{url}
+           update  server_info  set server_id=#{server_id},ip=#{ip},port=#{port},gm_port=#{gm_port},status=#{status},url=#{url},server_name=#{server_name}
            where server_id =#{server_id}
         ]]>
 

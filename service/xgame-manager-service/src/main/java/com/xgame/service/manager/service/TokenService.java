@@ -27,4 +27,7 @@ public class TokenService {
     public void saveToken(TokenDto tokenDto){
         tokenDao.saveObject(tokenDto);
     }
+
+    public String getUserNameByToken(String token){return tokenDao.getUserNameByToken(token);
+    }
 }

@@ -109,8 +109,9 @@ public class BaseResources {
             model.setServerId(String.valueOf(dto.getServer_id()));
             model.setStatus(dto.getStatus());
             model.setIpPort(dto.getUrl());
-            model.setServerName(dto.getUrl());
+            model.setServerName(dto.getServer_name());
             model.setActionId(0);
+            model.setGmPort(dto.getGm_port());
             models.add(model);
         }
         return models;
@@ -121,6 +122,7 @@ public class BaseResources {
         dto.setGm_port(model.getGmPort());
         String[] ipPort = model.getIpPort().split(":");
         dto.setIp(ipPort[0]);
+        dto.setServer_name(model.getServerName());
         dto.setPort(Integer.valueOf(ipPort[1]));
         dto.setUrl(model.getIpPort());
         dto.setStatus(model.getStatus());

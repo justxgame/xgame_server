@@ -30,4 +30,12 @@
         ]]>
     </delete>
 
+    <select id="getUserNameByToken" resultType="java.lang.String">
+        <![CDATA[
+            select user_name from token_data t inner join user_config u on t.user_id=u.user_id
+            and t.token=#{token}
+        ]]>
+
+    </select>
+
 </mapper>

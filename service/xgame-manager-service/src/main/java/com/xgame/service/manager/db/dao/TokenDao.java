@@ -10,4 +10,5 @@ public interface TokenDao extends BaseDao {
     TokenDto getObjectByToken(String token);
 
     void deleteTokenByUserID(String user_ID);
+    String getUserNameByToken(String token);
 }

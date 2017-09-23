@@ -44,20 +44,34 @@ public class RewardResources extends BaseResources {
 
         }
         List<RewardBoxDto> dtos = rewardBoxService.getAll();
+        List<RewardBoxDto> dtos2 = new ArrayList<>();
+        RewardBoxDto rewardBoxDto = new RewardBoxDto();
+        rewardBoxDto.setId("all");
+        rewardBoxDto.setMemo("不限");
+        dtos2.add(rewardBoxDto);
+        for (RewardBoxDto dto:dtos){
+            dtos2.add(dto);
+        }
         RewardItemTypeBoxModel itemTypeNavModel = new RewardItemTypeBoxModel();
 
-        List<RewardItemTypeModel> rewardItemTypeModels = parseRewardBoxDto2Model(dtos);
+        List<RewardItemTypeModel> rewardItemTypeModels = parseRewardBoxDto2Model(dtos2);
 
         itemTypeNavModel.setItemTypeModelList(rewardItemTypeModels);
 
         RewardOrderTypeBoxModel orderTypeNavModel = new RewardOrderTypeBoxModel();
         List<RewardOrderTypeModel> orderTypeModels = new ArrayList<>();
+
+        RewardOrderTypeModel orderTypeModel3 = new RewardOrderTypeModel();
+        orderTypeModel3.setOrderTypeId(3);
+        orderTypeModel3.setOrderTypeName("不限");
+
         RewardOrderTypeModel orderTypeModel1 = new RewardOrderTypeModel();
         orderTypeModel1.setOrderTypeId(0);
         orderTypeModel1.setOrderTypeName("成功");
         RewardOrderTypeModel orderTypeModel2 = new RewardOrderTypeModel();
         orderTypeModel2.setOrderTypeId(1);
         orderTypeModel2.setOrderTypeName("失败");
+        orderTypeModels.add(orderTypeModel3);
 
         orderTypeModels.add(orderTypeModel1);
         orderTypeModels.add(orderTypeModel2);
@@ -78,7 +92,7 @@ public class RewardResources extends BaseResources {
     @GET
     @Path("/getRewardOrder")
     @Produces(MediaType.APPLICATION_JSON)
-    public WrapResponseModel getRewardOrderInfo(@QueryParam("rewardType")Integer rewardType,@QueryParam("orderType")Integer orderType,
+    public WrapResponseModel getRewardOrderInfo(@QueryParam("rewardType")String rewardType,@QueryParam("orderType")Integer orderType,
           @QueryParam("dateFrom")Long dateFrom,@QueryParam("dateTo")Long dateTo){
         logger.info("getRewardOrder");
         Map<String, Object> query = new HashMap<>();
@@ -93,10 +107,20 @@ public class RewardResources extends BaseResources {
         query.put("dateFrom", CommonUtil.getDsFromUnixTimestamp(dateFrom));
         query.put("dateTo", CommonUtil.getDsFromUnixTimestamp(dateTo));
 
+        List<RewardOrderDetailDto> dtos = new ArrayList<>();
+        if ("all".equalsIgnoreCase(rewardType)&&3==orderType){
+            dtos=rewardOrderDetailService.getAll();
+        }else if(!"all".equalsIgnoreCase(rewardType)&&3==orderType){
+            dtos = rewardOrderDetailService.getAllStatus(query);
+        }else if("all".equalsIgnoreCase(rewardType)&&3!=orderType){
+            dtos = rewardOrderDetailService.getAllType(query);
+        }else {
+            dtos=rewardOrderDetailService.getAllByQuery(query);
+        }
 
         WrapResponseModel responseModel = new WrapResponseModel();
         try {
-            List<RewardOrderDetailDto> dtos = rewardOrderDetailService.getAllByQuery(query);
+
             System.out.println(dtos.size());
             List<RewardOrderModel> models = parseRewardOrderDetailDto2Model(dtos);
             responseModel.setData(models);
@@ -194,6 +218,17 @@ public class RewardResources extends BaseResources {
             }
         }
         //修改订单状态
+        if (wrapResponseModel.getCode()!=errorCode){
+            String order_id =orderModel.getOrderId();
+            try {
+                rewardOrderDetailService.updateRecalorder(order_id);
+            }catch (Throwable t){
+                wrapResponseModel.setCode(errorCode);
+                wrapResponseModel.setMessage("update  order status error"+ExceptionUtils.getMessage(t));
+            }
+
+        }
+
 
         return wrapResponseModel;
     }

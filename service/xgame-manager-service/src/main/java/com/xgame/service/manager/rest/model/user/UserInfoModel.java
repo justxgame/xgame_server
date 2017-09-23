@@ -1,6 +1,7 @@
 package com.xgame.service.manager.rest.model.user;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class UserInfoModel {
     private Integer actionId;
@@ -10,6 +11,7 @@ public class UserInfoModel {
     private String userName;
     private Integer ticket;
     private Integer diamond;
+    @JsonProperty("counpon")
     private Integer coupon;
     private Integer coins;
     private Integer status;
@@ -85,4 +87,13 @@ public class UserInfoModel {
     public void setCoins(Integer coins) {
         this.coins = coins;
     }
+
+
+    @Override
+    public String toString(){
+        return "[ actionid="+actionId+" serverId="+serverId+" pid="+pid+" userName="+userName
+                +" ticket="+ticket+" diamond="+diamond+" coupon="+coupon+" coins="+coins
+                +" status="+status;
+    }
+
 }

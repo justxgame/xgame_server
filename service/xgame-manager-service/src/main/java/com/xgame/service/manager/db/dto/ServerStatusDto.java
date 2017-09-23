@@ -16,6 +16,7 @@ public class ServerStatusDto {
 
     private String url;
     private String indate;
+    private String server_name;
 
 
     public Integer getServer_id() {
@@ -72,5 +73,13 @@ public class ServerStatusDto {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getServer_name() {
+        return server_name;
+    }
+
+    public void setServer_name(String server_name) {
+        this.server_name = server_name;
     }
 }

@@ -83,8 +83,12 @@ public class GameResources extends BaseResources {
             response = httpclient.execute(get);
             entity = response.getEntity();
             String res = EntityUtils.toString(entity, "UTF-8");
+            if(null==res){
+                responseModel.setCode(errorCode);
+                responseModel.setMessage("call game server get null");
+            }
            GameSettingList gameSettingList = JSONObject.parseObject(res, GameSettingList.class);
-           responseModel.setData(gameSettingList);
+           responseModel.setData(gameSettingList.getList());
 
         }catch (Throwable t){
 
