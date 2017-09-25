@@ -56,14 +56,6 @@ public class AuthorizationFilter implements ContainerRequestFilter {
             }
         } else {
             TokenDto tokenDto = tokenService.getObjectByToken(token);
-            UserDto userDto = userService.getUserID(tokenDto.getUser_id());
-            if(userDto.getApprove()==0){
-                logger.info("[AuthorizationFilter] user is not approve");
-                WrapResponseModel wrapResponseModel = new WrapResponseModel();
-                wrapResponseModel.setCode(auth_access_failed);
-                wrapResponseModel.setMessage("用户没有权限");
-                requestContext.abortWith(Response.ok(wrapResponseModel).build());
-            }
             if (null == tokenDto) {
                 logger.info("[AuthorizationFilter] token is not correct");
                 WrapResponseModel wrapResponseModel = new WrapResponseModel();
@@ -72,6 +64,14 @@ public class AuthorizationFilter implements ContainerRequestFilter {
                 requestContext.abortWith(Response.ok(wrapResponseModel).build());
             } else {
                 requestContext.getHeaders().add("uid", tokenDto.getUser_id());
+            }
+            UserDto userDto = userService.getUserID(tokenDto.getUser_id());
+            if(userDto.getApprove()==0){
+                logger.info("[AuthorizationFilter] user is not approve");
+                WrapResponseModel wrapResponseModel = new WrapResponseModel();
+                wrapResponseModel.setCode(auth_access_failed);
+                wrapResponseModel.setMessage("用户没有权限");
+                requestContext.abortWith(Response.ok(wrapResponseModel).build());
             }
         }
     }
