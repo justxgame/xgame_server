@@ -8,22 +8,33 @@ import com.xgame.order.consumer.db.dao.RewardUserDao;
 import com.xgame.order.consumer.db.dto.RewardBoxDto;
 import com.xgame.order.consumer.db.dto.RewardOrderInfoDto;
 import com.xgame.order.consumer.db.dto.RewardOrderLogDto;
+import com.xgame.order.consumer.rest.model.ExchangeResultModel;
 import com.xgame.order.consumer.rest.model.FuelCardModel;
 import com.xgame.order.consumer.rest.model.Params;
+import com.xgame.service.common.conf.Card;
+import com.xgame.service.common.conf.ConfigHolder;
+import com.xgame.service.common.conf.OrderInfo;
 import com.xgame.service.common.util.CommonUtil;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.*;
 
@@ -57,97 +68,104 @@ public class FuelCardRechargeBiz extends BaseBiz{
     }
 
 
-   public List<RewardOrderInfoDto> getProcessedResult(List<RewardOrderLogDto> rewardOrderLogDtos){
+   public List<RewardOrderInfoDto> getProcessedResult(List<RewardOrderLogDto> rewardOrderLogDtos) throws URISyntaxException {
        if (rewardOrderLogDtos.isEmpty()){
            return Collections.EMPTY_LIST;
        }
        List<RewardOrderInfoDto> result = new ArrayList<>();
-       String url = Configuration.getInstance().getConfig().getString("fuel.card.charge.url");
-       String reqId = CommonUtil.getOrderId(3);
-       String appid = Configuration.getInstance().getConfig().getString("fuel.card.charge.appid");
-       String appkey = Configuration.getInstance().getConfig().getString("fuel.card.charge.appkey");
-       String recallUrl = Configuration.getInstance().getConfig().getString("fuel.card.charge.recall.rul");
-       String version = "1.0";
-       String code = "300100";
-       String desc = "加油卡充值";
+       String url = Configuration.getInstance().getConfig().getString("ofpay.charge.url");
+       String cardId = Configuration.getInstance().getConfig().getString("ofpay.fuel.cardid");
+       String userId = Configuration.getInstance().getConfig().getString("ofpay.userid");
+       String userPw = Configuration.getInstance().getConfig().getString("ofpay.userpw");
+       String keyStr = Configuration.getInstance().getConfig().getString("ofpay.keystr");
+       String pwMd5 = CommonUtil.hashingMD5(userPw);
+       String version = "6.0";
+
        RewardUserDao userDao = sqlSession.getMapper(RewardUserDao.class);
-
-
-
+       RewardOrderLogDao rewardOrderLogDao = sqlSession.getMapper(RewardOrderLogDao.class);
        for (RewardOrderLogDto dto:rewardOrderLogDtos){
+
            String rewardInfo = getRewardInfo(dto.getItem_id(), rewardBoxDtos);
            if (null==rewardInfo){
               logger.error("can't get item memo. wrong item id");
               continue;
            }
-           Map<String, Object> queryMap = new HashMap<>();
-           queryMap.put("server_id", dto.getServer_id());
-           queryMap.put("uid", dto.getUid());
-           String phone = userDao.getObjectByID(queryMap);
-           if (phone==null||phone.isEmpty()){
-               logger.error("can't get phone by uid:"+dto.getUid()+" server_id"+dto.getServer_id());
-               continue;
-           }
+           ExchangeResultModel resultModel = new ExchangeResultModel();
+           resultModel.setId(Integer.valueOf(dto.getId()));
+           resultModel.setUid(Integer.valueOf(dto.getUid()));
+           resultModel.setServerId(Integer.valueOf(dto.getServer_id()));
+
+           HttpGet request = new HttpGet(url);
+
+           String itemCount = String.valueOf(dto.getItem_count());
+           String orderId = dto.getOrder_id();
+           String date = CommonUtil.getOFDateByNow();
+
            String chargeFee = getChargeFee(rewardInfo);
+           String md5Str = getMd5(userId, pwMd5, cardId, itemCount, orderId, date, keyStr);
+           String md5 = CommonUtil.hashingMD5(md5Str).toUpperCase();
 
-           HttpPost post = new HttpPost(url);
-           post.addHeader("Content-type","application/json; charset=utf-8");
-           post.setHeader("Accept", "application/json");
+           List<NameValuePair> nameValuePairs = new ArrayList<>();
+           NameValuePair userIdPair = new BasicNameValuePair("userid", userId);
+           NameValuePair pwPair = new BasicNameValuePair("userpws", pwMd5);
+           NameValuePair cardidPair = new BasicNameValuePair("cardid", cardId);
+           NameValuePair cardnumPair = new BasicNameValuePair("cardnum", chargeFee);
+           NameValuePair orderIdPair = new BasicNameValuePair("sporder_id", orderId);
+           NameValuePair datePair = new BasicNameValuePair("sporder_time", date);
 
-           Params params = getParams("KEY-SINOPEC", "中石化卡密", dto.getOrder_id(), String.valueOf(dto.getItem_count()),
-                   phone, chargeFee, recallUrl);
-           String paramsMd5 = getParamsMd5(params);
-           String time = dto.getIndate();
-           String sign = getSign(reqId, appid, code, version, desc, time, appkey, paramsMd5);
+           NameValuePair md5Pair = new BasicNameValuePair("md5_str", md5);
+           NameValuePair versionPair = new BasicNameValuePair("version", version);
 
-           FuelCardModel fuelCardModel = new FuelCardModel();
-           fuelCardModel.setAppid(appid);
-           fuelCardModel.setCode(code);
-           fuelCardModel.setDesc(desc);
-           fuelCardModel.setParams(params);
-           fuelCardModel.setReqid(reqId);
-           fuelCardModel.setTime(time);
-           fuelCardModel.setVersion(version);
-           fuelCardModel.setSign(sign);
-           String jsonStr = JSONObject.toJSONString(fuelCardModel);
-           StringEntity reqEntity = new StringEntity(jsonStr, Charset.forName("UTF-8"));
-           reqEntity.setContentEncoding("UTF-8");
-           reqEntity.setContentType("application/json");
 
-           post.setEntity(reqEntity);
-           CloseableHttpResponse response =null;
+           nameValuePairs.add(userIdPair);
+           nameValuePairs.add(pwPair);
+           nameValuePairs.add(cardidPair);
+           nameValuePairs.add(orderIdPair);
+           nameValuePairs.add(versionPair);
+           nameValuePairs.add(md5Pair);
+           nameValuePairs.add(datePair);
+           nameValuePairs.add(cardnumPair);
+           URI uri = new URIBuilder(request.getURI()).addParameters(nameValuePairs).build();
+           CloseableHttpResponse response = null;
+           request.setURI(uri);
            HttpEntity entity=null;
+           int status = 0;
+           String exception = "";
            try {
-               response = httpclient.execute(post);
-               entity= response.getEntity();
-               String res = EntityUtils.toString(entity, "UTF-8");
+               response = httpclient.execute(request);
+               entity = response.getEntity();
+               String res = EntityUtils.toString(entity);
                System.out.println(res);
-           } catch (IOException e) {
-               e.printStackTrace();
+               OrderInfo orderInfo = ConfigHolder.getOrderInfo(res);
+               if (1!=orderInfo.getRetcode()){
+                   resultModel.setPassword("error "+orderInfo.getErr_msg());
+               }else {
+                   List<Card> cards = orderInfo.getCards().getCard();
+                   String jsonCard = JSONObject.toJSONString(cards);
+                   resultModel.setPassword(jsonCard);
+
+               }
+
+
+
+           } catch (Throwable t) {
+               logger.error(ExceptionUtils.getMessage(t));
            }finally {
                try {
-
                    response.close();
                    EntityUtils.consume(entity);
                } catch (IOException e) {
-                   e.printStackTrace();
+                   logger.error(e.getMessage());
                }
            }
 
-           RewardOrderInfoDto orderInfoDto = new RewardOrderInfoDto();
-           orderInfoDto.setServerId(dto.getServer_id());
-           orderInfoDto.setUid(dto.getUid());
-           orderInfoDto.setIsReorder(dto.getIs_reorder());
-           orderInfoDto.setItemCount(dto.getItem_count());
-           orderInfoDto.setItemId(dto.getItem_id());
-           orderInfoDto.setItemType(dto.getItem_type());
-           orderInfoDto.setIndate(dto.getIndate());
-           orderInfoDto.setOrderId(dto.getOrder_id());
-           orderInfoDto.setOrderStatus(0);
-           orderInfoDto.setReqId(dto.getOrder_id());
-           orderInfoDto.setOrderException("");
-           RewardOrderLogDao orderLogDao = sqlSession.getMapper(RewardOrderLogDao.class);
-           orderLogDao.updateObjectById(dto);
+           resultModel.setPassword("success");
+
+           //TODO url 获取
+           String gameServer="http://117.8.50.212:10009"+"/exchange_result";
+           int code = postResultCode(httpclient, url, resultModel);
+           rewardOrderLogDao.updateObjectById(dto);
+           RewardOrderInfoDto orderInfoDto = parsOrderLog2OrderInfo(dto, status, exception);
 
            result.add(orderInfoDto);
        }
@@ -194,6 +212,12 @@ public class FuelCardRechargeBiz extends BaseBiz{
        return CommonUtil.hashingMD5(str).toUpperCase();
 
    }
-
+    private String getMd5(String userId,String pwMd5,String cardId,String cardNum,String orderId,
+                          String orderDate,String keystr){
+        StringBuilder sb = new StringBuilder();
+        String str = sb.append(userId).append(pwMd5).append(cardId).append(cardNum).append(orderId)
+                .append(orderDate).append(keystr).toString();
+        return str;
+    }
 
 }

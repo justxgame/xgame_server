@@ -27,6 +27,6 @@ public class FuelCardTest {
         rewardOrderLogDto.setItem_count(1);
         rewardOrderLogDto.setUid("1001");
         rewardOrderLogDtos.add(rewardOrderLogDto);
-        List<RewardOrderInfoDto> result = biz.getProcessedResult(rewardOrderLogDtos);
+//        List<RewardOrderInfoDto> result = biz.getProcessedResult(rewardOrderLogDtos);
     }
 }

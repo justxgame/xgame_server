@@ -12,6 +12,8 @@ public class RewardOrderInfoDto {
     private String orderException;
     private Integer isReorder;
     private String indate;
+    private Integer id;
+    private String phone;
 
     public String getOrderId() {
         return orderId;
@@ -99,5 +101,21 @@ public class RewardOrderInfoDto {
 
     public void setIndate(String indate) {
         this.indate = indate;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }

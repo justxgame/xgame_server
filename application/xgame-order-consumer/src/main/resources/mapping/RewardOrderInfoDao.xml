@@ -11,20 +11,20 @@
     <insert id="saveObject" parameterType="com.xgame.order.consumer.db.dto.RewardOrderInfoDto">
            <![CDATA[
             insert into order_info(order_id,req_id,server_id,uid,item_id,item_type,item_count,order_status,order_exception,
-            is_reorder,indate)
+            is_reorder,indate,id,phone)
              values(#{orderId},#{reqId},#{serverId},#{uid},#{itemId},#{itemType},#{itemCount},#{orderStatus},#{orderException},
-             #{isReorder},#{indate})
+             #{isReorder},#{indate},#{id},#{phone})
         ]]>
     </insert>
     <insert id="saveObjects" parameterType="java.util.List">
         <![CDATA[
             insert into order_info(order_id,req_id,server_id,uid,item_id,item_type,item_count,order_status,order_exception,
-            is_reorder,indate)
+            is_reorder,indate,id,phone)
              values
         ]]>
         <foreach collection="list" item="item" index="index" separator=",">
             (#{item.orderId},#{item.reqId},#{item.serverId},#{item.uid},#{item.itemId},#{item.itemType},#{item.itemCount},#{item.orderStatus},#{item.orderException},
-            #{item.isReorder},#{item.indate})
+            #{item.isReorder},#{item.indate},#{item.id},#{item.phone})
         </foreach>
     </insert>
 </mapper>

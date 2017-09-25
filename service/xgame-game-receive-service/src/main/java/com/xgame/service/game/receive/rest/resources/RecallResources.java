@@ -20,7 +20,7 @@ public class RecallResources {
     @POST
     @Path("/fuel")
     @Produces(MediaType.APPLICATION_JSON)
-    public ResultModel fuelRecall(FuelModel model){
+    public ResultModel fuelRecall(String model){
         logger.info("fuel recall:"+model);
         ResultModel resultModel = new ResultModel();
         resultModel.setResult("SUCCESS");

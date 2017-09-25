@@ -9,8 +9,10 @@ import java.text.ParseException;
 public class CommonUtil {
     private final static String dsPatterns = "yyyy-MM-dd HH:mm:ss";
     private final static String PHONE_DATEFORMAt = "yyyyMMdd";
+    private final static String ofdate = "yyyyMMddHHmmss";
     private final static FastDateFormat dsDateFormat = FastDateFormat.getInstance(dsPatterns);
     private final static FastDateFormat norMalDateFormat = FastDateFormat.getInstance(PHONE_DATEFORMAt);
+    private final static FastDateFormat ofDateFormat = FastDateFormat.getInstance(ofdate);
 
 
 
@@ -57,4 +59,8 @@ public class CommonUtil {
         }
         return 0;
     }
+    public static String getOFDateByNow(){
+        return ofDateFormat.format(System.currentTimeMillis());
+    }
+
 }

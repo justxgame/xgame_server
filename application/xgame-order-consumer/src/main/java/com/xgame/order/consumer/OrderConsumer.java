@@ -1,6 +1,7 @@
 package com.xgame.order.consumer;
 
 import com.xgame.order.consumer.biz.FuelCardRechargeBiz;
+import com.xgame.order.consumer.biz.PhoneMiRechargeBiz;
 import com.xgame.order.consumer.biz.PhoneReChargeBiz;
 import com.xgame.order.consumer.db.dao.RewardBoxDao;
 import com.xgame.order.consumer.db.dao.RewardOrderInfoDao;
@@ -23,6 +24,7 @@ public class OrderConsumer {
     public static void main(String[] args) {
         SqlSession sqlSession = MybatisSqlSessionFactory.getSqlSessionAutoCommit();
         Timer timer = new Timer("conmer timer");
+        System.out.println(" Timer start");
         //每十秒获取db数据执行
         timer.schedule(new ConsumerTimerTask(sqlSession),0,10*1000);
 
@@ -45,29 +47,45 @@ class ConsumerTimerTask extends TimerTask{
 
             RewardOrderLogDao rewardOrderLogDao = sqlSession.getMapper(RewardOrderLogDao.class);
             List<RewardOrderLogDto> rewardOrderLogDtos = rewardOrderLogDao.getAll();
-            if (rewardOrderLogDtos!=null||!rewardOrderLogDtos.isEmpty()){
-                logger.info("[ConsumerTimerTask] get order from db.size "+rewardBoxDtos.size());
+            if (rewardOrderLogDtos!=null&&!rewardOrderLogDtos.isEmpty()){
+                logger.info("[ConsumerTimerTask] get order from db.size "+rewardOrderLogDtos.size());
                 List<RewardOrderLogDto> phoneDtos = getPhoneRechargeDto(rewardOrderLogDtos);
                 List<RewardOrderLogDto> fuelCardDtos = getFuelCardRechargeDto(rewardOrderLogDtos);
+                List<RewardOrderLogDto> phoneMidtos = getPhoneMiRechargeDto(rewardOrderLogDtos);
 
                 FuelCardRechargeBiz fuelCardRechargeBiz = new FuelCardRechargeBiz(sqlSession,rewardBoxDtos);
                 PhoneReChargeBiz phoneReChargeBiz = new PhoneReChargeBiz(sqlSession,rewardBoxDtos);
+                PhoneMiRechargeBiz phoneMiRechargeBiz = new PhoneMiRechargeBiz(sqlSession, rewardBoxDtos);
+                List<RewardOrderInfoDto> fuelOrderInfoDtos=null;
+                List<RewardOrderInfoDto> phoneOrderInfoDtos=null;
+                List<RewardOrderInfoDto> phoneMiInfoDtos = null;
+                if (fuelCardDtos!=null&&!fuelCardDtos.isEmpty()){
+                    fuelOrderInfoDtos = fuelCardRechargeBiz.getProcessedResult(fuelCardDtos);
+                }
+                if (phoneDtos!=null&&!phoneDtos.isEmpty()){
+                    phoneOrderInfoDtos = phoneReChargeBiz.getProcessedResult(phoneDtos);
+                }
+                if(phoneMidtos!=null&&!phoneMidtos.isEmpty()){
+                    phoneMiInfoDtos = phoneMiRechargeBiz.getProcessedResult(phoneMidtos);
+                }
 
-                List<RewardOrderInfoDto> fuelOrderInfoDtos = fuelCardRechargeBiz.getProcessedResult(fuelCardDtos);
-                List<RewardOrderInfoDto> phoneOrderInfoDtos = phoneReChargeBiz.getProcessedResult(phoneDtos);
+
 
                 RewardOrderInfoDao rewardOrderInfoDao = sqlSession.getMapper(RewardOrderInfoDao.class);
-                if (!fuelOrderInfoDtos.isEmpty()){
+                if (null!=fuelOrderInfoDtos&&!fuelOrderInfoDtos.isEmpty()){
                     rewardOrderInfoDao.saveObjects(fuelOrderInfoDtos);
                 }
-                if(!phoneOrderInfoDtos.isEmpty()){
+                if(null!=rewardOrderInfoDao&&!phoneOrderInfoDtos.isEmpty()){
                     rewardOrderInfoDao.saveObjects(phoneOrderInfoDtos);
+                }
+                if(null!=phoneMiInfoDtos&&!phoneOrderInfoDtos.isEmpty()){
+                    rewardOrderInfoDao.saveObjects(phoneMidtos);
                 }
             }
 
 
         }catch (Exception e){
-            logger.error("get data from db error");
+            logger.error("get data from db error"+e);
         }
 
 
@@ -87,6 +105,15 @@ class ConsumerTimerTask extends TimerTask{
         List<RewardOrderLogDto> dtos = new ArrayList<>();
         for (RewardOrderLogDto dto : rewardOrderLogDtos) {
             if (dto.getItem_type() == 200) {
+                dtos.add(dto);
+            }
+        }
+        return dtos;
+    }
+    private  List<RewardOrderLogDto> getPhoneMiRechargeDto( List<RewardOrderLogDto> rewardOrderLogDtos) {
+        List<RewardOrderLogDto> dtos = new ArrayList<>();
+        for (RewardOrderLogDto dto : rewardOrderLogDtos) {
+            if (dto.getItem_type() == 300) {
                 dtos.add(dto);
             }
         }

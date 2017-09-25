@@ -24,7 +24,7 @@ public class ServerStatusResources extends BaseResources {
         logger.info("server status report");
         logger.info("model:"+model);
         WrapResponseModel responseModel = new WrapResponseModel();
-       // ServerStatusReportModel model = JSONObject.parseObject(str, ServerStatusReportModel.class);
+
         ServerStatusDto dto = parseServerStatusModel2Dto(model);
         try {
             serverStatusService.saveObject(dto);

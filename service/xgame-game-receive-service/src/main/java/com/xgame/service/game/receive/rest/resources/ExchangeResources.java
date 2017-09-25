@@ -46,11 +46,13 @@ public class ExchangeResources extends BaseResources{
         RewardOrderDto orderInfo =new RewardOrderDto();
         orderInfo.setServerId(String.valueOf(rewardReportModel.getServer_id()));
         orderInfo.setUid(String.valueOf(rewardReportModel.getUid()));
-        orderInfo.setItemId(rewardReportModel.getId());
+        orderInfo.setItemId(rewardReportModel.getItemId());
+        orderInfo.setId(rewardReportModel.getId());
         orderInfo.setItemType(rewardReportModel.getType());
         orderInfo.setItemCount(rewardReportModel.getType());
         orderInfo.setOrderType(0);
         orderInfo.setIsReorder(rewardReportModel.getIsReorder());
+        orderInfo.setPhone(rewardReportModel.getPhone());
         String orderId = CommonUtils.getOrderId(1);
         orderInfo.setOrderId(orderId);
         orderInfo.setIndate(CommonUtils.getFormatDateByNow());

@@ -8,7 +8,7 @@
 
     <select id="getAll" resultType="com.xgame.service.manager.db.dto.BroadCastDto">
           <![CDATA[
-            SELECT transection,server_id,msg,send_user,indate from broadcast_info
+            SELECT transection,server_id,msg,send_user,indate from broadcast_info order by indate desc
         ]]>
 
     </select>

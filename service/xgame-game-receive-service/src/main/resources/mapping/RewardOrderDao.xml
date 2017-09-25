@@ -9,8 +9,8 @@
 
     <insert id="saveObject" parameterType="com.xgame.service.game.receive.db.dto.RewardOrderDto" keyProperty="tansection" useGeneratedKeys="true">
         <![CDATA[
-            insert into order_log(server_id,uid,item_id,item_type,item_count,order_type,order_id,indate)
-             values(#{serverId},#{uid},#{itemId},#{itemType},#{itemCount},#{orderType},#{orderId},#{indate})
+            insert into order_log(server_id,uid,id,item_id,item_type,item_count,order_type,order_id,indate,phone)
+             values(#{serverId},#{uid},#{id},#{itemId},#{itemType},#{itemCount},#{orderType},#{orderId},#{indate},#{phone})
         ]]>
     </insert>
 

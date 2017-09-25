@@ -10,7 +10,7 @@
 
     <select id="getAll" resultType="com.xgame.order.consumer.db.dto.RewardOrderLogDto">
           <![CDATA[
-            select server_id,uid,item_id,item_type,item_count,order_type,order_id,is_reorder,indate
+            select server_id,uid,item_id,item_type,item_count,order_type,order_id,is_reorder,indate,phone,id
           from order_log where order_type=0
         ]]>
 

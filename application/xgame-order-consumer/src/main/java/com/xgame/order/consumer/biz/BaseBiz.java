@@ -1,14 +1,23 @@
 package com.xgame.order.consumer.biz;
 
+import com.alibaba.fastjson.JSONObject;
 import com.xgame.order.consumer.db.dao.RewardOrderInfoDao;
 import com.xgame.order.consumer.db.dao.RewardOrderLogDao;
 import com.xgame.order.consumer.db.dto.RewardBoxDto;
 import com.xgame.order.consumer.db.dto.RewardOrderInfoDto;
 import com.xgame.order.consumer.db.dto.RewardOrderLogDto;
+import com.xgame.order.consumer.rest.model.ExchangeResultModel;
+import org.apache.http.HttpEntity;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 
 public class BaseBiz {
@@ -55,7 +64,39 @@ public class BaseBiz {
         orderInfoDto.setOrderStatus(status);
         orderInfoDto.setReqId(dto.getOrder_id());
         orderInfoDto.setOrderException(exception);
+        orderInfoDto.setId(Integer.valueOf(dto.getId()));
+        orderInfoDto.setPhone(dto.getPhone());
         return orderInfoDto;
+    }
+    protected int postResultCode(CloseableHttpClient httpclient, String url, ExchangeResultModel model){
+        HttpPost post = new HttpPost(url);
+        String jsonStr = JSONObject.toJSONString(model);
+        StringEntity reqEntity = new StringEntity(jsonStr, Charset.forName("UTF-8"));
+        reqEntity.setContentEncoding("UTF-8");
+        reqEntity.setContentType("application/json");
+
+        post.setEntity(reqEntity);
+        CloseableHttpResponse response =null;
+        HttpEntity entity=null;
+        int code =0;
+        try {
+            response = httpclient.execute(post);
+            entity= response.getEntity();
+            String res = EntityUtils.toString(entity, "UTF-8");
+            System.out.println(res);
+        } catch (IOException e) {
+            System.out.println("post game server error"+e.getMessage());
+            code=-1;
+        }finally {
+            try {
+
+                response.close();
+                EntityUtils.consume(entity);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return code;
     }
 
 

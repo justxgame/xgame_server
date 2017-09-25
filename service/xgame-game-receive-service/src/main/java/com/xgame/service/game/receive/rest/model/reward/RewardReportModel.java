@@ -10,12 +10,16 @@ public class RewardReportModel {
     private Integer uid;
     @JsonProperty("Id")
     private Integer id;
+    @JsonProperty("Item_id")
+    private Integer itemId;
     @JsonProperty("Type")
     private Integer type;
     @JsonProperty("Count")
     private Integer count;
     @JsonProperty("IsReorder")
     private Integer isReorder;
+    @JsonProperty("Phone")
+    private String phone;
 
 
     public Integer getServer_id() {
@@ -67,9 +71,25 @@ public class RewardReportModel {
         this.isReorder = isReorder;
     }
 
+    public Integer getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(Integer itemId) {
+        this.itemId = itemId;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
     @Override
     public String toString(){
-        return "rewardReportModel[server_id=" + server_id + " uid=" + uid + " id=" + id + " type="
-                + type + " count=" + count + " isReorder=" + isReorder + "]";
+        return "rewardReportModel[server_id=" + server_id + " uid=" + uid + " id=" + id+" item_id"+itemId+ " type="
+                + type + " count=" + count +"phone "+phone+ " isReorder=" + isReorder + "]";
     }
 }

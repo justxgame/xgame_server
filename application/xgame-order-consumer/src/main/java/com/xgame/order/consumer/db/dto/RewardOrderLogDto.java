@@ -10,6 +10,9 @@ public class RewardOrderLogDto {
     private Integer is_reorder;
     private String order_id;
     private String indate;
+    private String phone;
+    private String id;
+
 
     public String getServer_id() {
         return server_id;
@@ -81,5 +84,21 @@ public class RewardOrderLogDto {
 
     public void setIndate(String indate) {
         this.indate = indate;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
