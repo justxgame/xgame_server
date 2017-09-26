@@ -6,7 +6,7 @@
 <mapper namespace="com.xgame.order.consumer.db.dao.RewardOrderInfoDao">
 
     <insert id="saveObject" parameterType="com.xgame.order.consumer.db.dto.RewardOrderInfoDto">
-           <![CDATA[
+        <![CDATA[
             insert into order_info(order_id,server_id,uid,item_id,item_type,item_count,order_status,order_exception,
             is_reorder,indate,id,phone)
              values(#{order_id},#{server_id},#{uid},#{item_id},#{item_type},#{item_count},#{order_status},#{order_exception},
@@ -34,4 +34,18 @@
              where order_id=#{order_id}
         ]]>
     </update>
+
+    <select id="getServerUrlByOrderId" resultType="string">
+        <![CDATA[
+              select s.url from order_info o left join  server_info  s on o.server_id = s.server_id  where o.order_id = #{0} limit 1
+            ]]>
+    </select>
+
+    <select id="getObjectByID" resultType="com.xgame.order.consumer.db.dto.RewardOrderInfoDto">
+        <![CDATA[
+              select order_id,server_id,uid,item_id,item_type,item_count,order_status,order_exception,
+              is_reorder,indate,id,phone from order_info where order_id = #{0}
+            ]]>
+    </select>
+
 </mapper>

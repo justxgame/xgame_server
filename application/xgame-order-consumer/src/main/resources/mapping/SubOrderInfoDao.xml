@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xgame.order.consumer.db.dao.SubOrderInfoDao">
+
+    <insert id="saveObject" parameterType="com.xgame.order.consumer.db.dto.SubOrderInfoDto">
+        <![CDATA[
+            insert into sub_order_info(sub_order_id,order_id,batch_number,state,message,indate)
+             values(#{sub_order_id},#{order_id},#{batch_number},#{state},#{message},#{indate})
+        ]]>
+    </insert>
+
+    <select id="countStateByOrderId" resultType="int">
+        <![CDATA[
+              select count(*) from sub_order_info where order_id=#{0} and state=#{1}
+            ]]>
+    </select>
+
+    <select id="getObjectByID" resultType="com.xgame.order.consumer.db.dto.SubOrderInfoDto">
+        <![CDATA[
+              select order_id,server_id,uid,item_id,item_type,item_count,order_status,order_exception,
+              is_reorder,indate,id,phone from order_info where order_id = #{0}
+            ]]>
+    </select>
+
+</mapper>

@@ -75,7 +75,7 @@ public abstract class AbstractOfPayBusiness extends BaseBusiness {
         return ofDateFormat.format(System.currentTimeMillis());
     }
 
-    protected void gameCallBack(String url, ExchangeResultModel model) throws IOException {
+    public static void gameCallBack(String url, ExchangeResultModel model) throws IOException {
 
         HttpPost post = new HttpPost(url);
         String jsonStr = JSONObject.toJSONString(model);

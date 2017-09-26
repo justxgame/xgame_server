@@ -3,6 +3,7 @@ package com.xgame.order.consumer;
 
 import com.xgame.order.consumer.db.dao.RewardOrderInfoDao;
 import com.xgame.order.consumer.db.dao.RewardOrderLogMappingDao;
+import com.xgame.order.consumer.db.dao.SubOrderInfoDao;
 import com.xgame.order.consumer.service.OrderService;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -20,12 +21,14 @@ public class ServiceContextFactory {
     private static OrderService orderService;
     private static  RewardOrderLogMappingDao rewardOrderLogMappingDao;
     private static RewardOrderInfoDao rewardOrderInfoDao;
+    private static SubOrderInfoDao subOrderInfoDao;
 
 
     static {
         orderService =  (OrderService) applicationContext.getBean("orderService");
         rewardOrderLogMappingDao = orderService.getRewardOrderLogMappingDao();
         rewardOrderInfoDao  = orderService.getRewardOrderInfoDao();
+        subOrderInfoDao = orderService.getSubOrderInfoDao();
     }
 
     public static ApplicationContext getApplicationContext() {
@@ -43,5 +46,9 @@ public class ServiceContextFactory {
 
     public static RewardOrderInfoDao getRewardOrderInfoDao() {
         return rewardOrderInfoDao;
+    }
+
+    public static SubOrderInfoDao getSubOrderInfoDao() {
+        return subOrderInfoDao;
     }
 }

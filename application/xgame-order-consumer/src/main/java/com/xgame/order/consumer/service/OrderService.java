@@ -2,6 +2,7 @@ package com.xgame.order.consumer.service;
 
 import com.xgame.order.consumer.db.dao.RewardOrderInfoDao;
 import com.xgame.order.consumer.db.dao.RewardOrderLogMappingDao;
+import com.xgame.order.consumer.db.dao.SubOrderInfoDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,8 @@ public class OrderService {
     @Autowired
     private RewardOrderLogMappingDao rewardOrderLogMappingDao;
 
+    @Autowired
+    private SubOrderInfoDao subOrderInfoDao;
 
     public RewardOrderInfoDao getRewardOrderInfoDao() {
         return rewardOrderInfoDao;
@@ -25,5 +28,9 @@ public class OrderService {
 
     public RewardOrderLogMappingDao getRewardOrderLogMappingDao() {
         return rewardOrderLogMappingDao;
+    }
+
+    public SubOrderInfoDao getSubOrderInfoDao() {
+        return subOrderInfoDao;
     }
 }

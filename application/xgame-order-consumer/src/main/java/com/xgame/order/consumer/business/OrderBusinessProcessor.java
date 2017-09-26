@@ -60,9 +60,6 @@ public class OrderBusinessProcessor {
                 return;
             }
             logger.info("[OrderBusinessProcessor] start process order , rewardOrderLogMappingDto =  " + rewardOrderLogMappingDto.toString());
-            Map<Integer, String> providerCatalogClassMapping = providerMapping.get(requireNonNull(rewardOrderLogMappingDto.getProvider_id(), "provide id is empty"));
-            String processorClass = providerCatalogClassMapping.get(requireNonNull(rewardOrderLogMappingDto.getCatalog(), "catalog is empty"));
-            BaseBusiness baseBusiness = (BaseBusiness) Class.forName(processorClass).newInstance();
 
             // 检查订单合法性
             requireNonNull(rewardOrderLogMappingDto.getOrder_id(), "order id is null");
@@ -78,6 +75,11 @@ public class OrderBusinessProcessor {
             rewardOrderInfoDto.setOrder_status(OrderInfoType.INIT.getValue());
             rewardOrderInfoDto.setIndate(new Date());
             rewardOrderInfoDao.saveObject(rewardOrderInfoDto);
+
+            // 获取订单处理类
+            Map<Integer, String> providerCatalogClassMapping = providerMapping.get(requireNonNull(rewardOrderLogMappingDto.getProvider_id(), "provide id is empty"));
+            String processorClass = providerCatalogClassMapping.get(requireNonNull(rewardOrderLogMappingDto.getCatalog(), "catalog is empty"));
+            BaseBusiness baseBusiness = (BaseBusiness) Class.forName(processorClass).newInstance();
 
             //处理订单
             baseBusiness.processorOrder(rewardOrderLogMappingDto,rewardOrderInfoDto);
