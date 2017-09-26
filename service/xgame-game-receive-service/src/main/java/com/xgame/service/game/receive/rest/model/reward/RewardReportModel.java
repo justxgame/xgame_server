@@ -20,6 +20,8 @@ public class RewardReportModel {
     private Integer isReorder;
     @JsonProperty("Phone")
     private String phone;
+    @JsonProperty("Op_type")
+    private Integer opType;
 
 
     public Integer getServer_id() {
@@ -87,9 +89,17 @@ public class RewardReportModel {
         this.phone = phone;
     }
 
+    public Integer getOpType() {
+        return opType;
+    }
+
+    public void setOpType(Integer opType) {
+        this.opType = opType;
+    }
+
     @Override
     public String toString(){
         return "rewardReportModel[server_id=" + server_id + " uid=" + uid + " id=" + id+" item_id"+itemId+ " type="
-                + type + " count=" + count +"phone "+phone+ " isReorder=" + isReorder + "]";
+                + type + " count=" + count +"phone "+phone+ " isReorder=" + isReorder +"op_type="+opType+ "]";
     }
 }

@@ -119,14 +119,29 @@ public abstract class AbstractOfPayBusiness extends BaseBusiness {
 
     protected String getCardIdByPhoneType(String cardId,PhoneType phoneType){
         String[] cardArr = cardId.split("\\|");
-        switch (phoneType){
-            case MOBILE:
-                return cardArr[0];
-            case UNICOM:
-                return cardArr[1];
-            case TELECOM:
-                return cardArr[2];
+        //移动|联通|电信-- 移动||电信 --|联通|电信
+        if (cardArr.length==3){
+            switch (phoneType){
+                case MOBILE:
+                    return cardArr[0];
+                case UNICOM:
+                    return cardArr[1];
+                case TELECOM:
+                    return cardArr[2];
                 default:return "";
+            }
+        }else {
+            //移动|联通|  |联通| cardarr length=2
+            switch (phoneType){
+                case MOBILE:
+                    return cardArr[0];
+                case UNICOM:
+                    return cardArr[1];
+                case TELECOM:
+                    return "";
+                default:return "";
+            }
         }
+
     }
 }
