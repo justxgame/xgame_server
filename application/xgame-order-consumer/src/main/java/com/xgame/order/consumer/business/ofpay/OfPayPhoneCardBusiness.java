@@ -7,6 +7,7 @@ import com.xgame.order.consumer.db.dto.RewardOrderLogMappingDto;
 import com.xgame.order.consumer.rest.model.ExchangeResultModel;
 import com.xgame.service.common.conf.Card;
 import com.xgame.service.common.conf.Cards;
+import com.xgame.service.common.exception.CardChargeException;
 import com.xgame.service.common.type.OrderInfoType;
 import com.xgame.service.common.type.PhoneType;
 import com.xgame.service.common.util.CommonUtil;
@@ -60,6 +61,9 @@ public class OfPayPhoneCardBusiness extends AbstractOfPayBusiness{
                 //调用归属地接口获取电话归属地
                 PhoneType phoneType = getPhoneType(phone, mobinfo_url, httpclient);
                 String cardid = getCardIdByPhoneType(oriCardid, phoneType);
+                if (StringUtils.isEmpty(cardid)) {
+                    throw new CardChargeException("card charge error, cardid is empty");
+                }
 
 
                 String sporder_time = getOFDateByNow();

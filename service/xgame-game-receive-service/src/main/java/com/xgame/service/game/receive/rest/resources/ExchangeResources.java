@@ -56,6 +56,7 @@ public class ExchangeResources extends BaseResources{
         String orderId = CommonUtils.getOrderId(1);
         orderInfo.setOrderId(orderId);
         orderInfo.setIndate(CommonUtils.getFormatDateByNow());
+        orderInfo.setOpType(rewardReportModel.getOpType());
         return orderInfo;
     }
 

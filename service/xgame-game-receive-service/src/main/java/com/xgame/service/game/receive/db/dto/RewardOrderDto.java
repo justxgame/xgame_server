@@ -12,6 +12,7 @@ public class RewardOrderDto {
     private String orderId;
     private String phone;
     private String indate;
+    private Integer opType;
 
     public String getServerId() {
         return serverId;
@@ -99,5 +100,13 @@ public class RewardOrderDto {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public Integer getOpType() {
+        return opType;
+    }
+
+    public void setOpType(Integer opType) {
+        this.opType = opType;
     }
 }
