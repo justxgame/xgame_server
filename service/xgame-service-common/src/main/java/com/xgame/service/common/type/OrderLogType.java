@@ -5,8 +5,8 @@ package com.xgame.service.common.type;
  */
 public enum OrderLogType {
 
-    Consumer(1),  // 订单未被消费
-    NoConsumer(0); // 订单已被消费
+    Consumer(1),  // 订单已被消费
+    NoConsumer(0); // 订单未被消费
 
     private Integer value;
 

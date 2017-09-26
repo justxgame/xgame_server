@@ -41,9 +41,6 @@ public class OfPayPhoneDirectBusiness extends AbstractOfPayBusiness {
         String orderId = rewardOrderLogMappingDto.getOrder_id();
         logger.info("[OfPayPhoneDirectBusiness] start to process order , orderid=" + orderId);
 
-        //更新 order info表 to consumer
-        rewardOrderLogMappingDao.updateOrderToConsumer(rewardOrderLogMappingDto.getOrder_id());
-
         // 保存初始状态
         requireNonNull(rewardOrderLogMappingDto.getItem_count(), "item count is null");
         RewardOrderInfoDto rewardOrderInfoDto = parsOrderLog2OrderInfo(rewardOrderLogMappingDto);
@@ -51,12 +48,13 @@ public class OfPayPhoneDirectBusiness extends AbstractOfPayBusiness {
         rewardOrderInfoDto.setIndate(new Date());
         rewardOrderInfoDao.saveObject(rewardOrderInfoDto);
 
-
+        //更新 order info表 to consumer
+        rewardOrderLogMappingDao.updateOrderToConsumer(rewardOrderLogMappingDto.getOrder_id());
+        String exceptionMessage = "";
+        String message = "";
+        String res = "";
         // 循环 count
         for (int i = 0; i < rewardOrderLogMappingDto.getItem_count(); i++) {
-            String exceptionMessage = "";
-            String message = "";
-            String res = "";
             try {
                 // 订单面额
                 Integer cardnum = requireNonNull(rewardOrderLogMappingDto.getPrice());
@@ -100,19 +98,19 @@ public class OfPayPhoneDirectBusiness extends AbstractOfPayBusiness {
             } catch (Throwable t) {
                 exceptionMessage = exceptionMessage + ExceptionUtils.getMessage(t);
             }
-            // save to db
-            if(StringUtils.isEmpty(exceptionMessage)){
-                rewardOrderInfoDto.setOrder_status(OrderInfoType.CHARGING.getValue());
-            }else{
-                rewardOrderInfoDto.setOrder_status(OrderInfoType.FAILURE.getValue());
-            }
-            rewardOrderInfoDto.setMessage(message);
-            rewardOrderInfoDto.setOrder_exception(exceptionMessage);
-            rewardOrderInfoDao.updateObjectById(rewardOrderInfoDto);
-            logger.info("[OfPayPhoneDirectBusiness] processor order over  , orderid=" + orderId);
         }
-    }
 
+        // save to db
+        if(StringUtils.isEmpty(exceptionMessage)){
+            rewardOrderInfoDto.setOrder_status(OrderInfoType.CHARGING.getValue());
+        }else{
+            rewardOrderInfoDto.setOrder_status(OrderInfoType.FAILURE.getValue());
+        }
+        rewardOrderInfoDto.setMessage(message);
+        rewardOrderInfoDto.setOrder_exception(exceptionMessage);
+        rewardOrderInfoDao.updateObjectById(rewardOrderInfoDto);
+        logger.info("[OfPayPhoneDirectBusiness] processor order over  , orderid=" + orderId);
+    }
 
     /**
      * 接口调用是否充值中
@@ -131,7 +129,6 @@ public class OfPayPhoneDirectBusiness extends AbstractOfPayBusiness {
         }
         return false;
     }
-
 
     public static void main(String[] args) throws IOException, JAXBException {
 //        HttpPost httpPost = new HttpPost("http://apitest.ofpay.com/onlineorder.do");

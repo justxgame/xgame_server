@@ -36,7 +36,6 @@ class OrderConsumerTask implements Runnable {
 
     @Override
     public void run() {
-
         logger.info("[OrderConsumerTask] task starting");
 
         while (true) {
