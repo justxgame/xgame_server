@@ -152,7 +152,8 @@ public class OfPayPhoneDirectBusiness extends AbstractOfPayBusiness {
 //        System.out.println(response);
 
         //  String x = CommonUtil.hashingMD5("A08566", "4c625b7861a92c7971cd2029c2fd3c4a", "140101", String.valueOf(50),"test001234567", "20160817140214","15996271050","OFCARD");
-        // System.out.println(x);
+        String x = CommonUtil.hashingMD5("A085664c625b7861a92c7971cd2029c2fd3c4a1599627105050OFCARD");
+        System.out.println(x);
     }
 
 }

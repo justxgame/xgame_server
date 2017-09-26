@@ -1,16 +1,18 @@
 package com.xgame.order.consumer;
 
-import com.google.common.util.concurrent.Runnables;
-import com.google.common.util.concurrent.Service;
 import com.xgame.order.consumer.business.OrderBusinessProcessor;
-import com.xgame.order.consumer.db.dao.RewardOrderLogMappingDao;
+import com.xgame.order.consumer.conf.Configuration;
 import com.xgame.order.consumer.db.dto.RewardOrderLogMappingDto;
 import com.xgame.service.common.type.OrderLogType;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.util.resource.Resource;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
-import java.util.Timer;
 import java.util.TimerTask;
 
 
@@ -23,16 +25,40 @@ public class OrderConsumerMain {
         // timer.schedule(new OrderConsumerTimerTask(sqlSession), 0, 10 * 1000);
         OrderConsumerTask orderConsumerTask = new OrderConsumerTask();
         new Thread(orderConsumerTask).start();
+
+        try {
+            System.out.println("start web server ...");
+            final String appDir = new OrderConsumerMain().getWebAppsPath();
+            final Server server = new Server(Configuration.getInstance().getConfig().getInt("xgame.order.service.port", 8888));
+            WebAppContext context = new WebAppContext();
+            context.setContextPath("/");
+            context.setBaseResource(Resource.newResource(appDir));
+            server.setHandler(context);
+            server.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("webapp not found in CLASSPATH.");
+            System.exit(2);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("start metastore service error.");
+            System.exit(1);
+        }
     }
 
-
+    private String getWebAppsPath() throws IOException {
+        URL url = getClass().getClassLoader().getResource("webapps");
+        if (url == null)
+            throw new IOException("webapp not found in CLASSPATH");
+        return url.toString();
+    }
 }
 
 
 class OrderConsumerTask implements Runnable {
 
     OrderBusinessProcessor orderBusinessProcessor = new OrderBusinessProcessor();
-    private static Logger logger = LoggerFactory.getLogger(TimerTask.class.getName());
+    private static Logger logger = LoggerFactory.getLogger(OrderConsumerTask.class.getName());
 
     @Override
     public void run() {

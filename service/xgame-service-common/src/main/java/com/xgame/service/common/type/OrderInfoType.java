@@ -10,7 +10,9 @@ public enum  OrderInfoType {
     FAILURE(1),  // 失败
     SUCCESS(0), // 成功
     INIT(2), // 初始化
-    CHARGING(3); // 充值中
+    CHARGING(3), // 充值中
+    CANCEL(9) ;//订单撤销
+
 
     private Integer value;
 
