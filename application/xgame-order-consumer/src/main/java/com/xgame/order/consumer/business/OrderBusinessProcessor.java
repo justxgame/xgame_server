@@ -1,9 +1,15 @@
 package com.xgame.order.consumer.business;
 
+import com.xgame.order.consumer.ServiceContextFactory;
+import com.xgame.order.consumer.db.dao.RewardOrderInfoDao;
+import com.xgame.order.consumer.db.dao.RewardOrderLogMappingDao;
+import com.xgame.order.consumer.db.dto.RewardOrderInfoDto;
 import com.xgame.order.consumer.db.dto.RewardOrderLogMappingDto;
+import com.xgame.service.common.type.OrderInfoType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +19,10 @@ import static java.util.Objects.*;
  * Created by william on 2017/9/26.
  */
 public class OrderBusinessProcessor {
+
+
+    protected RewardOrderLogMappingDao rewardOrderLogMappingDao = ServiceContextFactory.getRewardOrderLogMappingDao();
+    protected RewardOrderInfoDao rewardOrderInfoDao = ServiceContextFactory.getRewardOrderInfoDao();
 
     private static Logger logger = LoggerFactory.getLogger(OrderBusinessProcessor.class.getName());
 
@@ -53,13 +63,56 @@ public class OrderBusinessProcessor {
             Map<Integer, String> providerCatalogClassMapping = providerMapping.get(requireNonNull(rewardOrderLogMappingDto.getProvider_id(), "provide id is empty"));
             String processorClass = providerCatalogClassMapping.get(requireNonNull(rewardOrderLogMappingDto.getCatalog(), "catalog is empty"));
             BaseBusiness baseBusiness = (BaseBusiness) Class.forName(processorClass).newInstance();
-            baseBusiness.processorOrder(rewardOrderLogMappingDto);
+
+            // 检查订单合法性
+            requireNonNull(rewardOrderLogMappingDto.getOrder_id(), "order id is null");
+            String orderId = rewardOrderLogMappingDto.getOrder_id();
+            logger.info("[OrderBusinessProcessor] start to process order , orderid=" + orderId);
+
+            // 处理订单前，保存到info表 , 更新 order info表状态
+            rewardOrderLogMappingDao.updateOrderToConsumer(rewardOrderLogMappingDto.getOrder_id());
+
+            // 处理订单前，插入到info表 ,orderid 主键
+            requireNonNull(rewardOrderLogMappingDto.getItem_count(), "item count is null");
+            RewardOrderInfoDto rewardOrderInfoDto = parsOrderLog2OrderInfo(rewardOrderLogMappingDto);
+            rewardOrderInfoDto.setOrder_status(OrderInfoType.INIT.getValue());
+            rewardOrderInfoDto.setIndate(new Date());
+            rewardOrderInfoDao.saveObject(rewardOrderInfoDto);
+
+            //处理订单
+            baseBusiness.processorOrder(rewardOrderLogMappingDto,rewardOrderInfoDto);
+
+            //更新info表状态
+            rewardOrderInfoDao.updateObjectById(rewardOrderInfoDto);
+
+            logger.info("[OrderBusinessProcessor] processor order over  , orderid=" + orderId);
 
         } catch (Throwable t) {
             logger.error("[OrderBusinessProcessor] start process order failed", t);
         } finally {
 
         }
+    }
+
+
+    /**
+     * 转换
+     * @param dto
+     * @return
+     */
+    protected RewardOrderInfoDto parsOrderLog2OrderInfo(RewardOrderLogMappingDto dto) {
+        RewardOrderInfoDto orderInfoDto = new RewardOrderInfoDto();
+        orderInfoDto.setServer_id(dto.getServer_id());
+        orderInfoDto.setUid(dto.getUid());
+        orderInfoDto.setIs_reorder(dto.getIs_reorder());
+        orderInfoDto.setItem_count(dto.getItem_count());
+        orderInfoDto.setItem_id(dto.getItem_id());
+        orderInfoDto.setItem_type(dto.getItem_type());
+        orderInfoDto.setIndate(dto.getIndate());
+        orderInfoDto.setOrder_id(dto.getOrder_id());
+        orderInfoDto.setId(Integer.valueOf(dto.getId()));
+        orderInfoDto.setPhone(dto.getPhone());
+        return orderInfoDto;
     }
 
 }

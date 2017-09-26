@@ -34,28 +34,6 @@ public abstract class BaseBusiness {
 
 
     // 处理订单
-    public abstract void processorOrder(RewardOrderLogMappingDto rewardOrderLogMappingDto) throws Throwable;
-
-
-    /**
-     * 转换
-     * @param dto
-     * @return
-     */
-    protected RewardOrderInfoDto parsOrderLog2OrderInfo(RewardOrderLogMappingDto dto) {
-        RewardOrderInfoDto orderInfoDto = new RewardOrderInfoDto();
-        orderInfoDto.setServer_id(dto.getServer_id());
-        orderInfoDto.setUid(dto.getUid());
-        orderInfoDto.setIs_reorder(dto.getIs_reorder());
-        orderInfoDto.setItem_count(dto.getItem_count());
-        orderInfoDto.setItem_id(dto.getItem_id());
-        orderInfoDto.setItem_type(dto.getItem_type());
-        orderInfoDto.setIndate(dto.getIndate());
-        orderInfoDto.setOrder_id(dto.getOrder_id());
-        orderInfoDto.setId(Integer.valueOf(dto.getId()));
-        orderInfoDto.setPhone(dto.getPhone());
-        return orderInfoDto;
-    }
-
+    public abstract void processorOrder(RewardOrderLogMappingDto rewardOrderLogMappingDto,RewardOrderInfoDto rewardOrderInfoDto) throws Throwable;
 
 }

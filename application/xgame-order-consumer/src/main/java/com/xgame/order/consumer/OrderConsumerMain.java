@@ -71,12 +71,14 @@ class OrderConsumerTask implements Runnable {
                 if (null == rewardOrderLogMappingDtos || 0 == rewardOrderLogMappingDtos.size()) {
                     logger.info("[OrderConsumerTask] no orders to consumer");
                 }
-                logger.info("[OrderConsumerTask] get order from db.size = " + rewardOrderLogMappingDtos.size());
+                logger.info("[OrderConsumerTask] waiting process order size = " + rewardOrderLogMappingDtos.size());
 
                 // 处理每一条订单
                 for (RewardOrderLogMappingDto rewardOrderLogMappingDto : rewardOrderLogMappingDtos) {
                     orderBusinessProcessor.processOrder(rewardOrderLogMappingDto);
                 }
+                logger.info("[OrderConsumerTask] process order size finished ");
+
             } catch (Exception e) {
                 logger.error("[OrderConsumerTask] processor error", e);
             }

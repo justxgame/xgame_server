@@ -35,17 +35,7 @@ public class OfPayFuelCardBusiness extends AbstractOfPayBusiness {
     private final String request_url = ofpay_base_url + "/order.do";
     private final String mobinfo_url = ofpay_base_url + "/mobinfo.do";
     @Override
-    public void processorOrder(RewardOrderLogMappingDto rewardOrderLogMappingDto) {
-        requireNonNull(rewardOrderLogMappingDto.getOrder_id(), "order id is null");
-        String orderId = rewardOrderLogMappingDto.getOrder_id();
-        logger.info("[OfPayFuelCardBusiness] start to process order , orderid=" + orderId);
-
-        // 保存初始状态
-        requireNonNull(rewardOrderLogMappingDto.getItem_count(), "item count is null");
-        RewardOrderInfoDto rewardOrderInfoDto = parsOrderLog2OrderInfo(rewardOrderLogMappingDto);
-        rewardOrderInfoDto.setOrder_status(OrderInfoType.INIT.getValue());
-        rewardOrderInfoDto.setIndate(new Date());
-        rewardOrderInfoDao.saveObject(rewardOrderInfoDto);
+    public void processorOrder(RewardOrderLogMappingDto rewardOrderLogMappingDto,RewardOrderInfoDto rewardOrderInfoDto) {
 
         //更新 order info表 to consumer
         rewardOrderLogMappingDao.updateOrderToConsumer(rewardOrderLogMappingDto.getOrder_id());
@@ -127,7 +117,7 @@ public class OfPayFuelCardBusiness extends AbstractOfPayBusiness {
         requireNonNull(url,"server url is null.can't call back");
         String gameUrl = HTTP_PREFIX+url+"/exchange_result";
         try {
-            gameCallBack(httpclient,gameUrl,exchangeResultModel);
+            gameCallBack(gameUrl,exchangeResultModel);
             message = message +String.format("game call back success  ");
         }catch (Throwable t){
             exceptionMessage = exceptionMessage + ExceptionUtils.getMessage(t);
@@ -135,10 +125,6 @@ public class OfPayFuelCardBusiness extends AbstractOfPayBusiness {
 
         rewardOrderInfoDto.setMessage(message);
         rewardOrderInfoDto.setOrder_exception(exceptionMessage);
-        rewardOrderInfoDao.updateObjectById(rewardOrderInfoDto);
-        logger.info("[OfPayPhoneDirectBusiness] processor order over  , orderid=" + orderId);
-
-
 
     }
 

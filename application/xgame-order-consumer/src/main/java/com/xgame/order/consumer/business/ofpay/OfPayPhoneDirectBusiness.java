@@ -36,20 +36,7 @@ public class OfPayPhoneDirectBusiness extends AbstractOfPayBusiness {
     private final String callback_url = Configuration.getInstance().getConfig().getString("ofpay.phone.direct.recall.url");
 
     @Override
-    public void processorOrder(RewardOrderLogMappingDto rewardOrderLogMappingDto) throws Throwable {
-        requireNonNull(rewardOrderLogMappingDto.getOrder_id(), "order id is null");
-        String orderId = rewardOrderLogMappingDto.getOrder_id();
-        logger.info("[OfPayPhoneDirectBusiness] start to process order , orderid=" + orderId);
-
-        // 保存初始状态
-        requireNonNull(rewardOrderLogMappingDto.getItem_count(), "item count is null");
-        RewardOrderInfoDto rewardOrderInfoDto = parsOrderLog2OrderInfo(rewardOrderLogMappingDto);
-        rewardOrderInfoDto.setOrder_status(OrderInfoType.INIT.getValue());
-        rewardOrderInfoDto.setIndate(new Date());
-        rewardOrderInfoDao.saveObject(rewardOrderInfoDto);
-
-        //更新 order info表 to consumer
-        rewardOrderLogMappingDao.updateOrderToConsumer(rewardOrderLogMappingDto.getOrder_id());
+    public void processorOrder(RewardOrderLogMappingDto rewardOrderLogMappingDto,RewardOrderInfoDto rewardOrderInfoDto) throws Throwable {
         String exceptionMessage = "";
         String message = "";
         String res = "";
@@ -108,8 +95,6 @@ public class OfPayPhoneDirectBusiness extends AbstractOfPayBusiness {
         }
         rewardOrderInfoDto.setMessage(message);
         rewardOrderInfoDto.setOrder_exception(exceptionMessage);
-        rewardOrderInfoDao.updateObjectById(rewardOrderInfoDto);
-        logger.info("[OfPayPhoneDirectBusiness] processor order over  , orderid=" + orderId);
     }
 
     /**
