@@ -20,6 +20,9 @@ public class RewardOrderLogMappingDto {
     private int catalog;
     private int provider_id;
     private int price;
+    //不同移动运营商的 cardId 移动|联通|电信
+    private String extra;
+    private String url;
 
     public String getServer_id() {
         return server_id;
@@ -141,6 +144,23 @@ public class RewardOrderLogMappingDto {
         this.price = price;
     }
 
+
+    public String getExtra() {
+        return extra;
+    }
+
+    public void setExtra(String extra) {
+        this.extra = extra;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     @Override
     public String toString() {
         return "RewardOrderLogMappingDto{" +
@@ -159,6 +179,8 @@ public class RewardOrderLogMappingDto {
                 ", catalog=" + catalog +
                 ", provider_id=" + provider_id +
                 ", price=" + price +
+                ", extra="+ extra+
+                ", url="+ url+
                 '}';
     }
 }

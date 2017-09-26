@@ -1,7 +1,7 @@
 package com.xgame.service.game.receive.rest.resources;
 
 import com.xgame.service.common.conf.ConfigHolder;
-import com.xgame.service.common.conf.OrderInfo;
+
 import com.xgame.service.game.receive.rest.model.recall.FuelModel;
 import com.xgame.service.game.receive.rest.model.recall.ResultModel;
 import org.slf4j.Logger;
@@ -33,17 +33,17 @@ public class RecallResources {
     @Produces(MediaType.APPLICATION_XML)
     public String phoneRecall(String xml){
         ResultModel resultModel = new ResultModel();
-        try {
-            logger.info("phone recall:"+xml);
-            OrderInfo orderInfo= ConfigHolder.getPhoneChargeXml(xml);
-            System.out.println(orderInfo.getReqcode());
-            resultModel.setResult("SUCCESS");
-            resultModel.setResult_desc("收到结果");
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            logger.info("phone recall:"+xml);
+////            OrderInfo orderInfo= ConfigHolder.getPhoneChargeXml(xml);
+////            System.out.println(orderInfo.getReqcode());
+//            resultModel.setResult("SUCCESS");
+//            resultModel.setResult_desc("收到结果");
+//        } catch (JAXBException e) {
+//            e.printStackTrace();
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
         return "success";
     }
 }

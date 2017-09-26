@@ -8,10 +8,13 @@
     <select id="getAllOrdersLogByOrderType" resultType="com.xgame.order.consumer.db.dto.RewardOrderLogMappingDto">
           <![CDATA[
                select o.server_id,o.uid,o.item_id,o.item_type,o.item_count,o.order_type,o.order_id,o.is_reorder,o.indate,o.phone,o.id
-    		    , r.type , r.memo, r.catalog , r.catalog ,r.provider_id , r.price
+    		    , r.type , r.memo, r.catalog , r.catalog ,r.provider_id , r.price,r.extra,s.url
                 from order_log o
                 left join reward_info r  on o.item_id = r.id
+                left join server_info s on o.server_id = s.server_id
                 where o.order_type=#{0}
+
+
             ]]>
     </select>
 

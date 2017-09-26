@@ -38,11 +38,6 @@ public class RewardResources extends BaseResources {
         logger.info("getAllBox");
         WrapResponseModel responseModel = new WrapResponseModel();
 
-        try {
-
-        }catch (Throwable t){
-
-        }
         List<RewardBoxDto> dtos = rewardBoxService.getAll();
         List<RewardBoxDto> dtos2 = new ArrayList<>();
         RewardBoxDto rewardBoxDto = new RewardBoxDto();
