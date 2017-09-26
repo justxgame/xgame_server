@@ -5,26 +5,33 @@
 
 <mapper namespace="com.xgame.order.consumer.db.dao.RewardOrderInfoDao">
 
-
-
-
     <insert id="saveObject" parameterType="com.xgame.order.consumer.db.dto.RewardOrderInfoDto">
            <![CDATA[
-            insert into order_info(order_id,req_id,server_id,uid,item_id,item_type,item_count,order_status,order_exception,
+            insert into order_info(order_id,server_id,uid,item_id,item_type,item_count,order_status,order_exception,
             is_reorder,indate,id,phone)
-             values(#{orderId},#{reqId},#{serverId},#{uid},#{itemId},#{itemType},#{itemCount},#{orderStatus},#{orderException},
-             #{isReorder},#{indate},#{id},#{phone})
+             values(#{order_id},#{server_id},#{uid},#{item_id},#{item_type},#{item_count},#{order_status},#{order_exception},
+             #{is_reorder},#{indate},#{id},#{phone})
         ]]>
     </insert>
     <insert id="saveObjects" parameterType="java.util.List">
         <![CDATA[
-            insert into order_info(order_id,req_id,server_id,uid,item_id,item_type,item_count,order_status,order_exception,
+            insert into order_info(order_id,server_id,uid,item_id,item_type,item_count,order_status,order_exception,
             is_reorder,indate,id,phone)
              values
         ]]>
         <foreach collection="list" item="item" index="index" separator=",">
-            (#{item.orderId},#{item.reqId},#{item.serverId},#{item.uid},#{item.itemId},#{item.itemType},#{item.itemCount},#{item.orderStatus},#{item.orderException},
+            (#{item.orderId},#{item.serverId},#{item.uid},#{item.itemId},#{item.itemType},#{item.itemCount},#{item.orderStatus},#{item.orderException},
             #{item.isReorder},#{item.indate},#{item.id},#{item.phone})
         </foreach>
     </insert>
+
+
+    <update id="updateObjectById">
+        <![CDATA[
+            update order_info set server_id = #{server_id},uid = #{uid}, item_id = #{item_id},
+            item_type=#{item_type}, item_count = #{item_count} , order_status = #{order_status}, order_exception = #{order_exception}, is_reorder = #{is_reorder},
+             indate = #{indate}, id = #{id}, phone = #{phone} , message = #{message}, callback_message = #{callback_message}
+             where order_id=#{order_id}
+        ]]>
+    </update>
 </mapper>

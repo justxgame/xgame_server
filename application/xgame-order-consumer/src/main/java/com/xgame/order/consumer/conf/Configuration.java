@@ -11,7 +11,7 @@ public class Configuration
 {
     private static Logger logger =  LoggerFactory.getLogger(Configuration.class.getName());
 
-    private final String SERVICE_CONF_NAME = "xgame-orde-consumer.properties";
+    private final String SERVICE_CONF_NAME = "xgame-order-consumer.properties";
 
     private org.apache.commons.configuration.Configuration config;
 

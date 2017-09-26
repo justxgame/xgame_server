@@ -1,18 +1,25 @@
 package com.xgame.order.consumer.db.dto;
 
-public class RewardOrderLogDto {
+import java.util.Date;
+
+public class RewardOrderLogMappingDto {
     private String server_id;
     private String uid;
-    private Integer item_id;
+    private Integer item_id; // mapping reward_id
     private Integer item_type;
     private Integer item_count;
     private Integer order_type;
     private Integer is_reorder;
     private String order_id;
-    private String indate;
+    private Date indate;
     private String phone;
     private String id;
 
+    // mapping reward_info
+    private String memo;
+    private int catalog;
+    private int provider_id;
+    private int price;
 
     public String getServer_id() {
         return server_id;
@@ -78,11 +85,11 @@ public class RewardOrderLogDto {
         this.order_id = order_id;
     }
 
-    public String getIndate() {
+    public Date getIndate() {
         return indate;
     }
 
-    public void setIndate(String indate) {
+    public void setIndate(Date indate) {
         this.indate = indate;
     }
 
@@ -100,5 +107,58 @@ public class RewardOrderLogDto {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
+    }
+
+    public int getCatalog() {
+        return catalog;
+    }
+
+    public void setCatalog(int catalog) {
+        this.catalog = catalog;
+    }
+
+    public int getProvider_id() {
+        return provider_id;
+    }
+
+    public void setProvider_id(int provider_id) {
+        this.provider_id = provider_id;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    @Override
+    public String toString() {
+        return "RewardOrderLogMappingDto{" +
+                "server_id='" + server_id + '\'' +
+                ", uid='" + uid + '\'' +
+                ", item_id=" + item_id +
+                ", item_type=" + item_type +
+                ", item_count=" + item_count +
+                ", order_type=" + order_type +
+                ", is_reorder=" + is_reorder +
+                ", order_id='" + order_id + '\'' +
+                ", indate='" + indate + '\'' +
+                ", phone='" + phone + '\'' +
+                ", id='" + id + '\'' +
+                ", memo='" + memo + '\'' +
+                ", catalog=" + catalog +
+                ", provider_id=" + provider_id +
+                ", price=" + price +
+                '}';
     }
 }

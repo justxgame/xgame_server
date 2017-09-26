@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xgame.order.consumer.db.dao.RewardOrderLogMappingDao">
+
+    <select id="getAllOrdersLogByOrderType" resultType="com.xgame.order.consumer.db.dto.RewardOrderLogMappingDto">
+          <![CDATA[
+               select o.server_id,o.uid,o.item_id,o.item_type,o.item_count,o.order_type,o.order_id,o.is_reorder,o.indate,o.phone,o.id
+    		    , r.type , r.memo, r.catalog , r.catalog ,r.provider_id , r.price
+                from order_log o
+                left join reward_info r  on o.item_id = r.id
+                where o.order_type=#{0}
+            ]]>
+    </select>
+
+    <update id="updateOrderToConsumer" parameterType="com.xgame.order.consumer.db.dto.RewardOrderLogMappingDto">
+        <![CDATA[
+            update order_log set order_type=1  where order_id=#{0}
+        ]]>
+    </update>
+
+</mapper>

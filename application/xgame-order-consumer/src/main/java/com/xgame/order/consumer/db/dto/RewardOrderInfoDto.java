@@ -1,42 +1,39 @@
 package com.xgame.order.consumer.db.dto;
 
+import java.util.Date;
+
 public class RewardOrderInfoDto {
-    private String orderId;
-    private String reqId;
-    private String serverId;
+
+    private String order_id;
+    private String server_id;
     private String uid;
-    private Integer itemId;
-    private Integer itemType;
-    private Integer itemCount;
-    private Integer orderStatus;
-    private String orderException;
-    private Integer isReorder;
-    private String indate;
+    private Integer item_id;
+    private Integer item_type;
+    private Integer item_count;
+    private Integer order_status;
+    private String order_exception;
+    private Integer is_reorder;
+    private Date indate;
     private Integer id;
     private String phone;
 
-    public String getOrderId() {
-        return orderId;
+    private String message;
+    private String callback_message;
+
+    public String getOrder_id() {
+        return order_id;
     }
 
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
+    public void setOrder_id(String order_id) {
+        this.order_id = order_id;
     }
 
-    public String getReqId() {
-        return reqId;
+    public String getServer_id() {
+        return server_id;
     }
 
-    public void setReqId(String reqId) {
-        this.reqId = reqId;
-    }
-
-    public String getServerId() {
-        return serverId;
-    }
-
-    public void setServerId(String serverId) {
-        this.serverId = serverId;
+    public void setServer_id(String server_id) {
+        this.server_id = server_id;
     }
 
     public String getUid() {
@@ -47,59 +44,59 @@ public class RewardOrderInfoDto {
         this.uid = uid;
     }
 
-    public Integer getItemId() {
-        return itemId;
+    public Integer getItem_id() {
+        return item_id;
     }
 
-    public void setItemId(Integer itemId) {
-        this.itemId = itemId;
+    public void setItem_id(Integer item_id) {
+        this.item_id = item_id;
     }
 
-    public Integer getItemType() {
-        return itemType;
+    public Integer getItem_type() {
+        return item_type;
     }
 
-    public void setItemType(Integer itemType) {
-        this.itemType = itemType;
+    public void setItem_type(Integer item_type) {
+        this.item_type = item_type;
     }
 
-    public Integer getItemCount() {
-        return itemCount;
+    public Integer getItem_count() {
+        return item_count;
     }
 
-    public void setItemCount(Integer itemCount) {
-        this.itemCount = itemCount;
+    public void setItem_count(Integer item_count) {
+        this.item_count = item_count;
     }
 
-    public Integer getOrderStatus() {
-        return orderStatus;
+    public Integer getOrder_status() {
+        return order_status;
     }
 
-    public void setOrderStatus(Integer orderStatus) {
-        this.orderStatus = orderStatus;
+    public void setOrder_status(Integer order_status) {
+        this.order_status = order_status;
     }
 
-    public String getOrderException() {
-        return orderException;
+    public String getOrder_exception() {
+        return order_exception;
     }
 
-    public void setOrderException(String orderException) {
-        this.orderException = orderException;
+    public void setOrder_exception(String order_exception) {
+        this.order_exception = order_exception;
     }
 
-    public Integer getIsReorder() {
-        return isReorder;
+    public Integer getIs_reorder() {
+        return is_reorder;
     }
 
-    public void setIsReorder(Integer isReorder) {
-        this.isReorder = isReorder;
+    public void setIs_reorder(Integer is_reorder) {
+        this.is_reorder = is_reorder;
     }
 
-    public String getIndate() {
+    public Date getIndate() {
         return indate;
     }
 
-    public void setIndate(String indate) {
+    public void setIndate(Date indate) {
         this.indate = indate;
     }
 
@@ -117,5 +114,21 @@ public class RewardOrderInfoDto {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getCallback_message() {
+        return callback_message;
+    }
+
+    public void setCallback_message(String callback_message) {
+        this.callback_message = callback_message;
     }
 }

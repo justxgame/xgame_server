@@ -1,10 +1,12 @@
 package com.xgame.order.consumer.db.dao;
 
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
 /**
  */
-
+@Repository
 public interface BaseDao<T> {
 
     /**

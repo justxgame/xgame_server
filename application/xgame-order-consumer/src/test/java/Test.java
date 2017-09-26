@@ -1,6 +1,5 @@
 import com.xgame.order.consumer.biz.BaseBiz;
 import com.xgame.service.common.conf.ConfigHolder;
-import com.xgame.service.common.conf.OrderInfo;
 import com.xgame.service.common.util.CommonUtil;
 
 import javax.xml.bind.JAXBException;

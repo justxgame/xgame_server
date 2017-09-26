@@ -10,11 +10,11 @@ import java.nio.charset.StandardCharsets;
 
 public class ConfigHolder {
 
-    public static OrderInfo getOrderInfo(String res) throws JAXBException, UnsupportedEncodingException {
-        JAXBContext jaxbContext = JAXBContext.newInstance( OrderInfo.class );
-        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        InputStream stream = new ByteArrayInputStream(res.getBytes(StandardCharsets.UTF_8.name()));
-        return (OrderInfo) jaxbUnmarshaller.unmarshal(stream);
-    }
+//    public static OrderInfo getOrderInfo(String res) throws JAXBException, UnsupportedEncodingException {
+//        JAXBContext jaxbContext = JAXBContext.newInstance( OrderInfo.class );
+//        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+//        InputStream stream = new ByteArrayInputStream(res.getBytes(StandardCharsets.UTF_8.name()));
+//        return (OrderInfo) jaxbUnmarshaller.unmarshal(stream);
+//    }
 
 }

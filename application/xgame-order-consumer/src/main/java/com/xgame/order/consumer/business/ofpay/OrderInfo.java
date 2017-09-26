@@ -1,7 +1,8 @@
-package com.xgame.service.common.conf;
+package com.xgame.order.consumer.business.ofpay;
 
 
-import javax.xml.bind.annotation.XmlElement;
+import com.xgame.service.common.conf.Cards;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "orderinfo")
@@ -17,7 +18,7 @@ public class OrderInfo {
     private String cardname;
     private String sporder_id;
     private String game_userid;
-    private String game_state;
+    private String game_state;  ////如果成功将为1，澈消(充值失败)为9，充值中为0,只能当状态为9时，商户才可以退款给用户。
     private Cards cards;
 
     public String getErr_msg() {

@@ -4,7 +4,7 @@
 <configuration>
 
 
-    <properties resource="db.properties" />
+<!--    <properties resource="db.properties" />
     <environments default="development">
         <environment id="development">
             <transactionManager type="JDBC"/>
@@ -16,21 +16,10 @@
 
             </dataSource>
         </environment>
-    </environments>
+    </environments>-->
 
     <mappers>
-       <!-- <mapper resource="mapping/AppConfigDao.xml"/>
-        <mapper resource="mapping/ChannelConfigDao.xml"/>
-        <mapper resource="mapping/AdxConfigManagerDao.xml"/>
-        <mapper resource="mapping/CustomerConfigDao.xml"/>
-        <mapper resource="mapping/SystemConfigDao.xml"/>
-        <mapper resource="mapping/AdvConfigDao.xml"/>
-        <mapper resource="mapping/AdvStatisticDao.xml"/>
-        <mapper resource="mapping/TokenDao.xml"/>
-        <mapper resource="mapping/UserDao.xml"/>-->
-        <mapper resource="mapping/RewardOrderLogDao.xml"></mapper>
+        <mapper resource="mapping/RewardOrderLogMappingDao.xml"></mapper>
         <mapper resource="mapping/RewardOrderInfoDao.xml"></mapper>
-        <mapper resource="mapping/RewardUserDao.xml"></mapper>
-        <mapper resource="mapping/RewardBoxDao.xml"></mapper>
     </mappers>
 </configuration>
