@@ -82,4 +82,19 @@ public class ServerStatusDto {
     public void setServer_name(String server_name) {
         this.server_name = server_name;
     }
+
+
+    @Override
+    public String toString(){
+        return "ServerStatusDto{" +
+                "server_id='" + server_id + '\'' +
+                ", ip='" + ip + '\'' +
+                ", port=" + port +
+                ", gm_port=" + gm_port +
+                ", status=" + status +
+                ", url=" + url +
+                ", server_name=" + server_name +
+
+                '}';
+    }
 }

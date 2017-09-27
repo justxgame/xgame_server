@@ -1,14 +1,17 @@
 package com.xgame.service.manager.db.dao;
 
+import com.xgame.service.manager.db.dto.RewardOrderDetailDto;
+
 import java.util.List;
+import java.util.Map;
 
-public interface RewardOrderDetailDao<T> extends BaseDao{
+public interface RewardOrderDetailDao extends BaseDao{
 
-    List<T> getAllByQuery(Object o);
+    List<RewardOrderDetailDto> getAllByQuery(Map query);
 
-    List<T> getAllStatus(Object o);
+    List<RewardOrderDetailDto> getAllStatus(Object o);
 
-    List<T> getAllType(Object o);
+    List<RewardOrderDetailDto> getAllType(Object o);
 
     void updateRecallOrder(Object o);
 }

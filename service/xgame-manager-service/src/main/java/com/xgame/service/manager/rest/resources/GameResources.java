@@ -172,12 +172,16 @@ public class GameResources extends BaseResources {
     public WrapResponseModel update(GameSettingResModel model){
         WrapResponseModel responseModel = new WrapResponseModel();
         try {
+            String uid = getUid();
             String serverId = String.valueOf(model.getServer_id());
             List<ServerStatusDto> serverStatusDtos =statusService.getAll();
             ServerStatusDto dto = getDtoById(serverId, serverStatusDtos);
             String sendUrl = HTTP_PREFIX+dto.getUrl()+"/match_config_update";
 
             String jsonStr = JSONObject.toJSONString(model);
+
+            String op = "[GameResources] update server "+model.getServer_id()+" setting:"+jsonStr;
+
             HttpPost post = new HttpPost(sendUrl);
             StringEntity reqEntity = new StringEntity(jsonStr, Charset.forName("UTF-8"));
             reqEntity.setContentEncoding("UTF-8");
@@ -192,6 +196,7 @@ public class GameResources extends BaseResources {
                 String res = EntityUtils.toString(entity, "UTF-8");
                 ServerRes serverRes = JSONObject.parseObject(res, ServerRes.class);
                 if (serverRes.getCode()==successCode){
+                    operationLog(uid,op);
                     responseModel.setCode(successCode);
                 }else {
                     responseModel.setCode(errorCode);

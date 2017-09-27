@@ -14,18 +14,14 @@ public class RewardOrderDetailService {
     public RewardOrderDetailDao rewardOrderDetailDao;
     public List<RewardOrderDetailDto> getAllByQuery (Map query){
 
-        return rewardOrderDetailDao.getAllByQuery(query);
+        return rewardOrderDetailDao.getAllByQuery( query);
     }
-    public List<RewardOrderDetailDto> getAllStatus(Map query){
-        return rewardOrderDetailDao.getAllStatus(query);
-    }
+
 
     public List<RewardOrderDetailDto> getAll(){
         return rewardOrderDetailDao.getAll();
     }
-    public List<RewardOrderDetailDto> getAllType(Map query){
-        return rewardOrderDetailDao.getAllType(query);
-    }
+
     public void updateRecalorder(String orderid){
         rewardOrderDetailDao.updateRecallOrder(orderid);
 

@@ -143,6 +143,8 @@ public class UserResources extends BaseResources {
     @Produces(MediaType.APPLICATION_JSON)
     public WrapResponseModel updateUser(List<UserInfoModel> userInfoModels){
         logger.info("user update");
+        String uid = getUid();
+        String op = "[UserResources] update user";
         UserInfoModel userInfoModel = userInfoModels.get(0);
         WrapResponseModel responseModel = new WrapResponseModel();
         try {
@@ -159,6 +161,7 @@ public class UserResources extends BaseResources {
             String sendUrl = HTTP_PREFIX+dto.getUrl();
 
             String jsonStr =null;
+            //封号 解封
             if (1==actionId||2==actionId){
                 sendUrl=sendUrl+"/ban";
                 logger.info("sendurl "+sendUrl);
@@ -167,13 +170,15 @@ public class UserResources extends BaseResources {
                 banModel.setUid(Integer.valueOf(userInfoModel.getPid()));
                 banModel.setOp_code(actionId);
                 jsonStr = JSONObject.toJSONString(banModel);
-                logger.info("ban json:"+jsonStr);
+                op = op+" ban user .uid="+userInfoModel.getPid()+" serverid="+serverId+" opcode="+actionId;
             }else if(3==actionId||4==actionId){
 
                 if (3==actionId){
                     sendUrl=sendUrl+"/mail";
+                    op = op + " send mail";
                 }else {
                     sendUrl=sendUrl+"/alter_player_info";
+                    op = op + " update user property";
                 }
 
                 logger.info("sendurl "+sendUrl );
@@ -187,6 +192,7 @@ public class UserResources extends BaseResources {
                 userUpdateModel.setTicket(userInfoModel.getTicket());
 
                 jsonStr = JSONObject.toJSONString(userUpdateModel);
+                op=op+" update json "+jsonStr;
                 logger.info("update json:"+jsonStr);
             }
             StringEntity reqEntity = new StringEntity(jsonStr, Charset.forName("UTF-8"));
@@ -204,6 +210,7 @@ public class UserResources extends BaseResources {
                 logger.info("game res:"+serverRes);
                 if (serverRes.getCode()==0){
                     responseModel.setCode(successCode);
+                    operationLog(uid,op);
                 }else {
                     responseModel.setCode(errorCode);
                     responseModel.setMessage("call game server get error code:"+serverRes.getCode());

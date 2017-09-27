@@ -104,14 +104,18 @@ public class ServerResources extends BaseResources {
     @Produces(MediaType.APPLICATION_JSON)
     public WrapResponseModel updateServer(ServerInfoModel serverInfoModel){
 
+        String uid = getUid();
+        String op = "[ServerResources] update server";
         int actionId = serverInfoModel.getActionId();
         WrapResponseModel responseModel = new WrapResponseModel();
         ServerStatusDto statusDto = parseServerInfoModel2StatusDto(serverInfoModel);
 
+        //新增
         if (actionId==1){
             try {
 
                 statusService.saveDto(statusDto);
+                op= op+" add new server "+statusDto;
                 responseModel.setCode(successCode);
             }catch (Throwable t){
                 responseModel.setCode(errorCode);
@@ -119,8 +123,10 @@ public class ServerResources extends BaseResources {
             }
             return responseModel;
         }else if(actionId==2){
+            //修改
             try {
                 statusService.updateDto(statusDto);
+                op="op"+ "update server "+statusDto;
                 responseModel.setCode(successCode);
             }catch (Throwable t){
                 responseModel.setCode(errorCode);
@@ -130,8 +136,10 @@ public class ServerResources extends BaseResources {
 
         }else if(actionId==3){
 
+            //删除
             try {
                 statusService.deleteById(statusDto.getServer_id());
+                op="op"+ "delete server "+statusDto;
                 responseModel.setCode(successCode);
 
             }catch (Throwable t){
@@ -185,22 +193,25 @@ public class ServerResources extends BaseResources {
         updateModel.setService("all");
         jsonStr= JSONObject.toJSONString(updateModel);
 
-
+        String uid = getUid();
+        String op ="[ServerResources] update server";
         HttpPost post =null;
         if (4==actionId){
             logger.info("start server "+dto.getServer_id());
             sendUrl = sendUrl+"/server_start";
             post = new HttpPost(sendUrl);
+            op = op+" start server "+dto.getServer_id();
 
         }else if(5==actionId){
             logger.info("stop server "+dto.getServer_id());
             sendUrl = sendUrl+"/server_stop";
             post = new HttpPost(sendUrl);
-
+            op = op+" stop server "+dto.getServer_id();
         }else if(6==actionId){
             logger.info("restart server "+dto.getServer_id());
             sendUrl = sendUrl+"/server_restart";
             post = new HttpPost(sendUrl);
+            op = op+" restart server "+dto.getServer_id();
         }
         StringEntity reqEntity = new StringEntity(jsonStr, Charset.forName("UTF-8"));
         reqEntity.setContentEncoding("UTF-8");
@@ -217,6 +228,7 @@ public class ServerResources extends BaseResources {
             if (res.getCode() == 1) {
                 logger.error("update server get error");
             }
+            operationLog(uid,op);
 
         }finally {
             try {

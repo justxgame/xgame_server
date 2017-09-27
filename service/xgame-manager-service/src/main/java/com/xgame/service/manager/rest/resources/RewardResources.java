@@ -102,21 +102,12 @@ public class RewardResources extends BaseResources {
         query.put("dateFrom", CommonUtil.getDsFromUnixTimestamp(dateFrom));
         query.put("dateTo", CommonUtil.getDsFromUnixTimestamp(dateTo));
 
-        List<RewardOrderDetailDto> dtos = new ArrayList<>();
-        if ("all".equalsIgnoreCase(rewardType)&&3==orderType){
-            dtos=rewardOrderDetailService.getAll();
-        }else if(!"all".equalsIgnoreCase(rewardType)&&3==orderType){
-            dtos = rewardOrderDetailService.getAllStatus(query);
-        }else if("all".equalsIgnoreCase(rewardType)&&3!=orderType){
-            dtos = rewardOrderDetailService.getAllType(query);
-        }else {
-            dtos=rewardOrderDetailService.getAllByQuery(query);
-        }
+        List<RewardOrderDetailDto> dtos=rewardOrderDetailService.getAllByQuery(query);
 
         WrapResponseModel responseModel = new WrapResponseModel();
         try {
 
-            System.out.println(dtos.size());
+
             List<RewardOrderModel> models = parseRewardOrderDetailDto2Model(dtos);
             responseModel.setData(models);
             responseModel.setCode(successCode);
@@ -124,41 +115,6 @@ public class RewardResources extends BaseResources {
             responseModel.setCode(errorCode);
             responseModel.setMessage(ExceptionUtils.getStackTrace(t));
         }
-
-
-
-//        List<RewardOrderModel> rewardOrderModelList = new ArrayList<>();
-//        RewardOrderModel orderModel1 = new RewardOrderModel();
-//        orderModel1.setAddress("上海");
-//        orderModel1.setException("");
-//        orderModel1.setServerId("10.1.1.1");
-//        orderModel1.setUid(1111);
-//        orderModel1.setRewardType(1);
-//        orderModel1.setRewardName("50加油卡");
-//        orderModel1.setRewardCount(1);
-//        orderModel1.setPhoneNo("18817333328");
-//        orderModel1.setOrderId("001");
-//        orderModel1.setIndate(System.currentTimeMillis());
-//        orderModel1.setOrderType(1);
-//        orderModel1.setSupplierOrderId("001");
-//        rewardOrderModelList.add(orderModel1);
-//
-//        RewardOrderModel orderModel2 = new RewardOrderModel();
-//        orderModel2.setAddress("上海");
-//        orderModel2.setException("");
-//        orderModel2.setServerId("10.1.1.1");
-//        orderModel2.setUid(1111);
-//        orderModel2.setRewardType(1);
-//        orderModel2.setRewardName("50加油卡");
-//        orderModel2.setRewardCount(1);
-//        orderModel2.setPhoneNo("18817333328");
-//        orderModel2.setOrderId("001");
-//        orderModel2.setIndate(System.currentTimeMillis());
-//        orderModel2.setOrderType(1);
-//        orderModel2.setSupplierOrderId("001");
-//        rewardOrderModelList.add(orderModel2);
-
-
 
 
         return responseModel;
@@ -171,58 +127,62 @@ public class RewardResources extends BaseResources {
     public WrapResponseModel sendRecallOrder(RewardOrderModel orderModel) {
         logger.info("sendReCallOrder");
         WrapResponseModel wrapResponseModel = new WrapResponseModel();
-        String receiveUrl = ServiceConfiguration.getInstance().getConfig().getString("xgame.receive.service.url");
-        HttpPost post = new HttpPost(receiveUrl);
-        RewardReportModel rewardReportModel = new RewardReportModel();
-        rewardReportModel.setUid(orderModel.getUid());
-        rewardReportModel.setServer_id(Integer.valueOf(orderModel.getServerId()));
-        rewardReportModel.setIsReorder(1);
-        rewardReportModel.setCount(orderModel.getRewardCount());
-        rewardReportModel.setId(orderModel.getRewardId());
-        rewardReportModel.setType(orderModel.getRewardType());
-        String jsonString = JSONObject.toJSONString(rewardReportModel);
-        StringEntity reqEntity = new StringEntity(jsonString, Charset.forName("UTF-8"));
-        reqEntity.setContentEncoding("UTF-8");
-        reqEntity.setContentType("application/json");
 
-        post.setEntity(reqEntity);
-        CloseableHttpResponse response =null;
-        HttpEntity entity=null;
-        try {
-            response = httpclient.execute(post);
-            entity = response.getEntity();
-            String res = EntityUtils.toString(entity, "UTF-8");
-            WrapResponseModel responseModel = JSONObject.parseObject(res, WrapResponseModel.class);
-            if (successCode==responseModel.getCode()){
-                wrapResponseModel.setCode(successCode);
-            }else {
-                wrapResponseModel.setCode(errorCode);
-                wrapResponseModel.setMessage(responseModel.getMessage());
-            }
-
-        } catch (Throwable t) {
-            wrapResponseModel.setCode(errorCode);
-            wrapResponseModel.setMessage(ExceptionUtils.getStackTrace(t));
-
-        }finally {
-            try {
-                response.close();
-                EntityUtils.consume(entity);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        //修改订单状态
-        if (wrapResponseModel.getCode()!=errorCode){
-            String order_id =orderModel.getOrderId();
-            try {
-                rewardOrderDetailService.updateRecalorder(order_id);
-            }catch (Throwable t){
-                wrapResponseModel.setCode(errorCode);
-                wrapResponseModel.setMessage("update  order status error"+ExceptionUtils.getMessage(t));
-            }
-
-        }
+        String uid = getUid();
+        String op = "[RewardResources] sendRecall order. orderid:"+orderModel.getOrderId();
+//        String receiveUrl = ServiceConfiguration.getInstance().getConfig().getString("xgame.receive.service.url");
+//        HttpPost post = new HttpPost(receiveUrl);
+//        RewardReportModel rewardReportModel = new RewardReportModel();
+//        rewardReportModel.setUid(orderModel.getUid());
+//        rewardReportModel.setServer_id(Integer.valueOf(orderModel.getServerId()));
+//        rewardReportModel.setIsReorder(1);
+//        rewardReportModel.setCount(orderModel.getRewardCount());
+//        rewardReportModel.setId(orderModel.getRewardId());
+//        rewardReportModel.setType(orderModel.getRewardType());
+//        String jsonString = JSONObject.toJSONString(rewardReportModel);
+//        StringEntity reqEntity = new StringEntity(jsonString, Charset.forName("UTF-8"));
+//        reqEntity.setContentEncoding("UTF-8");
+//        reqEntity.setContentType("application/json");
+//
+//        post.setEntity(reqEntity);
+//        CloseableHttpResponse response =null;
+//        HttpEntity entity=null;
+//        try {
+//            response = httpclient.execute(post);
+//            entity = response.getEntity();
+//            String res = EntityUtils.toString(entity, "UTF-8");
+//            WrapResponseModel responseModel = JSONObject.parseObject(res, WrapResponseModel.class);
+//            if (successCode==responseModel.getCode()){
+//                wrapResponseModel.setCode(successCode);
+//            }else {
+//                wrapResponseModel.setCode(errorCode);
+//                wrapResponseModel.setMessage(responseModel.getMessage());
+//            }
+//
+//        } catch (Throwable t) {
+//            wrapResponseModel.setCode(errorCode);
+//            wrapResponseModel.setMessage(ExceptionUtils.getStackTrace(t));
+//
+//        }finally {
+//            try {
+//                response.close();
+//                EntityUtils.consume(entity);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        //修改订单状态
+//        if (wrapResponseModel.getCode()!=errorCode){
+//            String order_id =orderModel.getOrderId();
+//            try {
+//                rewardOrderDetailService.updateRecalorder(order_id);
+//            }catch (Throwable t){
+//                wrapResponseModel.setCode(errorCode);
+//                wrapResponseModel.setMessage("update  order status error"+ExceptionUtils.getMessage(t));
+//            }
+//
+//        }
+        wrapResponseModel.setCode(successCode);
 
 
         return wrapResponseModel;

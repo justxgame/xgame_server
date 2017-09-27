@@ -34,8 +34,11 @@ public class BroadcastResources extends BaseResources {
     @Path("/send")
     @Produces(MediaType.APPLICATION_JSON)
     public WrapResponseModel sendBroadCast(BroadCastModel broadCastModel){
-        logger.info("send");
+        logger.info("[BroadcastResources]send:");
         WrapResponseModel responseModel = new WrapResponseModel();
+        String uid = getUid();
+        String op = "[BroadcastResources] send msg[" + broadCastModel.getMessage() + "] to server " + broadCastModel.getServerId();
+
         try {
             String token = requestContext.getHeaderString("token");
             String userName = tokenService.getUserNameByToken(token);
@@ -48,6 +51,7 @@ public class BroadcastResources extends BaseResources {
                     sendBroadcast(dto, broadCastModel.getMessage());
                     broadcastService.saveObject(broadCastDto);
                 }
+                operationLog(uid,op);
                 responseModel.setCode(successCode);
                 return responseModel;
             }
@@ -59,6 +63,7 @@ public class BroadcastResources extends BaseResources {
             }
             sendBroadcast(dto, broadCastModel.getMessage());
             broadcastService.saveObject(broadCastDto);
+            operationLog(uid,op);
             responseModel.setCode(successCode);
 
 
@@ -112,15 +117,17 @@ public class BroadcastResources extends BaseResources {
     @Produces(MediaType.APPLICATION_JSON)
     public WrapResponseModel delete(BroadCastModel model){
         WrapResponseModel responseModel = new WrapResponseModel();
+        String uid = getUid();
+        String op = "[BroadcastResources] delete msg .serverid:" + model.getServerId() + " msg:" + model.getMessage();
         try {
-
             broadcastService.deleteMsg(model.getTransection());
+
             responseModel.setCode(successCode);
+
         }catch (Throwable t){
             responseModel.setCode(errorCode);
             responseModel.setMessage(ExceptionUtils.getStackTrace(t));
         }
-        responseModel.setCode(successCode);
         return responseModel;
     }
 

@@ -15,6 +15,8 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BaseResources {
+    private static Logger logger = LoggerFactory.getLogger(BaseResources.class.getName());
     protected static final String HTTP_PREFIX="http://";
     protected static CloseableHttpClient httpclient;
     {
@@ -149,6 +152,12 @@ public class BaseResources {
         }
         return serverInfoModels;
     }
+
+    protected void operationLog(String uid,String operation){
+        String detail = String.format("user:%s operation:%s",uid,operation);
+        logger.info("Operation log "+detail);
+    }
+
 
 
 }
