@@ -6,6 +6,7 @@ import com.xgame.order.consumer.db.dao.RewardOrderLogMappingDao;
 import com.xgame.order.consumer.db.dto.RewardOrderInfoDto;
 import com.xgame.order.consumer.db.dto.RewardOrderLogMappingDto;
 import com.xgame.service.common.type.OrderInfoType;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,17 +77,25 @@ public class OrderBusinessProcessor {
             rewardOrderInfoDto.setIndate(new Date());
             rewardOrderInfoDao.saveObject(rewardOrderInfoDto);
 
+            requireNonNull(rewardOrderLogMappingDto.getProvider_id(), "该商品没有供货商");
             // 获取订单处理类
-            Map<Integer, String> providerCatalogClassMapping = providerMapping.get(requireNonNull(rewardOrderLogMappingDto.getProvider_id(), "provide id is empty"));
-            String processorClass = providerCatalogClassMapping.get(requireNonNull(rewardOrderLogMappingDto.getCatalog(), "catalog is empty"));
+            Map<Integer, String> providerCatalogClassMapping = providerMapping.get(rewardOrderLogMappingDto.getProvider_id());
+            if (null == providerCatalogClassMapping) {
+                throw new RuntimeException(String.format("供货商不存在 ,  provide=%s not exist", rewardOrderLogMappingDto.getProvider_id()));
+            }
+
+            String processorClass = providerCatalogClassMapping.get(requireNonNull(rewardOrderLogMappingDto.getCatalog(), "商品类目不存在"));
+            if (StringUtils.isEmpty(processorClass)) {
+                throw new RuntimeException("供货商不提供该物品 , catalog = " + rewardOrderLogMappingDto.getCatalog());
+            }
+
             BaseBusiness baseBusiness = (BaseBusiness) Class.forName(processorClass).newInstance();
 
             //处理订单
-            baseBusiness.processorOrder(rewardOrderLogMappingDto,rewardOrderInfoDto);
+            baseBusiness.processorOrder(rewardOrderLogMappingDto, rewardOrderInfoDto);
 
             //更新info表状态
             rewardOrderInfoDao.updateObjectById(rewardOrderInfoDto);
-
             logger.info("[OrderBusinessProcessor] processor order over  , orderid=" + orderId);
 
         } catch (Throwable t) {
@@ -99,6 +108,7 @@ public class OrderBusinessProcessor {
 
     /**
      * 转换
+     *
      * @param dto
      * @return
      */

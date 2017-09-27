@@ -1,6 +1,5 @@
 package com.xgame.service.game.receive.rest.resources;
 
-import com.alibaba.fastjson.JSONObject;
 import com.xgame.service.common.rest.model.WrapResponseModel;
 import com.xgame.service.common.util.CommonUtil;
 import com.xgame.service.game.receive.db.dto.UserStatusDto;
@@ -18,47 +17,44 @@ import javax.ws.rs.core.MediaType;
 @Path("/user")
 public class UserResources extends BaseResources {
     private static Logger logger = LoggerFactory.getLogger(UserResources.class.getName());
+
     @POST
     @Path("/address/report")
     @Produces(MediaType.APPLICATION_JSON)
-    public WrapResponseModel userAddressReport(UserAddressReportModel model){
-        logger.info("user address report");
+    public WrapResponseModel userAddressReport(UserAddressReportModel model) {
+        logger.info("[user:userAddressReport] model=" + model);
         WrapResponseModel responseModel = new WrapResponseModel();
         try {
             logger.info(model.toString());
             userAddressService.saveObject(model);
             responseModel.setCode(successCode);
-        }catch (Throwable t){
+        } catch (Throwable t) {
+            logger.error("[user:userAddressReport] failed", t);
             responseModel.setCode(errorCode);
             responseModel.setMessage(ExceptionUtils.getStackTrace(t));
         }
-
-
-
         return responseModel;
     }
 
     @POST
     @Path("/status/report")
     @Produces(MediaType.APPLICATION_JSON)
-    public WrapResponseModel userStatusReport(UserStatusReportModel model){
-        logger.info("user status report");
-
-        logger.info(model.toString());
+    public WrapResponseModel userStatusReport(UserStatusReportModel model) {
+        logger.info("[user:userStatusReport] model=" + model);
         WrapResponseModel responseModel = new WrapResponseModel();
         UserStatusDto dto = parseUserStatusMode2Dto(model);
         try {
             userStatusService.saveObjet(dto);
             responseModel.setCode(successCode);
-        }catch (Throwable t){
+        } catch (Throwable t) {
+            logger.error("[user:userStatusReport] failed ", t);
             responseModel.setCode(errorCode);
             responseModel.setMessage(ExceptionUtils.getStackTrace(t));
         }
-
         return responseModel;
     }
 
-    private UserStatusDto parseUserStatusMode2Dto(UserStatusReportModel model){
+    private UserStatusDto parseUserStatusMode2Dto(UserStatusReportModel model) {
         UserStatusDto dto = new UserStatusDto();
         dto.setUid(model.getUid());
         dto.setServer_id(model.getServer_id());

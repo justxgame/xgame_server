@@ -14,42 +14,35 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 @Path("/exchange")
-public class ExchangeResources extends BaseResources{
+public class ExchangeResources extends BaseResources {
     private static Logger logger = LoggerFactory.getLogger(ExchangeResources.class.getName());
 
     @POST
     @Path("/report")
     @Produces(MediaType.APPLICATION_JSON)
-    public WrapResponseModel getOrderInfo(RewardReportModel  model){
-
-        logger.info("receive");
+    public WrapResponseModel getOrderInfo(RewardReportModel model) {
+        logger.info("[exchange:getOrderInfo] model = " + model);
         WrapResponseModel wrapResponseModel = new WrapResponseModel();
-
-        logger.info("mode"+model);
         RewardOrderDto orderInfo = getRewardOrder(model);
-
         try {
             rewardOrderService.saveObject(orderInfo);
             wrapResponseModel.setCode(successCode);
-        }catch (Throwable t){
+        } catch (Throwable t) {
+            logger.error("[exchange:getOrderInfo] failed", t);
             wrapResponseModel.setCode(errorCode);
             wrapResponseModel.setMessage(ExceptionUtils.getStackTrace(t));
         }
-
-
-
-        wrapResponseModel.setCode(successCode);
-
         return wrapResponseModel;
     }
-    private RewardOrderDto getRewardOrder(RewardReportModel rewardReportModel){
-        RewardOrderDto orderInfo =new RewardOrderDto();
+
+    private RewardOrderDto getRewardOrder(RewardReportModel rewardReportModel) {
+        RewardOrderDto orderInfo = new RewardOrderDto();
         orderInfo.setServerId(String.valueOf(rewardReportModel.getServer_id()));
         orderInfo.setUid(String.valueOf(rewardReportModel.getUid()));
         orderInfo.setItemId(rewardReportModel.getItemId());
         orderInfo.setId(rewardReportModel.getId());
         orderInfo.setItemType(rewardReportModel.getType());
-        orderInfo.setItemCount(rewardReportModel.getType());
+        orderInfo.setItemCount(rewardReportModel.getCount());
         orderInfo.setOrderType(0);
         orderInfo.setIsReorder(rewardReportModel.getIsReorder());
         orderInfo.setPhone(rewardReportModel.getPhone());
@@ -59,7 +52,4 @@ public class ExchangeResources extends BaseResources{
         orderInfo.setOpType(rewardReportModel.getOpType());
         return orderInfo;
     }
-
-
-
 }

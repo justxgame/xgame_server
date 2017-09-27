@@ -11,15 +11,6 @@ import javax.ws.rs.container.ContainerRequestContext;
 
 public class BaseResources {
 
-    //    protected AdxConfigManagerService adxConfigManagerService = ServiceContextFactory.adxConfigManagerService;
-//    protected AppConfigService appConfigService = ServiceContextFactory.appConfigService;
-//    protected ChannelConfigService channelConfigService = ServiceContextFactory.channelConfigService;
-//    protected CustomerConfigService customerConfigService = ServiceContextFactory.customerConfigService;
-//    protected SystemConfigService systemConfigService = ServiceContextFactory.systemConfigService;
-//    protected AdvConfigService advConfigService = ServiceContextFactory.advConfigService;
-//    protected AdvStatisticService advStatisticService = ServiceContextFactory.advStatisticService;
-//    protected UserService userService = ServiceContextFactory.userService;
-//    protected TokenService tokenService = ServiceContextFactory.tokenService;
     protected RewardOrderService rewardOrderService = ServiceContextFactory.rewardOrderService;
     protected ServerStatusService serverStatusService = ServiceContextFactory.serverStatusService;
     protected UserAddressService userAddressService = ServiceContextFactory.userAddressService;

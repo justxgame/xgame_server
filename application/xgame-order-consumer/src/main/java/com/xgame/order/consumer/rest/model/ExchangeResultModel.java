@@ -43,4 +43,15 @@ public class ExchangeResultModel {
     public void setPassword(String password) {
         this.password = password;
     }
+
+
+    @Override
+    public String toString() {
+        return "ExchangeResultModel{" +
+                "serverId=" + serverId +
+                ", uid=" + uid +
+                ", id=" + id +
+                ", password='" + password + '\'' +
+                '}';
+    }
 }

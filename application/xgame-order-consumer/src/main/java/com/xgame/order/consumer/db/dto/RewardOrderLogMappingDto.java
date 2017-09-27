@@ -17,12 +17,13 @@ public class RewardOrderLogMappingDto {
 
     // mapping reward_info
     private String memo;
-    private int catalog;
-    private int provider_id;
-    private int price;
+    private Integer catalog;
+    private Integer provider_id;
+    private Integer price;
     //不同移动运营商的 cardId 移动|联通|电信
     private String extra;
     private String url;
+
 
     public String getServer_id() {
         return server_id;
@@ -120,30 +121,29 @@ public class RewardOrderLogMappingDto {
         this.memo = memo;
     }
 
-    public int getCatalog() {
+    public Integer getCatalog() {
         return catalog;
     }
 
-    public void setCatalog(int catalog) {
+    public void setCatalog(Integer catalog) {
         this.catalog = catalog;
     }
 
-    public int getProvider_id() {
+    public Integer getProvider_id() {
         return provider_id;
     }
 
-    public void setProvider_id(int provider_id) {
+    public void setProvider_id(Integer provider_id) {
         this.provider_id = provider_id;
     }
 
-    public int getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(Integer price) {
         this.price = price;
     }
-
 
     public String getExtra() {
         return extra;

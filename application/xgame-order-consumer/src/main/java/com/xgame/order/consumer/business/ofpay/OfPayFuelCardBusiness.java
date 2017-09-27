@@ -77,12 +77,13 @@ public class OfPayFuelCardBusiness extends AbstractOfPayBusiness {
             params.add(new BasicNameValuePair("sporder_time", sporder_time));
             params.add(new BasicNameValuePair("md5_str", md5_str));
             params.add(new BasicNameValuePair("version", version));
+            logger.info("[OfPayFuelCardBusiness] request params = " + getParameterStr(params));
             httpPost.setEntity(new UrlEncodedFormEntity(params));
             response = httpclient.execute(httpPost);
             entity = response.getEntity();
             res = EntityUtils.toString(entity);
             message = res;
-            logger.info("[OfPayPhoneDirectBusiness] res=" + res);
+            logger.info("[OfPayFuelCardBusiness] res=" + res);
             OrderInfo orderInfo = getOrderInfo(res);
             requireNonNull(orderInfo, "orderInfo is empty");
             if (isSuccess(orderInfo)) {
@@ -94,6 +95,7 @@ public class OfPayFuelCardBusiness extends AbstractOfPayBusiness {
                 exceptionMessage = exceptionMessage + String.format("充值失败 , return = %s", res);
             }
         }catch (Throwable t){
+            logger.error("OfPayFuelCardBusiness] request error ",t);
             exceptionMessage = exceptionMessage + ExceptionUtils.getMessage(t);
         }finally {
             try {
@@ -119,10 +121,12 @@ public class OfPayFuelCardBusiness extends AbstractOfPayBusiness {
         String url = rewardOrderLogMappingDto.getUrl();
         requireNonNull(url,"server url is null.can't call back");
         String gameUrl = HTTP_PREFIX+url+"/exchange_result";
+        logger.info("[OfPayFuelCardBusiness] call url = " + gameUrl + ", exchangeResultModel=" + exchangeResultModel);
         try {
             gameCallBack(gameUrl,exchangeResultModel);
             message = message +String.format("game call back success  ");
         }catch (Throwable t){
+            logger.error("OfPayFuelCardBusiness] callback error ",t);
             exceptionMessage = exceptionMessage + ExceptionUtils.getMessage(t);
         }
 
@@ -130,7 +134,6 @@ public class OfPayFuelCardBusiness extends AbstractOfPayBusiness {
         rewardOrderInfoDto.setOrder_exception(exceptionMessage);
 
     }
-
 
     protected boolean isSuccess(OrderInfo orderInfo){
         if (orderInfo.getRetcode()==1&&orderInfo.getCards()!=null){

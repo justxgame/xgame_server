@@ -1,8 +1,10 @@
 package com.xgame.order.consumer.business.ofpay;
 
+import com.alibaba.fastjson.JSONObject;
 import com.xgame.order.consumer.conf.Configuration;
 import com.xgame.order.consumer.db.dto.RewardOrderInfoDto;
 import com.xgame.order.consumer.db.dto.RewardOrderLogMappingDto;
+import com.xgame.service.common.conf.Card;
 import com.xgame.service.common.type.OrderInfoType;
 import com.xgame.service.common.util.CommonUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +37,7 @@ public class OfPayPhoneDirectBusiness extends AbstractOfPayBusiness {
     private final String callback_url = Configuration.getInstance().getConfig().getString("ofpay.phone.direct.recall.url");
 
     @Override
-    public void processorOrder(RewardOrderLogMappingDto rewardOrderLogMappingDto,RewardOrderInfoDto rewardOrderInfoDto) throws Throwable {
+    public void processorOrder(RewardOrderLogMappingDto rewardOrderLogMappingDto, RewardOrderInfoDto rewardOrderInfoDto) throws Throwable {
         String exceptionMessage = "";
         String message = "";
         String res = "";
@@ -66,6 +68,8 @@ public class OfPayPhoneDirectBusiness extends AbstractOfPayBusiness {
                 params.add(new BasicNameValuePair("md5_str", md5_str));
                 params.add(new BasicNameValuePair("ret_url", ret_url));
                 params.add(new BasicNameValuePair("version", version));
+
+                logger.info("[OfPayPhoneDirectBusiness] request params = " + getParameterStr(params));
                 httpPost.setEntity(new UrlEncodedFormEntity(params));
                 CloseableHttpResponse response = httpclient.execute(httpPost);
                 HttpEntity entity = response.getEntity();
@@ -76,20 +80,25 @@ public class OfPayPhoneDirectBusiness extends AbstractOfPayBusiness {
                 // 解析返回值
                 OrderInfo orderInfo = getOrderInfo(res);
                 requireNonNull(orderInfo, "orderInfo is empty");
+                if (null == orderInfo || 1 != orderInfo.getRetcode() || null == orderInfo.getGame_state()) {
+                    throw new RuntimeException(String.format("充值失败 , return = %s", res));
+                }
+
                 if (isRechagering(requireNonNull(orderInfo.getGame_state()))) {
                     message = message + String.format("第 %s 充值中 game_status=%s", i, orderInfo.getGame_state());
                 } else {
                     exceptionMessage = exceptionMessage + String.format("第 %s 充值失败 , return = %s", i, res);
                 }
             } catch (Throwable t) {
+                logger.error("OfPayPhoneDirectBusiness] request error ", t);
                 exceptionMessage = exceptionMessage + ExceptionUtils.getMessage(t);
             }
         }
 
         // save to db
-        if(StringUtils.isEmpty(exceptionMessage)){
+        if (StringUtils.isEmpty(exceptionMessage)) {
             rewardOrderInfoDto.setOrder_status(OrderInfoType.CHARGING.getValue());
-        }else{
+        } else {
             rewardOrderInfoDto.setOrder_status(OrderInfoType.FAILURE.getValue());
         }
         rewardOrderInfoDto.setMessage(message);
@@ -135,9 +144,9 @@ public class OfPayPhoneDirectBusiness extends AbstractOfPayBusiness {
 //        OrderInfo orderInfo = getOrderInfo(res);
 //        System.out.println(response);
 
-        //  String x = CommonUtil.hashingMD5("A08566", "4c625b7861a92c7971cd2029c2fd3c4a", "140101", String.valueOf(50),"test001234567", "20160817140214","15996271050","OFCARD");
-        String x = CommonUtil.hashingMD5("A085664c625b7861a92c7971cd2029c2fd3c4a1599627105050OFCARD");
-        System.out.println(x);
+        //String x = CommonUtil.hashingMD5("A08566", "4c625b7861a92c7971cd2029c2fd3c4a", "131001", String.valueOf(2),"testtakecard1234567", "20160823140214","OFCARD");
+        String x = CommonUtil.hashingMD5("qaz789456");
+        System.out.println(x.toLowerCase());
     }
 
 }

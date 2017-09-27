@@ -56,8 +56,13 @@ public class UserAddressReportModel {
     }
 
     @Override
-    public String toString(){
-        return "UserAddressReportModel[uid=" + uid + " server_id=" + server_id + " name="
-                + name + " address=" + address + " phone_number" + phone_number + "]";
+    public String toString() {
+        return "UserAddressReportModel{" +
+                "uid=" + uid +
+                ", server_id=" + server_id +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", phone_number='" + phone_number + '\'' +
+                '}';
     }
 }

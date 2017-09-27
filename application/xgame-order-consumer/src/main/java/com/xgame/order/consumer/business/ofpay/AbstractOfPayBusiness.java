@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.xgame.order.consumer.business.BaseBusiness;
 import com.xgame.order.consumer.conf.Configuration;
 import com.xgame.order.consumer.rest.model.ExchangeResultModel;
+import com.xgame.order.consumer.rest.resource.OfPayCallBackResource;
 import com.xgame.service.common.type.PhoneType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
@@ -38,11 +39,14 @@ import static java.util.Objects.requireNonNull;
  * Created by william on 2017/9/26.
  */
 public abstract class AbstractOfPayBusiness extends BaseBusiness {
+
+    private static Logger logger = LoggerFactory.getLogger(OfPayCallBackResource.class.getName());
+
     private final static String ofdate = "yyyyMMddHHmmss";
     private final static FastDateFormat ofDateFormat = FastDateFormat.getInstance(ofdate);
-    protected final static int SUCCESSCODE =1;
-    protected final static int ERRORCODE=0;
-    protected final static String HTTP_PREFIX= "http://";
+    protected final static int SUCCESSCODE = 1;
+    protected final static int ERRORCODE = 0;
+    protected final static String HTTP_PREFIX = "http://";
 
     // base url
     protected final String ofpay_base_url = Configuration.getInstance().getConfig().getString("ofpay.base.url");
@@ -63,6 +67,7 @@ public abstract class AbstractOfPayBusiness extends BaseBusiness {
 
     /**
      * 返回字订单号 ,  generateSubOrder_0
+     *
      * @param orderId
      * @param subNum
      * @return
@@ -76,13 +81,11 @@ public abstract class AbstractOfPayBusiness extends BaseBusiness {
     }
 
     public static void gameCallBack(String url, ExchangeResultModel model) throws IOException {
-
         HttpPost post = new HttpPost(url);
         String jsonStr = JSONObject.toJSONString(model);
         StringEntity reqEntity = new StringEntity(jsonStr, Charset.forName("UTF-8"));
         reqEntity.setContentEncoding("UTF-8");
         reqEntity.setContentType("application/json");
-
         post.setEntity(reqEntity);
         CloseableHttpResponse response = null;
         HttpEntity entity = null;
@@ -90,17 +93,14 @@ public abstract class AbstractOfPayBusiness extends BaseBusiness {
             response = httpclient.execute(post);
             entity = response.getEntity();
             String res = EntityUtils.toString(entity, "UTF-8");
-
-
-        }  finally {
-
+            logger.info("[GameCallBack] return res = " + res);
+        } finally {
             response.close();
             EntityUtils.consume(entity);
         }
-
     }
 
-    protected PhoneType getPhoneType(String phone,String url,CloseableHttpClient httpclient) throws IOException {
+    protected PhoneType getPhoneType(String phone, String url, CloseableHttpClient httpclient) throws IOException {
         HttpPost httpPost = new HttpPost(url);
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("mobilenum", phone));
@@ -113,35 +113,48 @@ public abstract class AbstractOfPayBusiness extends BaseBusiness {
         String[] mobinfo = res.split("\\|");
         String location = mobinfo[2];
         return PhoneType.fromString(location);
-
-
     }
 
-    protected String getCardIdByPhoneType(String cardId,PhoneType phoneType){
+    protected String getCardIdByPhoneType(String cardId, PhoneType phoneType) {
         String[] cardArr = cardId.split("\\|");
         //移动|联通|电信-- 移动||电信 --|联通|电信
-        if (cardArr.length==3){
-            switch (phoneType){
+        if (cardArr.length == 3) {
+            switch (phoneType) {
                 case MOBILE:
                     return cardArr[0];
                 case UNICOM:
                     return cardArr[1];
                 case TELECOM:
                     return cardArr[2];
-                default:return "";
+                default:
+                    return "";
             }
-        }else {
+        } else {
             //移动|联通|  |联通| cardarr length=2
-            switch (phoneType){
+            switch (phoneType) {
                 case MOBILE:
                     return cardArr[0];
                 case UNICOM:
                     return cardArr[1];
                 case TELECOM:
                     return "";
-                default:return "";
+                default:
+                    return "";
             }
         }
+    }
 
+
+    protected String getParameterStr(List<NameValuePair> params) {
+        if (null == params) {
+            return "";
+        }
+        String paramsStr = "";
+        for (NameValuePair pair : params) {
+            if (null != pair) {
+                paramsStr = paramsStr +","+ pair.toString();
+            }
+        }
+        return paramsStr;
     }
 }

@@ -113,6 +113,7 @@ public class OfPayCallBackResource extends BaseResources {
                     exchangeResultModel.setId(Integer.valueOf(rewardOrderInfoDto.getId()));
                     exchangeResultModel.setPassword("充值话费全部成功");
                     String gameUrl = HTTP_PREFIX + serverUrl + "/exchange_result";
+                    logger.info("[ofpay:phoneDirectCallback] call url = " + gameUrl + ", exchangeResultModel=" + exchangeResultModel);
                     AbstractOfPayBusiness.gameCallBack(gameUrl, exchangeResultModel);
                     rewardOrderInfoDto.setMessage(rewardOrderInfoDto.getMessage() + ",  game call back success");
                 } catch (Throwable t) {

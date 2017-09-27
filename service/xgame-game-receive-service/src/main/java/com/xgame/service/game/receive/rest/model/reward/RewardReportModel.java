@@ -98,8 +98,17 @@ public class RewardReportModel {
     }
 
     @Override
-    public String toString(){
-        return "rewardReportModel[server_id=" + server_id + " uid=" + uid + " id=" + id+" item_id"+itemId+ " type="
-                + type + " count=" + count +"phone "+phone+ " isReorder=" + isReorder +"op_type="+opType+ "]";
+    public String toString() {
+        return "RewardReportModel{" +
+                "server_id=" + server_id +
+                ", uid=" + uid +
+                ", id=" + id +
+                ", itemId=" + itemId +
+                ", type=" + type +
+                ", count=" + count +
+                ", isReorder=" + isReorder +
+                ", phone='" + phone + '\'' +
+                ", opType=" + opType +
+                '}';
     }
 }
