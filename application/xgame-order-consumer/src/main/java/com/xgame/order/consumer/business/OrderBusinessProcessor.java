@@ -34,11 +34,13 @@ public class OrderBusinessProcessor {
 
     // 供货商类目
     private static final int provider_ofpay = 1; // 欧飞
+    private static final int provider_pmi = 2; // 蜂助手
 
 
     // TODO 配置表
     private static Map<Integer, Map<Integer, String>> providerMapping = new HashMap(); // 所有供货商配置
     private static Map<Integer, String> ofPayCatalogClassMapping = new HashMap(); //欧飞实现
+    private static Map<Integer, String> pmiCatalogClassMapping = new HashMap(); //蜂助手实现
 
     // 供货商实现配置
     static {
