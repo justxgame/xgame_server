@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 
 public class Util {
     public static PmiOrderInfo getOrderInfo(String res) throws JAXBException, UnsupportedEncodingException {
-        JAXBContext jaxbContext = JAXBContext.newInstance(OrderInfo.class);
+        JAXBContext jaxbContext = JAXBContext.newInstance(PmiOrderInfo.class);
         Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
         InputStream stream = new ByteArrayInputStream(res.getBytes(StandardCharsets.UTF_8.name()));
         return (PmiOrderInfo) jaxbUnmarshaller.unmarshal(stream);
