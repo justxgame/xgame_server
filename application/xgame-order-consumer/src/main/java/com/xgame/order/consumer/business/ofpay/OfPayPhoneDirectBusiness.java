@@ -1,10 +1,8 @@
 package com.xgame.order.consumer.business.ofpay;
 
-import com.alibaba.fastjson.JSONObject;
 import com.xgame.order.consumer.conf.Configuration;
 import com.xgame.order.consumer.db.dto.RewardOrderInfoDto;
 import com.xgame.order.consumer.db.dto.RewardOrderLogMappingDto;
-import com.xgame.service.common.conf.Card;
 import com.xgame.service.common.type.OrderInfoType;
 import com.xgame.service.common.util.CommonUtil;
 import org.apache.commons.lang3.StringUtils;
