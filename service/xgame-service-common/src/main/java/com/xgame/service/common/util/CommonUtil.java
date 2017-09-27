@@ -28,6 +28,13 @@ public class CommonUtil {
         }
         return Hashing.md5().hashString(str, Charsets.UTF_8).toString().toUpperCase();
     }
+    public static String hashingMD5Lower(String... args) {
+        String str = "";
+        for (String arg : args) {
+            str=str+arg;
+        }
+        return Hashing.md5().hashString(str, Charsets.UTF_8).toString();
+    }
 
 
     public static String getDsFromUnixTimestamp(long unixTimestamp) {
@@ -40,6 +47,9 @@ public class CommonUtil {
 
     public static String getNormalDate(String datestr) throws ParseException {
         return norMalDateFormat.format(dsDateFormat.parse(datestr));
+    }
+    public static String getNormalDateByTime(){
+        return norMalDateFormat.format(System.currentTimeMillis());
     }
 
 
