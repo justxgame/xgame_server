@@ -45,6 +45,7 @@ public class OrderBusinessProcessor {
     // 供货商实现配置
     static {
         providerMapping.put(provider_ofpay, ofPayCatalogClassMapping);
+        providerMapping.put(provider_pmi, pmiCatalogClassMapping);
     }
 
     // 欧飞实现配置
@@ -52,6 +53,11 @@ public class OrderBusinessProcessor {
         ofPayCatalogClassMapping.put(catalog_phone_direct, "com.xgame.order.consumer.business.ofpay.OfPayPhoneDirectBusiness");
         ofPayCatalogClassMapping.put(catalog_phone_card, "com.xgame.order.consumer.business.ofpay.OfPayPhoneCardBusiness");
         ofPayCatalogClassMapping.put(catalog_fuel_card, "com.xgame.order.consumer.business.ofpay.OfPayFuelCardBusiness");
+
+    }
+    //蜂助手实现配置
+    static {
+        pmiCatalogClassMapping.put(catalog_phone_direct,"com.xgame.order.consumer.business.pmi.PmiPhoneDirectBusiness");
     }
 
 

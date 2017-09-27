@@ -1,6 +1,7 @@
 package com.xgame.order.consumer;
 
 
+import com.xgame.order.consumer.business.pmi.AbstractPmiBusiness;
 import com.xgame.order.consumer.db.dao.RewardOrderInfoDao;
 import com.xgame.order.consumer.db.dao.RewardOrderLogMappingDao;
 import com.xgame.order.consumer.db.dao.SubOrderInfoDao;
@@ -22,7 +23,6 @@ public class ServiceContextFactory {
     private static  RewardOrderLogMappingDao rewardOrderLogMappingDao;
     private static RewardOrderInfoDao rewardOrderInfoDao;
     private static SubOrderInfoDao subOrderInfoDao;
-
 
     static {
         orderService =  (OrderService) applicationContext.getBean("orderService");
