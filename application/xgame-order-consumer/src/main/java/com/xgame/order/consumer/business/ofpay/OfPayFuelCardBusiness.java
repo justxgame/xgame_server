@@ -59,22 +59,20 @@ public class OfPayFuelCardBusiness extends AbstractOfPayBusiness {
             String phone = requireNonNull(rewardOrderLogMappingDto.getPhone());
             //调用归属地接口获取电话归属地
             PhoneType phoneType = getPhoneType(phone, mobinfo_url, httpclient);
-            String cardid = getCardIdByPhoneType(oriCardid, phoneType);
-            if (StringUtils.isEmpty(cardid)) {
-                throw new CardChargeException("card charge error, cardid is empty");
-            }
 
             String sporder_time = getOFDateByNow();
-            String md5_str = CommonUtil.hashingMD5(userid, userpws, cardid, String.valueOf(cardnum), sporder_id, sporder_time, keyStr);
+            //TODO 油卡分种类
+            String md5_str = null ;// CommonUtil.hashingMD5(userid, userpws, cardid, String.valueOf(cardnum), sporder_id, sporder_time, keyStr);
 
             HttpPost httpPost = new HttpPost(request_url);
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("userid", userid));
             params.add(new BasicNameValuePair("userpws", userpws));
-            params.add(new BasicNameValuePair("cardid", cardid));
+            params.add(new BasicNameValuePair("cardid", "")); //TODO
             params.add(new BasicNameValuePair("cardnum", String.valueOf(cardnum)));
             params.add(new BasicNameValuePair("sporder_id", sporder_id));
             params.add(new BasicNameValuePair("sporder_time", sporder_time));
+            params.add(new BasicNameValuePair("phone", phone));
             params.add(new BasicNameValuePair("md5_str", md5_str));
             params.add(new BasicNameValuePair("version", version));
             logger.info("[OfPayFuelCardBusiness] request params = " + getParameterStr(params));
@@ -99,9 +97,12 @@ public class OfPayFuelCardBusiness extends AbstractOfPayBusiness {
             exceptionMessage = exceptionMessage + ExceptionUtils.getMessage(t);
         }finally {
             try {
-                response.close();
+                if(null!=response){
+                    response.close();
+                }
                 EntityUtils.consume(entity);
             } catch (IOException e) {
+                logger.error("OfPayFuelCardBusiness] request failed ",e);
                 exceptionMessage = exceptionMessage + e.getMessage();
             }
 
@@ -111,25 +112,26 @@ public class OfPayFuelCardBusiness extends AbstractOfPayBusiness {
         }else{
             rewardOrderInfoDto.setOrder_status(OrderInfoType.FAILURE.getValue());
         }
-        //回调游戏服务商
-        //生成 model
-        ExchangeResultModel exchangeResultModel = new ExchangeResultModel();
-        exchangeResultModel.setUid(Integer.valueOf(rewardOrderLogMappingDto.getUid()));
-        exchangeResultModel.setServerId(Integer.valueOf(rewardOrderLogMappingDto.getServer_id()));
-        exchangeResultModel.setId(Integer.valueOf(rewardOrderLogMappingDto.getId()));
-        exchangeResultModel.setPassword(pwd);
-        String url = rewardOrderLogMappingDto.getUrl();
-        requireNonNull(url,"server url is null.can't call back");
-        String gameUrl = HTTP_PREFIX+url+"/exchange_result";
-        logger.info("[OfPayFuelCardBusiness] call url = " + gameUrl + ", exchangeResultModel=" + exchangeResultModel);
-        try {
-            gameCallBack(gameUrl,exchangeResultModel);
-            message = message +String.format("game call back success  ");
-        }catch (Throwable t){
-            logger.error("OfPayFuelCardBusiness] callback error ",t);
-            exceptionMessage = exceptionMessage + ExceptionUtils.getMessage(t);
-        }
 
+        //如果成功， 回调游戏服务商
+        if(rewardOrderInfoDto.getOrder_status().equals(OrderInfoType.SUCCESS.getValue())){
+            ExchangeResultModel exchangeResultModel = new ExchangeResultModel();
+            exchangeResultModel.setUid(Integer.valueOf(rewardOrderLogMappingDto.getUid()));
+            exchangeResultModel.setServerId(Integer.valueOf(rewardOrderLogMappingDto.getServer_id()));
+            exchangeResultModel.setId(Integer.valueOf(rewardOrderLogMappingDto.getId()));
+            exchangeResultModel.setPassword(pwd);
+            String url = rewardOrderLogMappingDto.getUrl();
+            requireNonNull(url,"server url is null.can't call back");
+            String gameUrl = HTTP_PREFIX+url+"/exchange_result";
+            logger.info("[OfPayFuelCardBusiness] call url = " + gameUrl + ", exchangeResultModel=" + exchangeResultModel);
+            try {
+                gameCallBack(gameUrl,exchangeResultModel);
+                message = message +String.format("game call back success  ");
+            }catch (Throwable t){
+                logger.error("OfPayFuelCardBusiness] callback error ",t);
+                exceptionMessage = exceptionMessage + ExceptionUtils.getMessage(t);
+            }
+        }
         rewardOrderInfoDto.setMessage(message);
         rewardOrderInfoDto.setOrder_exception(exceptionMessage);
 
