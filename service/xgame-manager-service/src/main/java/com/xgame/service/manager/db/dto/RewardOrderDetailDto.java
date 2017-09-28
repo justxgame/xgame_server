@@ -5,7 +5,7 @@ public class RewardOrderDetailDto {
     private String server_id;
     private String uid;
     private String address;
-    private String phone_no;
+    private String phone;
     private Integer item_id;
     private Integer item_type;
     private Integer item_count;
@@ -47,12 +47,12 @@ public class RewardOrderDetailDto {
         this.address = address;
     }
 
-    public String getPhone_no() {
-        return phone_no;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setPhone_no(String phone_no) {
-        this.phone_no = phone_no;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public Integer getItem_id() {

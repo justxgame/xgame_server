@@ -68,7 +68,7 @@ public class BaseResources {
             model.setOrderId(dto.getOrder_id());
             model.setSupplierOrderId(dto.getOrder_id());
             model.setOrderType(dto.getOrder_status());
-            model.setPhoneNo(dto.getPhone_no());
+            model.setPhoneNo(dto.getPhone());
             model.setRewardCount(dto.getItem_count());
             model.setServerId(dto.getServer_id());
             model.setRewardName(dto.getMemo());
