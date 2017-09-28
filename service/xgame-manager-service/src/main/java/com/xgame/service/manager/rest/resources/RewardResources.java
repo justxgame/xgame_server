@@ -54,22 +54,7 @@ public class RewardResources extends BaseResources {
         itemTypeNavModel.setItemTypeModelList(rewardItemTypeModels);
 
         RewardOrderTypeBoxModel orderTypeNavModel = new RewardOrderTypeBoxModel();
-        List<RewardOrderTypeModel> orderTypeModels = new ArrayList<>();
-
-        RewardOrderTypeModel orderTypeModel3 = new RewardOrderTypeModel();
-        orderTypeModel3.setOrderTypeId(3);
-        orderTypeModel3.setOrderTypeName("不限");
-
-        RewardOrderTypeModel orderTypeModel1 = new RewardOrderTypeModel();
-        orderTypeModel1.setOrderTypeId(0);
-        orderTypeModel1.setOrderTypeName("成功");
-        RewardOrderTypeModel orderTypeModel2 = new RewardOrderTypeModel();
-        orderTypeModel2.setOrderTypeId(1);
-        orderTypeModel2.setOrderTypeName("失败");
-        orderTypeModels.add(orderTypeModel3);
-
-        orderTypeModels.add(orderTypeModel1);
-        orderTypeModels.add(orderTypeModel2);
+        List<RewardOrderTypeModel> orderTypeModels = getRewardOrderTypeModels();
 
         orderTypeNavModel.setOrderTypeModelList(orderTypeModels);
 
@@ -187,4 +172,43 @@ public class RewardResources extends BaseResources {
 
         return wrapResponseModel;
     }
+
+
+    private List<RewardOrderTypeModel> getRewardOrderTypeModels(){
+        List<RewardOrderTypeModel> orderTypeModels = new ArrayList<>();
+
+        RewardOrderTypeModel orderTypeModel3 = new RewardOrderTypeModel();
+        orderTypeModel3.setOrderTypeId(4);
+        orderTypeModel3.setOrderTypeName("不限");
+        orderTypeModels.add(orderTypeModel3);
+
+        RewardOrderTypeModel orderTypeModel1 = new RewardOrderTypeModel();
+        orderTypeModel1.setOrderTypeId(0);
+        orderTypeModel1.setOrderTypeName("成功");
+        orderTypeModels.add(orderTypeModel1);
+
+        RewardOrderTypeModel orderTypeModel2 = new RewardOrderTypeModel();
+        orderTypeModel2.setOrderTypeId(1);
+        orderTypeModel2.setOrderTypeName("失败");
+        orderTypeModels.add(orderTypeModel2);
+
+        RewardOrderTypeModel orderTypeModel4 = new RewardOrderTypeModel();
+        orderTypeModel4.setOrderTypeId(2);
+        orderTypeModel4.setOrderTypeName("初始化");
+        orderTypeModels.add(orderTypeModel4);
+
+        RewardOrderTypeModel orderTypeModel6 = new RewardOrderTypeModel();
+        orderTypeModel6.setOrderTypeId(3);
+        orderTypeModel6.setOrderTypeName("充值中");
+        orderTypeModels.add(orderTypeModel6);
+
+        RewardOrderTypeModel orderTypeModel5 = new RewardOrderTypeModel();
+        orderTypeModel5.setOrderTypeId(9);
+        orderTypeModel5.setOrderTypeName("撤销");
+        orderTypeModels.add(orderTypeModel5);
+
+
+        return orderTypeModels;
+    }
+
 }
