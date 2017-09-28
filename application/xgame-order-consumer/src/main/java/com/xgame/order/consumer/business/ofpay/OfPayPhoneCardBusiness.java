@@ -78,6 +78,7 @@ public class OfPayPhoneCardBusiness extends AbstractOfPayBusiness {
             params.add(new BasicNameValuePair("cardnum", String.valueOf(cardnum)));
             params.add(new BasicNameValuePair("sporder_id", sporder_id));
             params.add(new BasicNameValuePair("sporder_time", sporder_time));
+            params.add(new BasicNameValuePair("phone", phone));
             params.add(new BasicNameValuePair("md5_str", md5_str));
             params.add(new BasicNameValuePair("version", version));
             logger.info("[OfPayPhoneCardBusiness] request params = " + getParameterStr(params));
@@ -99,13 +100,16 @@ public class OfPayPhoneCardBusiness extends AbstractOfPayBusiness {
                 exceptionMessage = exceptionMessage + String.format("充值失败 , return = %s", res);
             }
         } catch (Throwable t) {
+            logger.error("[OfPayPhoneCardBusiness] failed ", t);
             exceptionMessage = exceptionMessage + ExceptionUtils.getMessage(t);
         } finally {
             try {
-                response.close();
+                if (null != response) {
+                    response.close();
+                }
                 EntityUtils.consume(entity);
             } catch (IOException e) {
-                logger.error("OfPayPhoneCardBusiness] request error ",e);
+                logger.error("OfPayPhoneCardBusiness] request error ", e);
                 exceptionMessage = exceptionMessage + e.getMessage();
             }
 
@@ -115,25 +119,25 @@ public class OfPayPhoneCardBusiness extends AbstractOfPayBusiness {
         } else {
             rewardOrderInfoDto.setOrder_status(OrderInfoType.FAILURE.getValue());
         }
-        //回调游戏服务商
-        //生成 model
-        ExchangeResultModel exchangeResultModel = new ExchangeResultModel();
-        exchangeResultModel.setUid(Integer.valueOf(rewardOrderLogMappingDto.getUid()));
-        exchangeResultModel.setServerId(Integer.valueOf(rewardOrderLogMappingDto.getServer_id()));
-        exchangeResultModel.setId(Integer.valueOf(rewardOrderLogMappingDto.getId()));
-        exchangeResultModel.setPassword(pwd);
-        String url = rewardOrderLogMappingDto.getUrl();
-        requireNonNull(url, "server url is null.can't call back");
-        String gameUrl = HTTP_PREFIX + url + "/exchange_result";
-        logger.info("[OfPayPhoneCardBusiness] call url = " + gameUrl + ", exchangeResultModel=" + exchangeResultModel);
-        try {
-            gameCallBack(gameUrl, exchangeResultModel);
-            message = message + String.format("game call back success  ");
-        } catch (Throwable t) {
-            logger.error("OfPayPhoneCardBusiness] callback error ",t);
-            exceptionMessage = exceptionMessage + ExceptionUtils.getMessage(t);
+        //如果成功， 回调游戏服务商
+        if(rewardOrderInfoDto.getOrder_status().equals(OrderInfoType.SUCCESS.getValue())){
+            ExchangeResultModel exchangeResultModel = new ExchangeResultModel();
+            exchangeResultModel.setUid(Integer.valueOf(rewardOrderLogMappingDto.getUid()));
+            exchangeResultModel.setServerId(Integer.valueOf(rewardOrderLogMappingDto.getServer_id()));
+            exchangeResultModel.setId(Integer.valueOf(rewardOrderLogMappingDto.getId()));
+            exchangeResultModel.setPassword(pwd);
+            String url = rewardOrderLogMappingDto.getUrl();
+            requireNonNull(url, "server url is null.can't call back");
+            String gameUrl = HTTP_PREFIX + url + "/exchange_result";
+            logger.info("[OfPayPhoneCardBusiness] call url = " + gameUrl + ", exchangeResultModel=" + exchangeResultModel);
+            try {
+                gameCallBack(gameUrl, exchangeResultModel);
+                message = message + String.format("game call back success  ");
+            } catch (Throwable t) {
+                logger.error("OfPayPhoneCardBusiness] callback error ", t);
+                exceptionMessage = exceptionMessage + ExceptionUtils.getMessage(t);
+            }
         }
-
         rewardOrderInfoDto.setMessage(message);
         rewardOrderInfoDto.setOrder_exception(exceptionMessage);
 
