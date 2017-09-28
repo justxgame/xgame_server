@@ -1,4 +1,4 @@
-package com.xgame.order.consumer.rest.model;
+package com.xgame.order.consumer.rest.model.pmi;
 
 public class FuelCardModel {
     private String reqid;

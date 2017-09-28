@@ -58,6 +58,7 @@ public class OrderBusinessProcessor {
     //蜂助手实现配置
     static {
         pmiCatalogClassMapping.put(catalog_phone_direct,"com.xgame.order.consumer.business.pmi.PmiPhoneDirectBusiness");
+        pmiCatalogClassMapping.put(catalog_fuel_card,"com.xgame.order.consumer.business.pmi.PmiFuelCardBusiness");
     }
 
 

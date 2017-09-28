@@ -19,6 +19,7 @@ import javax.ws.rs.container.ContainerRequestContext;
 public class BaseResources {
 
     private static Logger logger = LoggerFactory.getLogger(BaseResources.class.getName());
+    protected static final String PHONE_CHARGE_SUCCESS = "话费充值成功";
 
     @Inject
     ContainerRequestContext requestContext;
@@ -33,7 +34,7 @@ public class BaseResources {
     protected final static String HTTP_PREFIX = "http://";
 
 
-    protected void validatorSubOrder(String orderId, RewardOrderInfoDto rewardOrderInfoDto, SubOrderInfoDto subOrderInfoDto) {
+    protected void validatorSubOrder(String orderId, RewardOrderInfoDto rewardOrderInfoDto, SubOrderInfoDto subOrderInfoDto,String pwd) {
         //更新order表
         rewardOrderInfoDao.updateObjectById(rewardOrderInfoDto);
         //保存sub order表
@@ -62,7 +63,7 @@ public class BaseResources {
                 exchangeResultModel.setUid(Integer.parseInt(rewardOrderInfoDto.getUid()));
                 exchangeResultModel.setServerId(Integer.valueOf(rewardOrderInfoDto.getServer_id()));
                 exchangeResultModel.setId(Integer.valueOf(rewardOrderInfoDto.getId()));
-                exchangeResultModel.setPassword("充值话费全部成功");
+                exchangeResultModel.setPassword(pwd);
                 String gameUrl = HTTP_PREFIX + serverUrl + "/exchange_result";
                 logger.info("[validatorSubOrder] call url = " + gameUrl + ", exchangeResultModel=" + exchangeResultModel);
                 AbstractOfPayBusiness.gameCallBack(gameUrl, exchangeResultModel);

@@ -1,4 +1,4 @@
-package com.xgame.order.consumer.rest.model;
+package com.xgame.order.consumer.rest.model.pmi;
 
 import com.alibaba.fastjson.annotation.JSONField;
 

@@ -82,7 +82,7 @@ public class OfPayCallBackResource extends BaseResources {
                 rewardOrderInfoDto.setOrder_exception(rewardOrderInfoDto.getMessage() + ", suborder failure , sub_order_id = " + sporder_id);
             }
 
-            validatorSubOrder(orderId, rewardOrderInfoDto, subOrderInfoDto);
+            validatorSubOrder(orderId, rewardOrderInfoDto, subOrderInfoDto,PHONE_CHARGE_SUCCESS);
 
 //            //更新order表
 //            rewardOrderInfoDao.updateObjectById(rewardOrderInfoDto);

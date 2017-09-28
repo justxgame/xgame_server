@@ -7,7 +7,7 @@
 
     <insert id="saveObject" parameterType="com.xgame.order.consumer.db.dto.SubOrderInfoDto">
         <![CDATA[
-            insert into sub_order_info(sub_order_id,order_id,batch_number,state,message,indate)
+            replace into sub_order_info(sub_order_id,order_id,batch_number,state,message,indate)
              values(#{sub_order_id},#{order_id},#{batch_number},#{state},#{message},#{indate})
         ]]>
     </insert>
