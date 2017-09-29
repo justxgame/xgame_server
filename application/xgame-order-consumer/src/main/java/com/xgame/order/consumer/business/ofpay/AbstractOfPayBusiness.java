@@ -95,7 +95,10 @@ public abstract class AbstractOfPayBusiness extends BaseBusiness {
             String res = EntityUtils.toString(entity, "UTF-8");
             logger.info("[GameCallBack] return res = " + res);
         } finally {
-            response.close();
+            if (response!=null){
+                response.close();
+            }
+
             EntityUtils.consume(entity);
         }
     }

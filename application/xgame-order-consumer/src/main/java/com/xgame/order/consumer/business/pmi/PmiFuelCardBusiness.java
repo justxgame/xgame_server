@@ -115,7 +115,9 @@ public class PmiFuelCardBusiness extends AbstractPmiBusiness {
                 exceptionMessage = exceptionMessage + ExceptionUtils.getMessage(t);
             }finally {
                 try {
-                    response.close();
+                    if (response!=null){
+                        response.close();
+                    }
                     EntityUtils.consume(entity);
                 } catch (IOException e) {
                     logger.error("PmiFuelCardBusiness] request error ",e);
