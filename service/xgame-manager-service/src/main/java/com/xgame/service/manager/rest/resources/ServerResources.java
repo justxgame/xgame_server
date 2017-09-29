@@ -51,6 +51,7 @@ public class ServerResources extends BaseResources {
         }catch (Throwable t){
             responseModel.setCode(errorCode);
             responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+            logger.error( "[ServerResources] user "+uid +" get  serverbox error"+ExceptionUtils.getMessage(t));
         }
 
         return responseModel;
@@ -80,6 +81,7 @@ public class ServerResources extends BaseResources {
         }catch (Throwable t){
             responseModel.setCode(errorCode);
             responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+            logger.error( "[ServerResources] user "+uid +" getServerInfo error"+ExceptionUtils.getMessage(t));
 
         }
         return responseModel;
@@ -109,6 +111,7 @@ public class ServerResources extends BaseResources {
             }catch (Throwable t){
                 responseModel.setCode(errorCode);
                 responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+                logger.error( "[ServerResources] user "+uid +" update ServerInfo error"+ExceptionUtils.getMessage(t));
             }
             return responseModel;
         }else if(actionId==2){
@@ -121,6 +124,7 @@ public class ServerResources extends BaseResources {
             }catch (Throwable t){
                 responseModel.setCode(errorCode);
                 responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+                logger.error( "[ServerResources] user "+uid +" update ServerInfo error"+ExceptionUtils.getMessage(t));
             }
             return responseModel;
 
@@ -138,6 +142,7 @@ public class ServerResources extends BaseResources {
             }catch (Throwable t){
                 responseModel.setCode(errorCode);
                 responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+                logger.error( "[ServerResources] user "+uid +" update ServerInfo error"+ExceptionUtils.getMessage(t));
             }
             return responseModel;
 
@@ -160,6 +165,7 @@ public class ServerResources extends BaseResources {
             }catch (Throwable t){
                 responseModel.setCode(errorCode);
                 responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+                logger.error( "[ServerResources] user "+uid +" update ServerInfo error"+ExceptionUtils.getMessage(t));
             }
 
 
@@ -175,6 +181,7 @@ public class ServerResources extends BaseResources {
             }catch (Throwable t){
                 responseModel.setCode(successCode);
                 responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+                logger.error( "[ServerResources] user "+uid +" update ServerInfo error"+ExceptionUtils.getMessage(t));
             }
 
         }
@@ -234,7 +241,7 @@ public class ServerResources extends BaseResources {
                 }
                 EntityUtils.consume(entity);
             } catch (IOException e) {
-                logger.error("update server error"+e);
+                logger.error( "[ServerResources] user "+uid +" update ServerInfo error"+ExceptionUtils.getMessage(e));
             }
         }
     }

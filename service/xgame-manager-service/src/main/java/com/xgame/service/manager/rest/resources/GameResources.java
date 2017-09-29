@@ -44,6 +44,7 @@ public class GameResources extends BaseResources {
         }catch (Throwable t){
             responseModel.setCode(errorCode);
             responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+            logger.error("[GameResources] get server box error "+ExceptionUtils.getMessage(t));
         }
 
         return responseModel;
@@ -59,45 +60,54 @@ public class GameResources extends BaseResources {
 
         WrapResponseModel responseModel = new WrapResponseModel();
 
-        List<ServerStatusDto> dtos = statusService.getAll();
-        ServerStatusDto dto = getDtoById(serverId, dtos);
-        if (dto==null){
-            responseModel.setCode(errorCode);
-            responseModel.setMessage("Can't find server by id "+serverId +" please make sure server exist");
-            return responseModel;
-        }
-        String sendUrl = HTTP_PREFIX+dto.getUrl()+"/match_config_list";
-
-        HttpGet get = new HttpGet(sendUrl);
-
-        CloseableHttpResponse response =null;
-        HttpEntity entity=null;
         try {
-            response = httpclient.execute(get);
-            entity = response.getEntity();
-            String res = EntityUtils.toString(entity, "UTF-8");
-            if(null==res){
+            List<ServerStatusDto> dtos = statusService.getAll();
+            ServerStatusDto dto = getDtoById(serverId, dtos);
+            if (dto==null){
                 responseModel.setCode(errorCode);
-                responseModel.setMessage("call game server get null");
+                responseModel.setMessage("Can't find server by id "+serverId +" please make sure server exist");
+                return responseModel;
             }
-           GameSettingList gameSettingList = JSONObject.parseObject(res, GameSettingList.class);
-           responseModel.setData(gameSettingList.getList());
+            String sendUrl = HTTP_PREFIX+dto.getUrl()+"/match_config_list";
 
-        }catch (Throwable t){
+            HttpGet get = new HttpGet(sendUrl);
 
-            responseModel.setCode(errorCode);
-            responseModel.setMessage(ExceptionUtils.getStackTrace(t));
-        }finally {
+            CloseableHttpResponse response =null;
+            HttpEntity entity=null;
             try {
-                if (response!=null){
-                    response.close();
+                response = httpclient.execute(get);
+                entity = response.getEntity();
+                String res = EntityUtils.toString(entity, "UTF-8");
+                if(null==res){
+                    responseModel.setCode(errorCode);
+                    responseModel.setMessage("call game server get null");
                 }
-                EntityUtils.consume(entity);
+                GameSettingList gameSettingList = JSONObject.parseObject(res, GameSettingList.class);
+                responseModel.setData(gameSettingList.getList());
 
-            } catch (IOException e) {
-                responseModel.setMessage(ExceptionUtils.getMessage(e));
+            }catch (Throwable t){
+
+                responseModel.setCode(errorCode);
+                responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+                logger.error("[GameResources] getGameSetting error "+ExceptionUtils.getMessage(t));
+            }finally {
+                try {
+                    if (response!=null){
+                        response.close();
+                    }
+                    EntityUtils.consume(entity);
+
+                } catch (IOException e) {
+                    responseModel.setMessage(ExceptionUtils.getMessage(e));
+                    logger.error("[GameResources] getGameSetting error "+ExceptionUtils.getMessage(e));
+                }
             }
+        }catch (Throwable t){
+            responseModel.setCode(errorCode);
+            responseModel.setMessage(ExceptionUtils.getMessage(t));
+            logger.error("[GameResources] getGameSetting error "+ExceptionUtils.getMessage(t));
         }
+
 
         responseModel.setCode(successCode);
         return responseModel;
@@ -144,6 +154,7 @@ public class GameResources extends BaseResources {
 
                 responseModel.setCode(errorCode);
                 responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+                logger.error("[GameResources] update GameSetting error "+ExceptionUtils.getMessage(t));
             }finally {
                 try {
                     if (response!=null){
@@ -153,13 +164,16 @@ public class GameResources extends BaseResources {
                     EntityUtils.consume(entity);
 
                 } catch (IOException e) {
-                   responseModel.setMessage(ExceptionUtils.getMessage(e));
+
+                    responseModel.setMessage(ExceptionUtils.getMessage(e));
+                    logger.error("[GameResources] updateGameSetting error "+ExceptionUtils.getMessage(e));
                 }
             }
         }catch (Throwable t){
 
             responseModel.setCode(errorCode);
             responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+            logger.error("[GameResources] update GameSetting error "+ExceptionUtils.getMessage(t));
         }
 
         return  responseModel;

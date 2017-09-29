@@ -106,6 +106,7 @@ public class UserResources extends BaseResources {
 
                 responseModel.setCode(errorCode);
                 responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+                logger.error("[UserResources] search user error"+ExceptionUtils.getMessage(t));
             }finally {
                 try {
 
@@ -115,7 +116,7 @@ public class UserResources extends BaseResources {
                     EntityUtils.consume(entity);
 
                 } catch (IOException e) {
-                   logger.error("search user error"+e);
+                    logger.error("[UserResources] search user error"+ExceptionUtils.getMessage(e));
                    responseModel.setCode(errorCode);
                    responseModel.setMessage(ExceptionUtils.getMessage(e));
 
@@ -124,6 +125,7 @@ public class UserResources extends BaseResources {
         }catch (Throwable t){
             responseModel.setCode(errorCode);
             responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+            logger.error("[UserResources] search user error"+ExceptionUtils.getMessage(t));
         }
 
 
@@ -207,12 +209,14 @@ public class UserResources extends BaseResources {
                 }else {
                     responseModel.setCode(errorCode);
                     responseModel.setMessage("call game server get error code:"+serverRes.getCode());
+
                 }
 
             }catch (Throwable t){
 
                 responseModel.setCode(errorCode);
                 responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+                logger.error("[UserResources] update user error"+ExceptionUtils.getMessage(t));
             }finally {
                 try {
 
@@ -224,13 +228,15 @@ public class UserResources extends BaseResources {
                 } catch (IOException e) {
                     responseModel.setCode(errorCode);
                     responseModel.setMessage(ExceptionUtils.getStackTrace(e));
+                    logger.error("[UserResources] update user error"+ExceptionUtils.getMessage(e));
                 }
             }
         }catch (Throwable t){
             if (responseModel.getCode()!=errorCode){
                 responseModel.setCode(errorCode);
                 responseModel.setMessage(ExceptionUtils.getStackTrace(t));
-            }
+               }
+            logger.error("[UserResources] update user error"+ExceptionUtils.getMessage(t));
             }
 
 
@@ -241,14 +247,14 @@ public class UserResources extends BaseResources {
     private UserRes getUserRes(ServerStatusDto dto,String uid){
         UserRes userRes = null;
         String sendUrl = HTTP_PREFIX+dto.getUrl()+"/get_player_info";
-        logger.info("sendurl:"+sendUrl);
+        logger.info("[UserResources]sendurl:"+sendUrl);
         HttpPost post = new HttpPost(sendUrl);
         UserSearchModel searchModel = new UserSearchModel();
         searchModel.setServer_id(Integer.valueOf(dto.getServer_id()));
 
         searchModel.setUid(Integer.valueOf(uid));
         String jsonStr = JSONObject.toJSONString(searchModel);
-        logger.info("send json:"+jsonStr);
+        logger.info("[UserResources]send json:"+jsonStr);
         StringEntity reqEntity = new StringEntity(jsonStr, Charset.forName("UTF-8"));
         reqEntity.setContentEncoding("UTF-8");
         reqEntity.setContentType("application/json");
@@ -260,14 +266,14 @@ public class UserResources extends BaseResources {
             response = httpclient.execute(post);
             entity = response.getEntity();
             String res = EntityUtils.toString(entity, "UTF-8");
-            logger.info(" game res:"+res);
+            logger.info("[UserResources] game res:"+res);
             if(res!=null){
                  userRes =JSONObject.parseObject(res, UserRes.class);
                 return userRes;
             }
 
         }catch (Throwable t){
-            logger.error("search user error");
+            logger.error("[UserResources]search user error"+ExceptionUtils.getMessage(t));
 
         }finally {
             try {

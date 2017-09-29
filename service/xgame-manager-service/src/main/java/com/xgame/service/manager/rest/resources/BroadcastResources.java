@@ -70,6 +70,7 @@ public class BroadcastResources extends BaseResources {
         }catch (Throwable t){
             responseModel.setCode(errorCode);
             responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+            logger.error("[BroadcastResources] send msg error "+ExceptionUtils.getMessage(t));
         }
 
         return responseModel;
@@ -93,6 +94,7 @@ public class BroadcastResources extends BaseResources {
         }catch (Throwable t){
             responseModel.setCode(errorCode);
             responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+            logger.error("[BroadcastResources] get history broadcast error "+ExceptionUtils.getMessage(t));
         }
 
 
@@ -115,6 +117,7 @@ public class BroadcastResources extends BaseResources {
         }catch (Throwable t){
             responseModel.setCode(errorCode);
             responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+            logger.error("[BroadcastResources] delete msg error "+ExceptionUtils.getMessage(t));
         }
         return responseModel;
     }

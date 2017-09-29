@@ -39,32 +39,39 @@ public class RewardResources extends BaseResources {
         logger.info("[RewardResources] user "+uid+ "get all box");
         WrapResponseModel responseModel = new WrapResponseModel();
 
-        List<RewardBoxDto> dtos = rewardBoxService.getAll();
-        List<RewardBoxDto> dtos2 = new ArrayList<>();
-        RewardBoxDto rewardBoxDto = new RewardBoxDto();
-        rewardBoxDto.setId("all");
-        rewardBoxDto.setMemo("不限");
-        dtos2.add(rewardBoxDto);
-        for (RewardBoxDto dto:dtos){
-            dtos2.add(dto);
+        try {
+            List<RewardBoxDto> dtos = rewardBoxService.getAll();
+            List<RewardBoxDto> dtos2 = new ArrayList<>();
+            RewardBoxDto rewardBoxDto = new RewardBoxDto();
+            rewardBoxDto.setId("all");
+            rewardBoxDto.setMemo("不限");
+            dtos2.add(rewardBoxDto);
+            for (RewardBoxDto dto:dtos){
+                dtos2.add(dto);
+            }
+            RewardItemTypeBoxModel itemTypeNavModel = new RewardItemTypeBoxModel();
+
+            List<RewardItemTypeModel> rewardItemTypeModels = parseRewardBoxDto2Model(dtos2);
+
+            itemTypeNavModel.setItemTypeModelList(rewardItemTypeModels);
+
+            RewardOrderTypeBoxModel orderTypeNavModel = new RewardOrderTypeBoxModel();
+            List<RewardOrderTypeModel> orderTypeModels = getRewardOrderTypeModels();
+
+            orderTypeNavModel.setOrderTypeModelList(orderTypeModels);
+
+            RewardBoxModel boxModel = new RewardBoxModel();
+            boxModel.setItemTypeBoxModel(itemTypeNavModel);
+            boxModel.setOrderTypeBoxModel(orderTypeNavModel);
+
+            responseModel.setData(boxModel);
+            responseModel.setCode(successCode);
+        }catch (Throwable t){
+            responseModel.setCode(errorCode);
+            responseModel.setMessage(ExceptionUtils.getMessage(t));
+            logger.info("[RewardResources] user get all box error"+ExceptionUtils.getMessage(t));
         }
-        RewardItemTypeBoxModel itemTypeNavModel = new RewardItemTypeBoxModel();
 
-        List<RewardItemTypeModel> rewardItemTypeModels = parseRewardBoxDto2Model(dtos2);
-
-        itemTypeNavModel.setItemTypeModelList(rewardItemTypeModels);
-
-        RewardOrderTypeBoxModel orderTypeNavModel = new RewardOrderTypeBoxModel();
-        List<RewardOrderTypeModel> orderTypeModels = getRewardOrderTypeModels();
-
-        orderTypeNavModel.setOrderTypeModelList(orderTypeModels);
-
-        RewardBoxModel boxModel = new RewardBoxModel();
-        boxModel.setItemTypeBoxModel(itemTypeNavModel);
-        boxModel.setOrderTypeBoxModel(orderTypeNavModel);
-
-        responseModel.setData(boxModel);
-        responseModel.setCode(successCode);
         return responseModel;
     }
 
@@ -101,6 +108,7 @@ public class RewardResources extends BaseResources {
         }catch (Throwable t){
             responseModel.setCode(errorCode);
             responseModel.setMessage(ExceptionUtils.getStackTrace(t));
+            logger.info("[RewardResources] getRewardOrder error"+ExceptionUtils.getMessage(t));
         }
 
 
