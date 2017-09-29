@@ -33,17 +33,15 @@ public class ServerResources extends BaseResources {
     @Path("/getServerBox")
     @Produces(MediaType.APPLICATION_JSON)
     public WrapResponseModel getServerBox(){
-        logger.info("getServerBox");
+        String uid = getUid();
+        String op = "[ServerResources] user "+uid +" get  serverbox";
+        operationLog(uid,op);
+
         WrapResponseModel responseModel = new WrapResponseModel();
-//        List<ServerBoxModel> boxModels = new ArrayList<>();
         ServerBoxModel boxModel1 = new ServerBoxModel();
         boxModel1.setServerId("ALL");
         boxModel1.setServerName("全服");
-//        ServerBoxModel boxModel2 = new ServerBoxModel();
-//        boxModel2.setServerId("10.1.1.1");
-//        boxModel2.setServerName("10.1.1.1");
-//        boxModels.add(boxModel1);
-//        boxModels.add(boxModel2);
+
         try {
             List<ServerStatusDto> dtos = statusService.getAll();
             List<ServerBoxModel> boxModels = parseServerStatusDto2BoxModel(dtos);
@@ -63,20 +61,10 @@ public class ServerResources extends BaseResources {
     @Path("/getServerInfo")
     @Produces(MediaType.APPLICATION_JSON)
     public WrapResponseModel getServerInfo(@QueryParam("serverId")String serverId){
+        String uid = getUid();
+        String op = "[ServerResources] user "+uid +" get  server "+ serverId+" info";
+        operationLog(uid,op);
         WrapResponseModel responseModel = new WrapResponseModel();
-//        List<ServerInfoModel> serverInfoModels = new ArrayList<>();
-//        ServerInfoModel serverInfoModel = new ServerInfoModel();
-//        serverInfoModel.setServerId("1");
-//        serverInfoModel.setServerName("服务器1");
-//        serverInfoModel.setIpPort("10.1.1.1:8111");
-//        serverInfoModel.setStatus(1);
-//        serverInfoModels.add(serverInfoModel);
-//        ServerInfoModel serverInfoModel1 = new ServerInfoModel();
-//        serverInfoModel1.setServerId("2");
-//        serverInfoModel1.setServerName("服务器1");
-//        serverInfoModel1.setIpPort("10.1.1.2:8111");
-//        serverInfoModel1.setStatus(1);
-//        serverInfoModels.add(serverInfoModel1);
         try {
             List<ServerStatusDto> dtos = statusService.getAll();
             List<ServerInfoModel> models = parseServerStatusDto2ServerInfoModel(dtos);
@@ -116,6 +104,7 @@ public class ServerResources extends BaseResources {
 
                 statusService.saveDto(statusDto);
                 op= op+" add new server "+statusDto;
+                operationLog(uid,op);
                 responseModel.setCode(successCode);
             }catch (Throwable t){
                 responseModel.setCode(errorCode);
@@ -127,6 +116,7 @@ public class ServerResources extends BaseResources {
             try {
                 statusService.updateDto(statusDto);
                 op="op"+ "update server "+statusDto;
+                operationLog(uid,op);
                 responseModel.setCode(successCode);
             }catch (Throwable t){
                 responseModel.setCode(errorCode);
@@ -138,9 +128,12 @@ public class ServerResources extends BaseResources {
 
             //删除
             try {
-                statusService.deleteById(statusDto.getServer_id());
                 op="op"+ "delete server "+statusDto;
+                operationLog(uid,op);
+                statusService.deleteById(statusDto.getServer_id());
+
                 responseModel.setCode(successCode);
+
 
             }catch (Throwable t){
                 responseModel.setCode(errorCode);
@@ -152,14 +145,18 @@ public class ServerResources extends BaseResources {
         List<ServerStatusDto> dtos = statusService.getAll();
         String serverId = serverInfoModel.getServerId();
 
+
         //全服操作
         if ("all".equalsIgnoreCase(serverInfoModel.getServerId())) {
+            op = op+" update all server";
             try {
                 for (ServerStatusDto dto:dtos){
 
                     updateServer(dto,httpclient,actionId,serverId);
                 }
+                op=" update all server success";
                 responseModel.setCode(successCode);
+                operationLog(uid,op);
             }catch (Throwable t){
                 responseModel.setCode(errorCode);
                 responseModel.setMessage(ExceptionUtils.getStackTrace(t));
@@ -232,10 +229,12 @@ public class ServerResources extends BaseResources {
 
         }finally {
             try {
-                response.close();
+                if (response!=null){
+                    response.close();
+                }
                 EntityUtils.consume(entity);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("update server error"+e);
             }
         }
     }

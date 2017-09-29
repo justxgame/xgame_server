@@ -35,8 +35,9 @@ public class UserResources extends BaseResources {
     @Produces(MediaType.APPLICATION_JSON)
     public WrapResponseModel searchUser(@QueryParam("serverId")String serverId,@QueryParam("userId")String uid,
                                         @QueryParam("userName")String userName){
-        logger.info("search user");
-        logger.info("serverId:"+serverId+" userId"+uid);
+        String user = getUid();
+        String op = "[UserResources] user "+user+" search uid "+uid+" serverid "+ serverId;
+        operationLog(uid,op);
         WrapResponseModel responseModel = new WrapResponseModel();
         ServerStatusDto dto =null;
         if (null==uid) {
@@ -51,6 +52,7 @@ public class UserResources extends BaseResources {
             List<ServerStatusDto> dtos = statusService.getAll();
 
             if("all".equalsIgnoreCase(serverId)){
+
                 for(ServerStatusDto statusDto:dtos){
                     dto = getDtoById(String.valueOf(statusDto.getServer_id()), dtos);
                     if (dto==null){
@@ -94,7 +96,6 @@ public class UserResources extends BaseResources {
                 response = httpclient.execute(post);
                 entity = response.getEntity();
                 String res = EntityUtils.toString(entity, "UTF-8");
-                logger.info("game res:"+res);
                 if(res!=null){
                     UserRes userRes =JSONObject.parseObject(res, UserRes.class);
                     responseModel.setData(userRes);
@@ -107,11 +108,17 @@ public class UserResources extends BaseResources {
                 responseModel.setMessage(ExceptionUtils.getStackTrace(t));
             }finally {
                 try {
-                    response.close();
+
+                    if (response!=null){
+                        response.close();
+                    }
                     EntityUtils.consume(entity);
 
                 } catch (IOException e) {
-                    e.printStackTrace();
+                   logger.error("search user error"+e);
+                   responseModel.setCode(errorCode);
+                   responseModel.setMessage(ExceptionUtils.getMessage(e));
+
                 }
             }
         }catch (Throwable t){
@@ -119,21 +126,6 @@ public class UserResources extends BaseResources {
             responseModel.setMessage(ExceptionUtils.getStackTrace(t));
         }
 
-//        List<UserInfoModel> userInfoModels = new ArrayList<>();
-//        UserInfoModel userInfoModel =new UserInfoModel();
-//        userInfoModel.setServerId("999");
-//        userInfoModel.setUserName(userName);
-//        userInfoModel.setUid("1");
-//        userInfoModel.setMoney(100);
-//        userInfoModel.setTicket(1000);
-//        userInfoModel.setActionId(0);
-//        userInfoModel.setStatus(1);
-//        userInfoModel.setPoints(10);
-//        userInfoModel.setCoins(10);
-//
-//        userInfoModels.add(userInfoModel);
-//        responseModel.setCode(successCode);
-//        responseModel.setData(userInfoModels);
 
         return responseModel;
     }
@@ -142,7 +134,6 @@ public class UserResources extends BaseResources {
     @Path("/update")
     @Produces(MediaType.APPLICATION_JSON)
     public WrapResponseModel updateUser(List<UserInfoModel> userInfoModels){
-        logger.info("user update");
         String uid = getUid();
         String op = "[UserResources] update user";
         UserInfoModel userInfoModel = userInfoModels.get(0);
@@ -164,7 +155,7 @@ public class UserResources extends BaseResources {
             //封号 解封
             if (1==actionId||2==actionId){
                 sendUrl=sendUrl+"/ban";
-                logger.info("sendurl "+sendUrl);
+                logger.info("[UserResources]sendurl "+sendUrl);
                 UserBanModel banModel = new UserBanModel();
                 banModel.setServer_id(Integer.valueOf(userInfoModel.getServerId()));
                 banModel.setUid(Integer.valueOf(userInfoModel.getPid()));
@@ -175,9 +166,11 @@ public class UserResources extends BaseResources {
 
                 if (3==actionId){
                     sendUrl=sendUrl+"/mail";
+                    logger.info("[UserResources]sendurl "+sendUrl);
                     op = op + " send mail";
                 }else {
                     sendUrl=sendUrl+"/alter_player_info";
+                    logger.info("[UserResources]sendurl "+sendUrl);
                     op = op + " update user property";
                 }
 
@@ -193,7 +186,7 @@ public class UserResources extends BaseResources {
 
                 jsonStr = JSONObject.toJSONString(userUpdateModel);
                 op=op+" update json "+jsonStr;
-                logger.info("update json:"+jsonStr);
+                logger.info("[UserResources]update json "+jsonStr);
             }
             StringEntity reqEntity = new StringEntity(jsonStr, Charset.forName("UTF-8"));
             reqEntity.setContentEncoding("UTF-8");
@@ -222,11 +215,15 @@ public class UserResources extends BaseResources {
                 responseModel.setMessage(ExceptionUtils.getStackTrace(t));
             }finally {
                 try {
-                    response.close();
+
+                    if(response!=null){
+                        response.close();
+                    }
                     EntityUtils.consume(entity);
 
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    responseModel.setCode(errorCode);
+                    responseModel.setMessage(ExceptionUtils.getStackTrace(e));
                 }
             }
         }catch (Throwable t){
@@ -274,11 +271,13 @@ public class UserResources extends BaseResources {
 
         }finally {
             try {
-                response.close();
+                if(response!=null){
+                    response.close();
+                }
                 EntityUtils.consume(entity);
 
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("[UserResources] get userres error"+e);
             }
         }
 

@@ -35,7 +35,8 @@ public class RewardResources extends BaseResources {
     @Path("/getAllBox")
     @Produces(MediaType.APPLICATION_JSON)
     public WrapResponseModel getAllBox(){
-        logger.info("getAllBox");
+        String uid = getUid();
+        logger.info("[RewardResources] user "+uid+ "get all box");
         WrapResponseModel responseModel = new WrapResponseModel();
 
         List<RewardBoxDto> dtos = rewardBoxService.getAll();
@@ -74,7 +75,11 @@ public class RewardResources extends BaseResources {
     @Produces(MediaType.APPLICATION_JSON)
     public WrapResponseModel getRewardOrderInfo(@QueryParam("rewardType")String rewardType,@QueryParam("orderType")Integer orderType,
           @QueryParam("dateFrom")Long dateFrom,@QueryParam("dateTo")Long dateTo){
-        logger.info("getRewardOrder");
+        String uid = getUid();
+        String op = "[RewardResources] user "+uid+" get order info.Parames rewardType="+rewardType+" orderType="+
+                orderType+" dateFrom="+dateFrom+" dateTo="+dateTo;
+
+        operationLog(uid,op);
         Map<String, Object> query = new HashMap<>();
         query.put("rewardType",rewardType);
         query.put("orderType", orderType);
@@ -84,15 +89,12 @@ public class RewardResources extends BaseResources {
             //2100
             dateTo=4103283661000l;
         }
-        query.put("dateFrom", CommonUtil.getDsFromUnixTimestamp(dateFrom));
-        query.put("dateTo", CommonUtil.getDsFromUnixTimestamp(dateTo));
-
-        List<RewardOrderDetailDto> dtos=rewardOrderDetailService.getAllByQuery(query);
 
         WrapResponseModel responseModel = new WrapResponseModel();
         try {
-
-
+            query.put("dateFrom", CommonUtil.getDsFromUnixTimestamp(dateFrom));
+            query.put("dateTo", CommonUtil.getDsFromUnixTimestamp(dateTo));
+            List<RewardOrderDetailDto> dtos=rewardOrderDetailService.getAllByQuery(query);
             List<RewardOrderModel> models = parseRewardOrderDetailDto2Model(dtos);
             responseModel.setData(models);
             responseModel.setCode(successCode);
@@ -110,11 +112,12 @@ public class RewardResources extends BaseResources {
     @Path("/sendReCallOrder")
     @Produces(MediaType.APPLICATION_JSON)
     public WrapResponseModel sendRecallOrder(RewardOrderModel orderModel) {
-        logger.info("sendReCallOrder");
+        logger.info("[RewardResources] send Recallorder");
         WrapResponseModel wrapResponseModel = new WrapResponseModel();
 
         String uid = getUid();
         String op = "[RewardResources] sendRecall order. orderid:"+orderModel.getOrderId();
+        operationLog(uid,op);
 //        String receiveUrl = ServiceConfiguration.getInstance().getConfig().getString("xgame.receive.service.url");
 //        HttpPost post = new HttpPost(receiveUrl);
 //        RewardReportModel rewardReportModel = new RewardReportModel();

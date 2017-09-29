@@ -79,7 +79,7 @@ public class BroadcastResources extends BaseResources {
     @Path("/history")
     @Produces(MediaType.APPLICATION_JSON)
     public WrapResponseModel getHistory(@QueryParam("serverId")String serverId){
-        logger.info("history");
+        logger.info("[BroadcastResources] get server " +serverId +" broadcast");
         WrapResponseModel responseModel = new WrapResponseModel();
         try {
             List<BroadCastDto> broadCastDtos = broadcastService.getAll();
@@ -95,19 +95,6 @@ public class BroadcastResources extends BaseResources {
             responseModel.setMessage(ExceptionUtils.getStackTrace(t));
         }
 
-//        BroadCastModel model1 = new BroadCastModel();
-//        model1.setMessage("祝贺 xx 获得 xxx");
-//        model1.setSendDate(System.currentTimeMillis());
-//        model1.setServerId("10.1.1.1");
-//        model1.setSendUserName("admin");
-//        broadCastModels.add(model1);
-//        BroadCastModel model2 = new BroadCastModel();
-//        model2.setMessage("祝贺 xx 获得 xxx");
-//        model2.setSendDate(System.currentTimeMillis());
-//        model2.setServerId("10.1.1.2");
-//        model2.setSendUserName("admin2");
-//        broadCastModels.add(model2);
-//        responseModel.setData(broadCastModels);
 
         return responseModel;
     }
@@ -119,6 +106,7 @@ public class BroadcastResources extends BaseResources {
         WrapResponseModel responseModel = new WrapResponseModel();
         String uid = getUid();
         String op = "[BroadcastResources] delete msg .serverid:" + model.getServerId() + " msg:" + model.getMessage();
+        operationLog(uid,op);
         try {
             broadcastService.deleteMsg(model.getTransection());
 
@@ -155,17 +143,19 @@ public class BroadcastResources extends BaseResources {
             ServerRes serverRes = JSONObject.parseObject(res,ServerRes.class);
             if (serverRes.getCode()!=0){
 
-               logger.error("send broadcast error by game server get error");
+               logger.error("[BroadcastResources]send broadcast error by game server get error");
             }
 
 
         }finally {
             try {
-                response.close();
+                if (response!=null){
+                    response.close();
+                }
                 EntityUtils.consume(entity);
 
             } catch (IOException e) {
-                e.printStackTrace();
+               logger.error("[BroadcastResources] send broad cast error");
             }
         }
     }

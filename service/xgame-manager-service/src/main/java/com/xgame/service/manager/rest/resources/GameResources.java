@@ -32,17 +32,10 @@ public class GameResources extends BaseResources {
     @Path("/getServerBox")
     @Produces(MediaType.APPLICATION_JSON)
     public WrapResponseModel getServerBox(){
-        logger.info("getServerBox");
+        String uid = getUid();
+        String op = "[GameResources] "+uid+" getserver box";
+        operationLog(uid,op);
         WrapResponseModel responseModel = new WrapResponseModel();
-//        List<ServerBoxModel> boxModels = new ArrayList<>();
-//        ServerBoxModel boxModel1 = new ServerBoxModel();
-//        boxModel1.setServerId("10.1.1.2");
-//        boxModel1.setServerName("10.1.1.2");
-//        ServerBoxModel boxModel2 = new ServerBoxModel();
-//        boxModel2.setServerId("10.1.1.1");
-//        boxModel2.setServerName("10.1.1.1");
-//        boxModels.add(boxModel1);
-//        boxModels.add(boxModel2);
         try {
             List<ServerStatusDto> dtos = statusService.getAll();
             List<ServerBoxModel> boxModels = parseServerStatusDto2BoxModel(dtos);
@@ -53,8 +46,6 @@ public class GameResources extends BaseResources {
             responseModel.setMessage(ExceptionUtils.getStackTrace(t));
         }
 
-
-
         return responseModel;
     }
 
@@ -62,8 +53,10 @@ public class GameResources extends BaseResources {
     @Path("/getGameSetting")
     @Produces(MediaType.APPLICATION_JSON)
     public WrapResponseModel getGameSetting(@QueryParam("serverId") String serverId){
-        logger.info("getGameSetting");
-        logger.info(serverId);
+        String uid =getUid();
+        String op = "[GameResources] "+uid+" get server " + serverId + " setting";
+        operationLog(uid,op);
+
         WrapResponseModel responseModel = new WrapResponseModel();
 
         List<ServerStatusDto> dtos = statusService.getAll();
@@ -96,71 +89,15 @@ public class GameResources extends BaseResources {
             responseModel.setMessage(ExceptionUtils.getStackTrace(t));
         }finally {
             try {
-                response.close();
+                if (response!=null){
+                    response.close();
+                }
                 EntityUtils.consume(entity);
 
             } catch (IOException e) {
-                e.printStackTrace();
+                responseModel.setMessage(ExceptionUtils.getMessage(e));
             }
         }
-//        List<GameSettingModel> gameSettingModels = new ArrayList<>();
-//        GameSettingModel model1 = new GameSettingModel();
-//        model1.setId(1);
-//        model1.setGameName("门票三人场");
-//        model1.setGmaeType(1);
-//        model1.setMatchItemType(1);
-//        model1.setMatchMode(1);
-//        model1.setMinStartPlayerNum(1);
-//        model1.setMaxStartPlayerNum(10);
-//        model1.setCanIntMinCoin(1);
-//        model1.setCanIntMaxCoin(10);
-//        model1.setTableCost(100);
-//        model1.setMaxPoint(1000);
-//        model1.setInitBase(100);
-//        model1.setBaseIncreaseSecond(1);
-//        model1.setBaseTimes(60);
-//        List<GameSignCostModel> signCostModels = new ArrayList<>();
-//        GameSignCostModel signCostModel = new GameSignCostModel();
-//        signCostModel.setGid(1);
-//        signCostModel.setGtype(1);
-//        signCostModel.setCount(2);
-//        GameSignCostModel signCostModel2 = new GameSignCostModel();
-//        signCostModel2.setGid(1);
-//        signCostModel2.setGtype(1);
-//        signCostModel2.setCount(2);
-//        signCostModels.add(signCostModel);
-//        signCostModels.add(signCostModel2);
-//        model1.setSignCost(signCostModels);
-//        model1.setIconId(1);
-//        model1.setEarlyExamMinute(1);
-//        model1.setServerId(11);
-//        model1.setOpenFlag(1);
-//        List<GameWinnerRewardsModel> winnerRewardsModels = new ArrayList<>();
-//        GameWinnerRewardsModel winnerRewardsModel = new GameWinnerRewardsModel();
-//        winnerRewardsModel.setGid(1);
-//        winnerRewardsModel.setCount(1);
-//        winnerRewardsModel.setGtype(1);
-//        winnerRewardsModel.setWeight(1);
-//        winnerRewardsModels.add(winnerRewardsModel);
-//        GameWinnerRewardsModel winnerRewardsModel2 = new GameWinnerRewardsModel();
-//        winnerRewardsModel2.setGid(1);
-//        winnerRewardsModel2.setCount(1);
-//        winnerRewardsModel2.setGtype(1);
-//        winnerRewardsModel2.setWeight(1);
-//        winnerRewardsModels.add(winnerRewardsModel2);
-//        model1.setWinnerRewards(winnerRewardsModels);
-//        model1.setInitStartScores(1);
-//        model1.setRemainPlayerNum(1);
-//        model1.setSecondRoundPlayerNumber(2);
-//        model1.setPhase2GameRounds(2);
-//        model1.setDateWeekDay(2);
-//        model1.setDayMonDay(2);
-//        model1.setDateDayHour(1);
-//        model1.setDateHourMinute(2);
-//        model1.setAllowLateMinutes(2);
-//        gameSettingModels.add(model1);
-//        responseModel.setData(gameSettingModels);
-
 
         responseModel.setCode(successCode);
         return responseModel;
@@ -209,11 +146,14 @@ public class GameResources extends BaseResources {
                 responseModel.setMessage(ExceptionUtils.getStackTrace(t));
             }finally {
                 try {
-                    response.close();
+                    if (response!=null){
+                        response.close();
+                    }
+
                     EntityUtils.consume(entity);
 
                 } catch (IOException e) {
-                    e.printStackTrace();
+                   responseModel.setMessage(ExceptionUtils.getMessage(e));
                 }
             }
         }catch (Throwable t){
@@ -222,51 +162,10 @@ public class GameResources extends BaseResources {
             responseModel.setMessage(ExceptionUtils.getStackTrace(t));
         }
 
-
-
-        //responseModel.setData();
         return  responseModel;
 
     }
 
-//    private GameSettingSendModel parse2SendSetting(GameSettingModel model){
-//        GameSettingSendModel sendModel = new GameSettingSendModel();
-//        List<GameWinnerRewardsModel> winnerRewardsModels = model.getWinnerRewards();
-//        String winnerStr = parse2WinnerRewardStr(winnerRewardsModels);
-//        List<GameSignCostModel> gameSignCostModels = model.getSignCost();
-//        String signCostStr = parse2SignCostStr(gameSignCostModels);
-//        sendModel.setSign_cost(signCostStr);
-//
-//        sendModel.setWinner_rewards(winnerStr);
-//        sendModel.setId(model.getId());
-//        sendModel.setMatch_iterm_type(model.getMatchItemType());
-//        sendModel.setGame_type(model.getGmaeType());
-//        sendModel.setName(model.getGameName());
-//        sendModel.setMatch_mode(model.getMatchMode());
-//        sendModel.setMin_start_player_num(model.getMinStartPlayerNum());
-//        sendModel.setMax_start_player_num(model.getMaxStartPlayerNum());
-//        sendModel.setCan_int_min_coin(model.getCanIntMinCoin());
-//        sendModel.setCan_in_max_coin(model.getCanIntMaxCoin());
-//        sendModel.setTable_cost(model.getTableCost());
-//        sendModel.setMax_point(model.getMaxPoint());
-//        sendModel.setInit_base(model.getInitBase());
-//        sendModel.setBase_increase_second(model.getBaseIncreaseSecond());
-//        sendModel.setBase_times(model.getBaseTimes());
-//        sendModel.setIcon_id(model.getIconId());
-//        sendModel.setInit_start_scores(model.getInitStartScores());
-//        sendModel.setRemain_player_num(model.getRemainPlayerNum());
-//        sendModel.setSecond_round_player_number(model.getSecondRoundPlayerNumber());
-//        sendModel.setPhase2_game_rounds(model.getPhase2GameRounds());
-//        sendModel.setEarly_exam_minute(model.getEarlyExamMinute());
-//        sendModel.setDate_mon_day(model.getDayMonDay());
-//        sendModel.setDate_week_day(model.getDateWeekDay());
-//        sendModel.setDate_day_hour(model.getDateDayHour());
-//        sendModel.setDate_hour_minute(model.getDateHourMinute());
-//        sendModel.setAllow_late_minutes(model.getAllowLateMinutes());
-//        sendModel.setOpen_flag(model.getOpenFlag());
-//        sendModel.setServer_id(model.getServerId());
-//        return sendModel;
-//    }
 
     private String parse2WinnerRewardStr(List<GameWinnerRewardsModel> models){
         StringBuilder sb = new StringBuilder();
