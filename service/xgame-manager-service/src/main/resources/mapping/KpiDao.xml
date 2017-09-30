@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xgame.service.manager.db.dao.KpiDao">
+
+
+    <select id="getActive" resultType="com.xgame.service.manager.rest.model.kpi.ActiveModel">
+          <![CDATA[
+            SELECT DATE_FORMAT(date,"%Y-%m-%d") as date ,dau,server_id from bi_kpi.active order by date desc,server_id asc
+        ]]>
+    </select>
+
+
+    <select id="getNewActive" resultType="com.xgame.service.manager.rest.model.kpi.NewActiveModel">
+        <![CDATA[
+            SELECT DATE_FORMAT(date,"%Y-%m-%d") as date ,active_num,server_id from bi_kpi.new_active order by date desc,server_id asc
+        ]]>
+    </select>
+
+    <select id="getPay" resultType="com.xgame.service.manager.rest.model.kpi.PayModel">
+        <![CDATA[
+            SELECT DATE_FORMAT(date,"%Y-%m-%d") as date ,pay ,server_id from bi_kpi.pay order by date desc,server_id asc
+        ]]>
+    </select>
+
+    <select id="getPayNumber" resultType="com.xgame.service.manager.rest.model.kpi.PayModelNumber">
+        <![CDATA[
+            SELECT DATE_FORMAT(date,"%Y-%m-%d") as date ,pay_number ,server_id from bi_kpi.pay_number order by date desc,server_id asc
+        ]]>
+    </select>
+
+    <select id="getRetention" resultType="com.xgame.service.manager.rest.model.kpi.RetentionModel">
+        <![CDATA[
+              SELECT
+                DATE_FORMAT(date,"%Y-%m-%d") as date ,server_id,
+                MAX(CASE diff WHEN 1 THEN concat ( left (rate *100,5),'%') ELSE 0 END) AS day_1,
+                MAX(CASE diff WHEN 2 THEN concat ( left (rate *100,5),'%') ELSE 0 END) AS day_2,
+                MAX(CASE diff WHEN 3 THEN concat ( left (rate *100,5),'%') ELSE 0 END) AS day_3,
+                MAX(CASE diff WHEN 4 THEN concat ( left (rate *100,5),'%') ELSE 0 END) AS day_4,
+                MAX(CASE diff WHEN 5 THEN concat ( left (rate *100,5),'%') ELSE 0 END) AS day_5,
+                MAX(CASE diff WHEN 6 THEN concat ( left (rate *100,5),'%') ELSE 0 END) AS day_6,
+                MAX(CASE diff WHEN 7 THEN concat ( left (rate *100,5),'%') ELSE 0 END) AS day_7
+                FROM
+                bi_kpi.retention
+                GROUP BY date,server_id
+                order by date desc,server_id asc
+        ]]>
+    </select>
+
+</mapper>

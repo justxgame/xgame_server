@@ -9,6 +9,7 @@
         <mapper resource="mapping/BroadcastDao.xml"/>
         <mapper resource="mapping/TokenDao.xml"/>
         <mapper resource="mapping/UserDao.xml"/>
+        <mapper resource="mapping/KpiDao.xml"/>
     </mappers>
 
 

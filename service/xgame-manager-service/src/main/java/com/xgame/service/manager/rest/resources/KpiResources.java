@@ -1,10 +1,9 @@
 package com.xgame.service.manager.rest.resources;
 
 import com.xgame.service.common.rest.model.WrapResponseModel;
-import com.xgame.service.manager.rest.model.kpi.KpiDataModel;
-import com.xgame.service.manager.rest.model.kpi.KpiMetaModel;
-import com.xgame.service.manager.rest.model.kpi.KpiNavModel;
+import com.xgame.service.manager.rest.model.kpi.*;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +21,121 @@ import java.util.List;
 @Path("/kpi")
 public class KpiResources extends BaseResources {
     private static Logger logger = LoggerFactory.getLogger(KpiResources.class.getName());
+
+    /**
+     *
+     * 日活
+     *
+     * @return
+     */
+    @GET
+    @Path("/getActive")
+    @Produces(MediaType.APPLICATION_JSON)
+    public WrapResponseModel getActive() {
+        logger.info("[kpi:getActive]" + getUid());
+        WrapResponseModel wrapResponseModel = new WrapResponseModel();
+        try {
+            List<ActiveModel> activeModels = kpiDao.getActive();
+            wrapResponseModel.setData(activeModels);
+            wrapResponseModel.setCode(successCode);
+        }catch (Throwable t){
+            wrapResponseModel.setCode(errorCode);
+            logger.error("[kpi:getActive] error "+ ExceptionUtils.getStackTrace(t));
+        }
+        return wrapResponseModel;
+    }
+
+    /**
+     * 新用户
+     *
+     * @return
+     */
+    @GET
+    @Path("/getNewActive")
+    @Produces(MediaType.APPLICATION_JSON)
+    public WrapResponseModel getNewActive() {
+        logger.info("[kpi:getNewActive]" + getUid());
+        WrapResponseModel wrapResponseModel = new WrapResponseModel();
+        try {
+            List<NewActiveModel> newActiveModels = kpiDao.getNewActive();
+            wrapResponseModel.setData(newActiveModels);
+            wrapResponseModel.setCode(successCode);
+        }catch (Throwable t){
+            wrapResponseModel.setCode(errorCode);
+            logger.error("[kpi:getNewActive] error "+ ExceptionUtils.getStackTrace(t));
+        }
+        return wrapResponseModel;
+    }
+
+
+    /**
+     * 支付金额
+     *
+     * @return
+     */
+    @GET
+    @Path("/getPay")
+    @Produces(MediaType.APPLICATION_JSON)
+    public WrapResponseModel getPay() {
+        logger.info("[kpi:getPay]" + getUid());
+        WrapResponseModel wrapResponseModel = new WrapResponseModel();
+        try {
+            List<PayModel> payModels = kpiDao.getPay();
+            wrapResponseModel.setData(payModels);
+            wrapResponseModel.setCode(successCode);
+        }catch (Throwable t){
+            wrapResponseModel.setCode(errorCode);
+            logger.error("[kpi:getPay] error "+ ExceptionUtils.getStackTrace(t));
+        }
+        return wrapResponseModel;
+    }
+
+
+    /**
+     * 支付金额
+     *
+     * @return
+     */
+    @GET
+    @Path("/getPayNumber")
+    @Produces(MediaType.APPLICATION_JSON)
+    public WrapResponseModel getPayNumber() {
+        logger.info("[kpi:getPayNumber]" + getUid());
+        WrapResponseModel wrapResponseModel = new WrapResponseModel();
+        try {
+            List<PayModelNumber> payModelNumbers = kpiDao.getPayNumber();
+            wrapResponseModel.setData(payModelNumbers);
+            wrapResponseModel.setCode(successCode);
+        }catch (Throwable t){
+            wrapResponseModel.setCode(errorCode);
+            logger.error("[kpi:getPayNumber] error "+ ExceptionUtils.getStackTrace(t));
+        }
+        return wrapResponseModel;
+    }
+
+
+    /**
+     * 支付金额
+     *
+     * @return
+     */
+    @GET
+    @Path("/getRetention")
+    @Produces(MediaType.APPLICATION_JSON)
+    public WrapResponseModel getRetention() {
+        logger.info("[kpi:getRetention]" + getUid());
+        WrapResponseModel wrapResponseModel = new WrapResponseModel();
+        try {
+            List<RetentionModel> retentionModels = kpiDao.getRetention();
+            wrapResponseModel.setData(retentionModels);
+            wrapResponseModel.setCode(successCode);
+        }catch (Throwable t){
+            wrapResponseModel.setCode(errorCode);
+            logger.error("[kpi:getRetention] error "+ ExceptionUtils.getStackTrace(t));
+        }
+        return wrapResponseModel;
+    }
+
 
     @GET
     @Path("/getNav")

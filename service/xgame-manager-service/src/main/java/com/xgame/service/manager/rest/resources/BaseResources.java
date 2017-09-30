@@ -3,6 +3,7 @@ package com.xgame.service.manager.rest.resources;
 
 import com.xgame.service.common.util.CommonUtil;
 import com.xgame.service.manager.ServiceContextFactory;
+import com.xgame.service.manager.db.dao.KpiDao;
 import com.xgame.service.manager.db.dto.RewardBoxDto;
 import com.xgame.service.manager.db.dto.RewardOrderDetailDto;
 import com.xgame.service.manager.db.dto.ServerStatusDto;
@@ -36,20 +37,13 @@ public class BaseResources {
                 HttpClientBuilder.create().setDefaultRequestConfig(config).build();
 
     }
-
-//    protected AdxConfigManagerService adxConfigManagerService = ServiceContextFactory.adxConfigManagerService;
-//    protected AppConfigService appConfigService = ServiceContextFactory.appConfigService;
-//    protected ChannelConfigService channelConfigService = ServiceContextFactory.channelConfigService;
-//    protected CustomerConfigService customerConfigService = ServiceContextFactory.customerConfigService;
-//    protected SystemConfigService systemConfigService = ServiceContextFactory.systemConfigService;
-//    protected AdvConfigService advConfigService = ServiceContextFactory.advConfigService;
-//    protected AdvStatisticService advStatisticService = ServiceContextFactory.advStatisticService;
     protected UserService userService = ServiceContextFactory.userService;
     protected TokenService tokenService = ServiceContextFactory.tokenService;
     protected RewardOrderDetailService rewardOrderDetailService = ServiceContextFactory.rewardOrderDetailService;
     protected RewardBoxService rewardBoxService = ServiceContextFactory.rewardBoxService;
     protected ServerStatusService statusService = ServiceContextFactory.serverStatusService;
     protected BroadcastService broadcastService = ServiceContextFactory.broadcastService;
+    protected KpiDao kpiDao = ServiceContextFactory.kpiDao;
 
     @Inject
     ContainerRequestContext requestContext;
