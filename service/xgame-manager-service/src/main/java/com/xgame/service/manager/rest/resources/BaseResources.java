@@ -1,26 +1,36 @@
 package com.xgame.service.manager.rest.resources;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.xgame.service.common.util.CommonUtil;
 import com.xgame.service.manager.ServiceContextFactory;
 import com.xgame.service.manager.db.dao.KpiDao;
 import com.xgame.service.manager.db.dto.RewardBoxDto;
 import com.xgame.service.manager.db.dto.RewardOrderDetailDto;
 import com.xgame.service.manager.db.dto.ServerStatusDto;
+import com.xgame.service.manager.rest.model.broadcast.BroadCastSendModel;
+import com.xgame.service.manager.rest.model.response.ServerRes;
 import com.xgame.service.manager.rest.model.reward.RewardItemTypeModel;
 import com.xgame.service.manager.rest.model.reward.RewardOrderModel;
 import com.xgame.service.manager.rest.model.server.ServerBoxModel;
 import com.xgame.service.manager.rest.model.server.ServerInfoModel;
 import com.xgame.service.manager.service.*;
+import org.apache.http.HttpEntity;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -152,6 +162,51 @@ public class BaseResources {
         logger.info("Operation log "+detail);
     }
 
+    /**
+     * 实际发送
+     * @param dto
+     * @param message
+     * @throws IOException
+     */
+    public void sendBroadcast(ServerStatusDto dto,String message) throws IOException {
 
+        String sendUrl = HTTP_PREFIX+dto.getUrl()+"/broadcast";
+        HttpPost post = new HttpPost(sendUrl);
+        BroadCastSendModel sendModel = new BroadCastSendModel();
+        sendModel.setServer_id(dto.getServer_id());
+
+        sendModel.setMsg(message);
+        String jsonStr = JSONObject.toJSONString(sendModel);
+        StringEntity reqEntity = new StringEntity(jsonStr, Charset.forName("UTF-8"));
+        reqEntity.setContentEncoding("UTF-8");
+        reqEntity.setContentType("application/json");
+
+        post.setEntity(reqEntity);
+        CloseableHttpResponse response =null;
+        HttpEntity entity=null;
+        try {
+            response = httpclient.execute(post);
+
+            entity = response.getEntity();
+            String res = EntityUtils.toString(entity, "UTF-8");
+            ServerRes serverRes = JSONObject.parseObject(res,ServerRes.class);
+            if (serverRes.getCode()!=0){
+
+                logger.error("[BroadcastResources]send broadcast error by game server get error");
+            }
+
+
+        }finally {
+            try {
+                if (response!=null){
+                    response.close();
+                }
+                EntityUtils.consume(entity);
+
+            } catch (IOException e) {
+                logger.error("[BroadcastResources] send broad cast error");
+            }
+        }
+    }
 
 }

@@ -61,11 +61,11 @@ public class GameResources extends BaseResources {
         WrapResponseModel responseModel = new WrapResponseModel();
 
         try {
-            List<ServerStatusDto> dtos = statusService.getAll();
+            List<ServerStatusDto> dtos = statusService.getAllActive();
             ServerStatusDto dto = getDtoById(serverId, dtos);
             if (dto==null){
                 responseModel.setCode(errorCode);
-                responseModel.setMessage("Can't find server by id "+serverId +" please make sure server exist");
+                responseModel.setMessage("Can't find server by id "+serverId +" please make sure server exist or active");
                 return responseModel;
             }
             String sendUrl = HTTP_PREFIX+dto.getUrl()+"/match_config_list";
@@ -121,8 +121,13 @@ public class GameResources extends BaseResources {
         try {
             String uid = getUid();
             String serverId = String.valueOf(model.getServer_id());
-            List<ServerStatusDto> serverStatusDtos =statusService.getAll();
+            List<ServerStatusDto> serverStatusDtos =statusService.getAllActive();
             ServerStatusDto dto = getDtoById(serverId, serverStatusDtos);
+            if (null==dto){
+                responseModel.setCode(errorCode);
+                responseModel.setMessage("Can't find server by id "+serverId +" please make sure server exist or active");
+                return responseModel;
+            }
             String sendUrl = HTTP_PREFIX+dto.getUrl()+"/match_config_update";
 
             String jsonStr = JSONObject.toJSONString(model);

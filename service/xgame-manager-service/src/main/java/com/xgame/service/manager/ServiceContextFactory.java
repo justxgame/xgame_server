@@ -1,6 +1,8 @@
 package com.xgame.service.manager;
 
+import com.xgame.service.manager.db.dao.BroadcastDao;
 import com.xgame.service.manager.db.dao.KpiDao;
+import com.xgame.service.manager.db.dao.ServerStatusDao;
 import com.xgame.service.manager.service.*;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -39,5 +41,10 @@ public class ServiceContextFactory {
     public static <T> T getBean(String name) throws BeansException {
         return (T) applicationContext.getBean(name);
     }
+
+    public static BroadcastDao getBroadCastDao(){
+        return broadcastService.getBroadcastDao();
+    }
+    public static ServerStatusDao getServerStatusDao(){return serverStatusService.getServerStatusDao();}
 
 }

@@ -7,6 +7,16 @@ public class BroadCastDto {
     private String send_user;
     private String indate;
 
+    public BroadCastDto(String serverId,String msg,String uid,String indate){
+        this.server_id=serverId;
+        this.send_user=uid;
+        this.msg=msg;
+        this.indate=indate;
+    }
+    public BroadCastDto(){
+
+    }
+
     public Long getTransection() {
         return transection;
     }

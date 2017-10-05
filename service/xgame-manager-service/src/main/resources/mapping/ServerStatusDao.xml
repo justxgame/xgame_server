@@ -12,6 +12,13 @@
         ]]>
 
     </select>
+    <select id="getAllActive" resultType="com.xgame.service.manager.db.dto.ServerStatusDto">
+        <![CDATA[
+            SELECT server_id,ip,port,gm_port,status,url,server_name,indate from server_info where status=1 order by
+            indate desc
+        ]]>
+
+    </select>
     <insert id="saveObject" parameterType="com.xgame.service.manager.db.dto.ServerStatusDto">
             <![CDATA[
            INSERT  into server_info (server_id,ip,port,gm_port,url,status,indate,server_name)

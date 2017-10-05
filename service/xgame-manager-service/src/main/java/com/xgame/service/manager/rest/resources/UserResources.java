@@ -49,7 +49,7 @@ public class UserResources extends BaseResources {
 
         }
         try {
-            List<ServerStatusDto> dtos = statusService.getAll();
+            List<ServerStatusDto> dtos = statusService.getAllActive();
 
             if("all".equalsIgnoreCase(serverId)){
 
@@ -75,7 +75,7 @@ public class UserResources extends BaseResources {
             dto = getDtoById(serverId, dtos);
             if (dto==null){
                 responseModel.setCode(errorCode);
-                responseModel.setMessage("Can't find server by id "+serverId +" please make sure server exist");
+                responseModel.setMessage("Can't find server by id "+serverId +" please make sure server exist or active");
                 return responseModel;
             }
             String sendUrl = HTTP_PREFIX+dto.getUrl()+"/get_player_info";
@@ -144,11 +144,11 @@ public class UserResources extends BaseResources {
             int actionId = userInfoModel.getActionId();
             String serverId = userInfoModel.getServerId();
 
-            List<ServerStatusDto> dtos = statusService.getAll();
+            List<ServerStatusDto> dtos = statusService.getAllActive();
             ServerStatusDto dto = getDtoById(serverId, dtos);
             if (dto==null){
                 responseModel.setCode(errorCode);
-                responseModel.setMessage("Can't find server by id "+serverId +" please make sure server exist");
+                responseModel.setMessage("Can't find server by id "+serverId +" please make sure server exist or active");
                 return responseModel;
             }
             String sendUrl = HTTP_PREFIX+dto.getUrl();

@@ -24,4 +24,9 @@ public class ServerStatusService {
     public void deleteById(Object id){
         serverStatusDao.deleteById(id);
     }
+    public List<ServerStatusDto> getAllActive(){return serverStatusDao.getAllActive();}
+
+    public ServerStatusDao getServerStatusDao() {
+        return serverStatusDao;
+    }
 }
