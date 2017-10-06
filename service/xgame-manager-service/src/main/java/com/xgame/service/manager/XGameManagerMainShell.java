@@ -66,11 +66,11 @@ class BroadCastRegularTask implements Runnable{
                     logger.info("[BroadCastRegularTask] get empty task");
                     continue;
                 }
-                logger.info("[BroadCastRegularTask] get task size is "+dtos.size());
+               // logger.info("[BroadCastRegularTask] get task size is "+dtos.size());
 
                 List<BroadCastRegularDto> processTask = getNeedProcessTask(dtos);
                 if (null==processTask||0==processTask.size()){
-                    logger.info("[BroadCastRegularTask] get empty process task");
+                    //logger.info("[BroadCastRegularTask] get empty process task");
                     continue;
                 }
                 logger.info("[BroadCastRegularTask] get need process task size is "+processTask.size());
@@ -84,7 +84,7 @@ class BroadCastRegularTask implements Runnable{
             }
 
             try {
-                Thread.sleep(5*1000);
+                Thread.sleep(10*1000);
             }catch (Throwable t){
                 logger.error("[BroadCastRegularTask] process task error");
             }
