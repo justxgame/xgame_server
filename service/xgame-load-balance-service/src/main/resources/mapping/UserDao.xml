@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xgame.service.load.balance.db.dao.UserDao">
+
+
+    <select id="getOnlineUsers" resultType="com.xgame.service.load.balance.db.dto.UserDto">
+        <![CDATA[
+               SELECT server_id,COUNT(1) as user_count from user_status where online_flag=1
+               GROUP BY server_id
+        ]]>
+    </select>
+    <select id="getOfflineUsers" resultType="com.xgame.service.load.balance.db.dto.UserDto">
+        <![CDATA[
+               SELECT server_id,COUNT(1)as user_count from user_status where online_flag=0
+        ]]>
+    </select>
+
+    <select id="getServerIdByUser" resultType="java.lang.Integer">
+        <![CDATA[
+               SELECT server_id from user_status where nick_name=#{userName}
+        ]]>
+    </select>
+
+
+
+
+</mapper>
