@@ -11,9 +11,8 @@ import java.util.List;
 public class UserService {
     @Autowired
     UserDao userDao;
-    public List<UserDto> getOnlineUsers(){return userDao.getOnlineUsers();}
+    public List<UserDto> getServerUsersByFlag(int flag){return userDao.getServerUsersByFlag(flag);}
 
-    public List<UserDto> getOfflineUsers(){return userDao.getOfflineUsers();}
 
     public Integer getServerIdByUser(String userName){return userDao.getServerIdByUser(userName);}
 }

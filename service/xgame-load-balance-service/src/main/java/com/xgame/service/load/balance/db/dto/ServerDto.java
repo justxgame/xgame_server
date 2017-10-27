@@ -1,15 +1,16 @@
 package com.xgame.service.load.balance.db.dto;
 
 public class ServerDto {
-    private String server_ip;
+    private String ip;
     private Integer port;
 
-    public String getServer_ip() {
-        return server_ip;
+
+    public String getIp() {
+        return ip;
     }
 
-    public void setServer_ip(String server_ip) {
-        this.server_ip = server_ip;
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 
     public Integer getPort() {

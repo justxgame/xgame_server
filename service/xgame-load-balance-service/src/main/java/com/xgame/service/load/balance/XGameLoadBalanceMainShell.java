@@ -13,13 +13,13 @@ import java.net.URL;
 /**
  * Created by william on 2017/9/9.
  */
-public class XGameManagerMainShell {
+public class XGameLoadBalanceMainShell {
 
     public static void main(String[] args) {
 
         try {
             System.out.println("start web server ...");
-            final String appDir = new XGameManagerMainShell().getWebAppsPath();
+            final String appDir = new XGameLoadBalanceMainShell().getWebAppsPath();
             final Server server = new Server(ServiceConfiguration.getInstance().getConfig().getInt("xgame.load.balance.service.port", 9105));
             WebAppContext context = new WebAppContext();
             context.setContextPath("/");

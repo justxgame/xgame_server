@@ -21,6 +21,7 @@
         <module>service/xgame-game-receive-service</module>
 
         <module>application/xgame-order-consumer</module>
+        <module>service/xgame-load-balance-service</module>
     </modules>
 
     <dependencies>

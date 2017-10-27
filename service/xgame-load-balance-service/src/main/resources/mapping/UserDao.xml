@@ -6,17 +6,13 @@
 <mapper namespace="com.xgame.service.load.balance.db.dao.UserDao">
 
 
-    <select id="getOnlineUsers" resultType="com.xgame.service.load.balance.db.dto.UserDto">
+    <select id="getServerUsersByFlag" resultType="com.xgame.service.load.balance.db.dto.UserDto">
         <![CDATA[
-               SELECT server_id,COUNT(1) as user_count from user_status where online_flag=1
+               SELECT server_id,COUNT(1) as user_count from user_status where online_flag=#{flag}
                GROUP BY server_id
         ]]>
     </select>
-    <select id="getOfflineUsers" resultType="com.xgame.service.load.balance.db.dto.UserDto">
-        <![CDATA[
-               SELECT server_id,COUNT(1)as user_count from user_status where online_flag=0
-        ]]>
-    </select>
+
 
     <select id="getServerIdByUser" resultType="java.lang.Integer">
         <![CDATA[
