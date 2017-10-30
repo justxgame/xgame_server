@@ -12,6 +12,13 @@
                GROUP BY server_id
         ]]>
     </select>
+    <select id="getServerCountByIdFlag" resultType="com.xgame.service.load.balance.db.dto.UserDto">
+        <![CDATA[
+              SELECT server_id,count(1) as user_count from user_status where server_id =#{0} and online_flag=#{1}
+group by server_id
+        ]]>
+    </select>
+
 
 
     <select id="getServerIdByUser" resultType="java.lang.Integer">

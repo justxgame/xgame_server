@@ -5,10 +5,12 @@ import com.xgame.service.load.balance.db.dto.ServerDto;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.List;
 
 @Service
 public class ServerService {
     @Inject
     ServerDao serverDao;
     public ServerDto getServerInfoById(Integer serverId){return serverDao.getServerInfoById(serverId);}
+    public List<ServerDto> getActiveServer(){return serverDao.getActiveServer();}
 }

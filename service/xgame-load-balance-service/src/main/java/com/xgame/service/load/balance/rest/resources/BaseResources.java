@@ -19,4 +19,7 @@ public class BaseResources {
 
     protected final int successCode = 0;
     protected final int errorCode = -1;
+    protected final int maxOnlineCode = -10;
+    protected final Integer onlineFlag =1;
+    protected final Integer offlineFlag = 0;
 }

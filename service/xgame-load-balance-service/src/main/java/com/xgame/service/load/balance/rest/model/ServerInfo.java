@@ -2,8 +2,8 @@ package com.xgame.service.load.balance.rest.model;
 
 public class ServerInfo {
     private Integer serverId;
-    private String ip;
-    private Integer port;
+    private String server_ip;
+    private Integer server_port;
 
     public Integer getServerId() {
         return serverId;
@@ -13,19 +13,19 @@ public class ServerInfo {
         this.serverId = serverId;
     }
 
-    public String getIp() {
-        return ip;
+    public String getServer_ip() {
+        return server_ip;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
+    public void setServer_ip(String server_ip) {
+        this.server_ip = server_ip;
     }
 
-    public Integer getPort() {
-        return port;
+    public Integer getServer_port() {
+        return server_port;
     }
 
-    public void setPort(Integer port) {
-        this.port = port;
+    public void setServer_port(Integer server_port) {
+        this.server_port = server_port;
     }
 }

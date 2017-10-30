@@ -18,6 +18,8 @@ import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Objects.requireNonNull;
+
 @Path("/server")
 public class ServerResources extends BaseResources{
     private static Logger logger = LoggerFactory.getLogger(ServerResources.class.getName());
@@ -28,52 +30,77 @@ public class ServerResources extends BaseResources{
         WrapResponseModel responseModel = new WrapResponseModel();
 
         try {
+            requireNonNull(userInfo,"[ServerResources] get null userinfo");
+
             String userName = userInfo.getUserName();
             logger.info("[ServerResources] get server info by user:"+userName);
             if (StringUtils.isEmpty(userName)){
                 responseModel.setCode(errorCode);
-                responseModel.setMessage("get empty user name");
+                responseModel.setMessage("[ServerResources] get empty user name");
                 return responseModel;
             }
+            int maxOnline = ServiceConfiguration.getInstance().getConfig().getInt("xgame.server.max.online");
+            //查询数据库 判断是否是新用户
             Integer serverId = userService.getServerIdByUser(userName);
+
             ServerInfo serverInfo = new ServerInfo();
 
+            //非新注册用户
             if (null!=serverId){
+                //获取 server 信息
                 ServerDto serverDto = serverService.getServerInfoById(serverId);
-                if (null==serverDto){
-                    responseModel.setCode(errorCode);
-                    responseModel.setMessage("Get serverId "+serverId+" serverInfo is empty, please check server setting");
+                //获取不到 server 信息 抛异常
+                requireNonNull(serverDto,"[ServerResources] Get serverId "+serverId+" serverInfo is empty, please check server setting and user "+userName+" login status");
+
+
+                //查询服务器是否已满载
+                UserDto userDto = userService.getServerCountByIdFlag(serverId,onlineFlag);
+                requireNonNull(userDto,"[ServerResources] get server "+serverId+" online user error,null response");
+                if (userDto.getUser_count()<maxOnline){
+                    serverInfo.setServerId(serverId);
+                    serverInfo.setServer_ip(serverDto.getIp());
+                    serverInfo.setServer_port(serverDto.getPort());
+                    responseModel.setData(serverInfo);
+                    responseModel.setCode(successCode);
+                    return responseModel;
+                }else {
+                    responseModel.setCode(maxOnlineCode);
+                    responseModel.setMessage("[ServerResources] server "+serverId+" reached max online users");
                     return responseModel;
                 }
-                serverInfo.setServerId(serverId);
-                serverInfo.setIp(serverDto.getIp());
-                serverInfo.setPort(serverDto.getPort());
-                responseModel.setData(serverInfo);
-                responseModel.setCode(successCode);
-                return responseModel;
+
+
             }else {
+
+                //获取 active server
+                List<ServerDto> activeServer = serverService.getActiveServer();
+                if (null==activeServer||activeServer.isEmpty()){
+                    responseModel.setCode(errorCode);
+                    responseModel.setMessage("[ServerResources] Can't get active server.");
+                    return responseModel;
+                }
                 //获取并计算每个 server当前总在线人数
-                List<UserDto> serverOnline = getServerOnlineUsers();
+                List<UserDto> serverOnline = getServerOnlineUsers(activeServer);
                 //过滤已满载 server
-                int maxOnline = ServiceConfiguration.getInstance().getConfig().getInt("xgame.server.max.online");
+
                 List<UserDto> filterUserDto = filterServerByMaxOnline(serverOnline, maxOnline);
                 if (filterUserDto.isEmpty()){
-                    responseModel.setCode(errorCode);
-                    responseModel.setMessage("All server reached maxOnline");
+                    responseModel.setCode(maxOnlineCode);
+                    responseModel.setMessage("[ServerResources] All server reached maxOnline");
                     return responseModel;
                 }
                 //比较 count 获取最多在线 server
                 UserDto finalUserDto = getMaxOnlineServer(filterUserDto);
 
-                ServerDto finalServer = serverService.getServerInfoById(finalUserDto.getServer_id());
+                ServerDto finalServer = getSpecificServer(activeServer, finalUserDto.getServer_id());
                 if (null == finalServer){
                     responseModel.setCode(errorCode);
-                    responseModel.setMessage("Get max online server "+finalUserDto.getServer_id()+" serverInfo is empty, please check server setting");
+                    responseModel.setMessage("[ServerResources] Get max online server "+finalUserDto.getServer_id()+" serverInfo is empty, please check server setting");
                     return responseModel;
                 }
-                serverInfo.setServerId(finalUserDto.getServer_id());
-                serverInfo.setIp(finalServer.getIp());
-                serverInfo.setPort(finalServer.getPort());
+                serverInfo.setServerId(finalServer.getServer_id());
+                serverInfo.setServer_ip(finalServer.getIp());
+                serverInfo.setServer_port(finalServer.getPort());
                 responseModel.setCode(successCode);
                 responseModel.setData(serverInfo);
 
@@ -99,18 +126,27 @@ public class ServerResources extends BaseResources{
         return result;
     }
 
-    private List<UserDto> getServerOnlineUsers(){
-        List<UserDto> serverOnline = userService.getServerUsersByFlag(1);
-        List<UserDto> serverOffline = userService.getServerUsersByFlag(0);
+    private List<UserDto> getServerOnlineUsers( List<ServerDto> activeServer ){
+        List<UserDto> activeUsers = new ArrayList<>();
+        for (ServerDto activeUserDto:activeServer){
+
+            UserDto userDto = new UserDto();
+            userDto.setServer_id(activeUserDto.getServer_id());
+            userDto.setUser_count(0);
+            activeUsers.add(userDto);
+
+        }
+        List<UserDto> serverOnline = userService.getServerUsersByFlag(onlineFlag);
         for (UserDto userDto:serverOnline){
-            for (UserDto offDto:serverOffline){
-                if (userDto.getServer_id().equals(offDto.getServer_id())){
-                    int diff = userDto.getUser_count()-offDto.getUser_count();
-                    userDto.setUser_count(diff);
+            for (UserDto active:activeUsers){
+                if (userDto.getServer_id().equals(active.getServer_id())){
+                    active.setUser_count(userDto.getUser_count());
                 }
             }
         }
-        return serverOnline;
+
+
+        return activeUsers;
     }
 
     private UserDto getMaxOnlineServer(List<UserDto> userDtos){
@@ -121,6 +157,15 @@ public class ServerResources extends BaseResources{
             }
         }
         return finalUserDto;
+    }
+
+    private ServerDto getSpecificServer(List<ServerDto> activeServer,Integer serverId){
+        for (ServerDto serverDto :activeServer){
+            if (serverId.equals(serverDto.getServer_id())){
+                return serverDto;
+            }
+        }
+        return null;
     }
 
 }

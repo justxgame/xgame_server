@@ -11,8 +11,10 @@ import java.util.List;
 public class UserService {
     @Autowired
     UserDao userDao;
-    public List<UserDto> getServerUsersByFlag(int flag){return userDao.getServerUsersByFlag(flag);}
+    public List<UserDto> getServerUsersByFlag(Integer flag){return userDao.getServerUsersByFlag(flag);}
 
 
     public Integer getServerIdByUser(String userName){return userDao.getServerIdByUser(userName);}
+
+    public UserDto getServerCountByIdFlag(Integer serveId,Integer flag){return userDao.getServerCountByIdFlag(serveId,flag);}
 }
