@@ -37,6 +37,7 @@ public class ServerResources extends BaseResources{
             if (StringUtils.isEmpty(userName)){
                 responseModel.setCode(errorCode);
                 responseModel.setMessage("[ServerResources] get empty user name");
+                responseModel.setMsg("服务器连接错误，请稍后重试");
                 return responseModel;
             }
             int maxOnline = ServiceConfiguration.getInstance().getConfig().getInt("xgame.server.max.online");
@@ -52,11 +53,22 @@ public class ServerResources extends BaseResources{
                 //获取不到 server 信息 抛异常
                 requireNonNull(serverDto,"[ServerResources] Get serverId "+serverId+" serverInfo is empty, please check server setting and user "+userName+" login status");
 
+                //查询当前 user 是否在线
+                Integer userStatus = userService.getUserOnlineStatus(userName);
+                if (onlineFlag==userStatus){
+                    serverInfo.setServerId(serverId);
+                    serverInfo.setServer_ip(serverDto.getIp());
+                    serverInfo.setServer_port(serverDto.getPort());
+                    responseModel.setData(serverInfo);
+                    responseModel.setCode(successCode);
+                    return responseModel;
+                }
+
 
                 //查询服务器是否已满载
                 UserDto userDto = userService.getServerCountByIdFlag(serverId,onlineFlag);
-                requireNonNull(userDto,"[ServerResources] get server "+serverId+" online user error,null response");
-                if (userDto.getUser_count()<maxOnline){
+
+                if (userDto==null||(userDto.getUser_count()<maxOnline)){
                     serverInfo.setServerId(serverId);
                     serverInfo.setServer_ip(serverDto.getIp());
                     serverInfo.setServer_port(serverDto.getPort());
@@ -66,6 +78,7 @@ public class ServerResources extends BaseResources{
                 }else {
                     responseModel.setCode(maxOnlineCode);
                     responseModel.setMessage("[ServerResources] server "+serverId+" reached max online users");
+                    responseModel.setMsg("服务器繁忙，请稍后重试");
                     return responseModel;
                 }
 
@@ -77,6 +90,7 @@ public class ServerResources extends BaseResources{
                 if (null==activeServer||activeServer.isEmpty()){
                     responseModel.setCode(errorCode);
                     responseModel.setMessage("[ServerResources] Can't get active server.");
+                    responseModel.setMsg("服务器连接错误，请稍后重试");
                     return responseModel;
                 }
                 //获取并计算每个 server当前总在线人数
@@ -87,6 +101,7 @@ public class ServerResources extends BaseResources{
                 if (filterUserDto.isEmpty()){
                     responseModel.setCode(maxOnlineCode);
                     responseModel.setMessage("[ServerResources] All server reached maxOnline");
+                    responseModel.setMsg("服务器繁忙，请稍后重试");
                     return responseModel;
                 }
                 //比较 count 获取最多在线 server
@@ -96,6 +111,7 @@ public class ServerResources extends BaseResources{
                 if (null == finalServer){
                     responseModel.setCode(errorCode);
                     responseModel.setMessage("[ServerResources] Get max online server "+finalUserDto.getServer_id()+" serverInfo is empty, please check server setting");
+                    responseModel.setMsg("服务器连接错误，请稍后重试");
                     return responseModel;
                 }
                 serverInfo.setServerId(finalServer.getServer_id());
@@ -109,6 +125,7 @@ public class ServerResources extends BaseResources{
         }catch (Throwable t){
             responseModel.setCode(errorCode);
             responseModel.setMessage(ExceptionUtils.getMessage(t));
+            responseModel.setMsg("服务器连接错误，请稍后重试");
             logger.error("[ServerResources] get user login server error "+ExceptionUtils.getMessage(t));
         }
 

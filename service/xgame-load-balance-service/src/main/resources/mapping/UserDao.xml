@@ -27,6 +27,12 @@ group by server_id
         ]]>
     </select>
 
+    <select id="getUserOnlineStatus" resultType="java.lang.Integer">
+          <![CDATA[
+               SELECT online_flag from user_status where nick_name=#{userName}
+        ]]>
+    </select>
+
 
 
 

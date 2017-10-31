@@ -9,6 +9,7 @@ public class WrapResponseModel {
     private String message;
     private Object data;
     private String debug;
+    private String msg;
 
     public Integer getResultCode() {
         return resultCode;
@@ -48,5 +49,13 @@ public class WrapResponseModel {
 
     public void setCode(Integer code) {
         this.code = code;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 }

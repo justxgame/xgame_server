@@ -17,4 +17,7 @@ public class UserService {
     public Integer getServerIdByUser(String userName){return userDao.getServerIdByUser(userName);}
 
     public UserDto getServerCountByIdFlag(Integer serveId,Integer flag){return userDao.getServerCountByIdFlag(serveId,flag);}
+
+    public Integer getUserOnlineStatus(String userName){
+        return userDao.getUserOnlineStatus(userName);}
 }

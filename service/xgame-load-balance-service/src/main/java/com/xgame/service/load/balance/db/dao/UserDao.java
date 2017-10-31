@@ -10,5 +10,6 @@ public interface UserDao extends BaseDao {
 
     public Integer getServerIdByUser(String userName);
     public UserDto getServerCountByIdFlag(Integer serverId,Integer flag);
+    public Integer getUserOnlineStatus(String userName);
 
 }
