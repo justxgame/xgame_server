@@ -6,6 +6,7 @@ public class BroadCastDto {
     private String msg;
     private String send_user;
     private String indate;
+    private Integer type;
 
     public BroadCastDto(String serverId,String msg,String uid,String indate){
         this.server_id=serverId;
@@ -55,5 +56,13 @@ public class BroadCastDto {
 
     public void setIndate(String indate) {
         this.indate = indate;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }

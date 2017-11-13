@@ -11,6 +11,7 @@ public class BroadCastRegularModel {
     private Integer freqVal;
     private String startDate;
     private String endDate;
+    private Integer type;
 
     public Long getTransection() {
         return transection;
@@ -90,5 +91,13 @@ public class BroadCastRegularModel {
 
     public void setEndDate(String endDate) {
         this.endDate = endDate;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }

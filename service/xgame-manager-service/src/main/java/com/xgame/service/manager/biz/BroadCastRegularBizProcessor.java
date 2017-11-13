@@ -58,6 +58,7 @@ public class BroadCastRegularBizProcessor extends BaseBiz {
             broadCastDto.setServer_id(String.valueOf(statusDto.getServer_id()));
             broadCastDto.setSend_user(dto.getUid());
             broadCastDto.setIndate(CommonUtil.getFormatDateByNow());
+            broadCastDto.setType(dto.getType());
             broadCastDto.setMsg(dto.getMsg());
             //保存到 广播历史表
             broadcastDao.saveObject(broadCastDto);

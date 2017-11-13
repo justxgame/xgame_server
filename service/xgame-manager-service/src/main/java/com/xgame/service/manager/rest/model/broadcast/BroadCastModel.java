@@ -6,6 +6,7 @@ public class   BroadCastModel {
     private String message;
     private String sendUserName;
     private Long sendDate;
+    private Integer type;
 
     public String getServerId() {
         return serverId;
@@ -45,5 +46,13 @@ public class   BroadCastModel {
 
     public void setTransection(Long transection) {
         this.transection = transection;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }

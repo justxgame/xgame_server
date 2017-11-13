@@ -1,6 +1,6 @@
 package com.xgame.service.manager.db.dto;
 
-import java.sql.Date;
+
 
 public class BroadCastRegularDto {
     private Long transection;
@@ -13,6 +13,7 @@ public class BroadCastRegularDto {
     private Integer freq_val;
     private String start_date;
     private String end_date;
+    private Integer type;
 
     public Long getTransection() {
         return transection;
@@ -95,6 +96,14 @@ public class BroadCastRegularDto {
         this.end_date = end_date;
     }
 
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
     @Override
     public String toString(){
         return "RewardOrderLogMappingDto{" +
@@ -108,6 +117,7 @@ public class BroadCastRegularDto {
                 ", freq_val='" + freq_val + '\'' +
                 ", start_date='" + start_date + '\'' +
                 ", end_date='" + end_date +
+                ", type ="+ type+
                 '}';
     }
 }

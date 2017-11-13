@@ -2,18 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
     <parent>
-        <groupId>com.xgame</groupId>
         <artifactId>xgame-parent</artifactId>
+        <groupId>com.xgame</groupId>
         <version>0.1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
+    <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.xgame</groupId>
-    <artifactId>xgame-manager-service</artifactId>
-
+    <artifactId>xgame-website</artifactId>
 
     <dependencies>
 
@@ -208,13 +205,6 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
-        <!-- jpush -->
-        <!-- https://mvnrepository.com/artifact/cn.jpush.api/jpush-client -->
-        <dependency>
-            <groupId>cn.jpush.api</groupId>
-            <artifactId>jpush-client</artifactId>
-            <version>3.3.2</version>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -235,5 +225,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

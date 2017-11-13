@@ -1,5 +1,16 @@
 package com.xgame.service.manager.rest.resources;
 
+import cn.jiguang.common.ClientConfig;
+import cn.jiguang.common.resp.APIConnectionException;
+import cn.jiguang.common.resp.APIRequestException;
+import cn.jpush.api.JPushClient;
+import cn.jpush.api.push.PushResult;
+import cn.jpush.api.push.model.Message;
+import cn.jpush.api.push.model.Platform;
+import cn.jpush.api.push.model.PushPayload;
+import cn.jpush.api.push.model.SMS;
+import cn.jpush.api.push.model.audience.Audience;
+import cn.jpush.api.push.model.notification.Notification;
 import com.alibaba.fastjson.JSONObject;
 import com.xgame.service.common.rest.model.WrapResponseModel;
 import com.xgame.service.common.type.TimeType;
@@ -7,6 +18,7 @@ import com.xgame.service.common.util.CommonUtil;
 import com.xgame.service.manager.ServiceConfiguration;
 import com.xgame.service.manager.db.dto.BroadCastDto;
 import com.xgame.service.manager.db.dto.BroadCastRegularDto;
+import com.xgame.service.manager.db.dto.PushDto;
 import com.xgame.service.manager.db.dto.ServerStatusDto;
 import com.xgame.service.manager.rest.model.broadcast.BroadCastModel;
 import com.xgame.service.manager.rest.model.broadcast.BroadCastRegularBoxModel;
@@ -34,9 +46,20 @@ import java.util.List;
 @Path("/broadcast")
 public class BroadcastResources extends BaseResources {
     private static Logger logger = LoggerFactory.getLogger(BroadcastResources.class.getName());
-
+    private static final Integer BROADCAST =1;
+    private static final Integer PUSH =2;
+    private static String jpushKey = ServiceConfiguration.getInstance().getConfig().getString("xgame.jpush.appkey");
+    private static String jpushSecret = ServiceConfiguration.getInstance().getConfig().getString("xgame.jpush.secret");
+    protected static JPushClient pushClient;
+    static {
+        ClientConfig config = ClientConfig.getInstance();
+        config.setMaxRetryTimes(3);
+        config.setConnectionTimeout(10 * 1000); // 10 seconds
+        config.setSSLVersion("TLSv1.1");
+        pushClient = new JPushClient(jpushSecret, jpushKey, null, config);
+    }
     /**
-     * 发送新广播
+     * 发送新广播和消息
      * @param broadCastModel
      * @return
      */
@@ -47,12 +70,30 @@ public class BroadcastResources extends BaseResources {
         logger.info("[BroadcastResources]send:");
         WrapResponseModel responseModel = new WrapResponseModel();
         String uid = getUid();
-        String op = "[BroadcastResources] send msg[" + broadCastModel.getMessage() + "] to server " + broadCastModel.getServerId();
+        String op = "[BroadcastResources] send msg[" + broadCastModel.getMessage() + "] to server " +
+                broadCastModel.getServerId()+" type :"+broadCastModel.getType();
 
         try {
+            Integer type = broadCastModel.getType();
+            //检查类型
+            if (isIllegalBroadCastType(type)){
+                responseModel.setCode(errorCode);
+                responseModel.setMsg("[BroadcastResources] type "+type +" is illegal type");
+                return responseModel;
+            }
+
             String token = requestContext.getHeaderString("token");
             String userName = tokenService.getUserNameByToken(token);
             BroadCastDto broadCastDto = parseBroadcastMode2Dto(broadCastModel,userName);
+            if (PUSH==type){
+
+                //推送消息
+                sendPush(broadCastDto.getMsg(),broadCastDto.getIndate());
+                operationLog(uid,op);
+                broadcastService.saveObject(broadCastDto);
+                responseModel.setCode(successCode);
+                return responseModel;
+            }
             List<ServerStatusDto> dtos = statusService.getAllActive();
 
 
@@ -95,11 +136,16 @@ public class BroadcastResources extends BaseResources {
     @GET
     @Path("/history")
     @Produces(MediaType.APPLICATION_JSON)
-    public WrapResponseModel getHistory(@QueryParam("serverId")String serverId){
-        logger.info("[BroadcastResources] get server " +serverId +" broadcast");
+    public WrapResponseModel getHistory(@QueryParam("serverId")String serverId,@QueryParam("type")Integer type){
+        logger.info("[BroadcastResources] get server " +serverId +"type "+ type+" broadcast");
         WrapResponseModel responseModel = new WrapResponseModel();
         try {
-            List<BroadCastDto> broadCastDtos = broadcastService.getAll();
+            if (isIllegalBroadCastType(type)){
+                responseModel.setCode(errorCode);
+                responseModel.setMsg("[BroadcastResources] type "+type +" is illegal type");
+                return responseModel;
+            }
+            List<BroadCastDto> broadCastDtos = broadcastService. getAllBroadCast(type);
             List<BroadCastModel> models = new ArrayList<>();
             for (BroadCastDto dto:broadCastDtos){
                 BroadCastModel model = parseBroadcastMode2Dto(dto);
@@ -146,19 +192,24 @@ public class BroadcastResources extends BaseResources {
 
 
     /**
-     * 获取所以定时 task
+     * 获取所有定时 task
      * @return
      */
     @GET
     @Path("/regular/tasks")
     @Produces(MediaType.APPLICATION_JSON)
-    public WrapResponseModel getBroadCastRegularTasks(){
+    public WrapResponseModel getBroadCastRegularTasks(@QueryParam("type")Integer type){
         WrapResponseModel responseModel = new WrapResponseModel();
         String uid = getUid();
-        String op = "[BroadcastResources] get regular/tasks ";
+        String op = "[BroadcastResources] get regular/tasks by type "+type;
         operationLog(uid,op);
         try {
-            List<BroadCastRegularDto> dtos = broadcastService.getRegularTask();
+            if (isIllegalBroadCastType(type)){
+                responseModel.setCode(errorCode);
+                responseModel.setMsg("[BroadcastResources] type "+type +" is illegal type");
+                return responseModel;
+            }
+            List<BroadCastRegularDto> dtos = broadcastService.getRegularTaskByType(type);
             List<BroadCastRegularModel> models = new ArrayList<>();
             for (BroadCastRegularDto dto:dtos){
                 BroadCastRegularModel model = parseRegularDto2Model(dto);
@@ -189,8 +240,13 @@ public class BroadcastResources extends BaseResources {
         try {
             String uid = getUid();
             String op = "[BroadcastResources] add new regular task. serverId="+model.getServerId()
-                    +" freq_unid="+model.getFreqUnit()+" freq_val="+model.getFreqVal()+" msg="+model.getMsg();
+                    +" freq_unid="+model.getFreqUnit()+" freq_val="+model.getFreqVal()+" msg="+model.getMsg()+" type="+model.getType();
             operationLog(uid,op);
+            if (isIllegalBroadCastType(model.getType())){
+                responseModel.setCode(errorCode);
+                responseModel.setMsg("[BroadcastResources] type "+model.getType() +" is illegal type");
+                return responseModel;
+            }
             Long now = System.currentTimeMillis();
             model.setIndate(CommonUtil.getDsFromUnixTimestamp(now));
             Long nextStartDate = calculateNextDate(model.getFreqUnit(), model.getFreqVal(), now);
@@ -279,6 +335,7 @@ public class BroadcastResources extends BaseResources {
         dto.setMsg(model.getMessage());
         dto.setSend_user(userName);
         dto.setServer_id(model.getServerId());
+        dto.setType(model.getType());
         return dto;
     }
     private BroadCastModel parseBroadcastMode2Dto(BroadCastDto dto){
@@ -288,6 +345,7 @@ public class BroadcastResources extends BaseResources {
         model.setSendUserName(dto.getSend_user());
         model.setTransection(dto.getTransection());
         model.setSendDate(CommonUtil.parseStr2Time(dto.getIndate()));
+        model.setType(dto.getType());
         return model;
     }
 
@@ -303,6 +361,7 @@ public class BroadcastResources extends BaseResources {
         model.setStartDate(dto.getStart_date());
         model.setEndDate(dto.getEnd_date());
         model.setTransection(dto.getTransection());
+        model.setType(dto.getType());
         return model;
     }
 
@@ -315,6 +374,7 @@ public class BroadcastResources extends BaseResources {
         dto.setIndate(model.getIndate());
         dto.setNext_send_date(model.getNextSendDate());
         dto.setMsg(model.getMsg());
+        dto.setType(model.getType());
         return dto;
     }
 
@@ -335,6 +395,33 @@ public class BroadcastResources extends BaseResources {
         }
     }
 
+    private void sendPush(String msg,String indate) throws APIConnectionException, APIRequestException {
+        PushPayload pushPayload = PushPayload.newBuilder().setPlatform(Platform.all()).setAudience(Audience.all())
+                .setNotification(Notification.alert(msg)).build();
+        PushResult pushResult = pushClient.sendPush(pushPayload);
+        if (0!=pushResult.statusCode){
+            throw new RuntimeException("[BroadcastResources] call jpush client error.status code="+pushResult.statusCode);
+        }
+
+        PushDto pushDto = new PushDto();
+        pushDto.setIndate(indate);
+        pushDto.setMsg_id(pushResult.msg_id);
+        pushDto.setMsg(msg);
+        broadcastService.savePush(pushDto);
+
+
+    }
+
+    private boolean isIllegalBroadCastType(Integer type){
+        if (null==type){
+            return true;
+        }
+        if (BROADCAST==type||PUSH==type){
+            return false;
+        }
+        return true;
+
+    }
 
 
 }

@@ -6,16 +6,16 @@
 <mapper namespace="com.xgame.service.manager.db.dao.BroadcastDao">
 
 
-    <select id="getAll" resultType="com.xgame.service.manager.db.dto.BroadCastDto">
+    <select id="getAllBroadCast" resultType="com.xgame.service.manager.db.dto.BroadCastDto">
           <![CDATA[
-            SELECT transection,server_id,msg,send_user,indate from broadcast_info order by indate desc
+            SELECT transection,server_id,msg,send_user,indate,type from broadcast_info where type=#{type} order by indate desc
         ]]>
 
     </select>
-    <insert id="saveObject" parameterType="com.xgame.service.manager.db.dto.BroadCastDto"  keyProperty="tansection" useGeneratedKeys="true">
+    <insert id="saveObject" parameterType="com.xgame.service.manager.db.dto.BroadCastDto"  keyProperty="transection" useGeneratedKeys="true">
             <![CDATA[
-           INSERT  into broadcast_info (server_id,msg,send_user,indate)
-           values(#{server_id},#{msg},#{send_user},#{indate})
+           INSERT  into broadcast_info (server_id,msg,send_user,indate,type)
+           values(#{server_id},#{msg},#{send_user},#{indate},#{type})
         ]]>
     </insert>
 
@@ -25,16 +25,22 @@
             delete from broadcast_info where transection=#{transection}
         ]]>
     </delete>
-    <select id="getRegularTasks" resultType="com.xgame.service.manager.db.dto.BroadCastRegularDto">
+    <select id="getRegularTasksByType" resultType="com.xgame.service.manager.db.dto.BroadCastRegularDto">
         <![CDATA[
-            SELECT transection,uid,server_id,indate,next_send_date,msg,freq_unit,freq_val,start_date,end_date from broadcast_regular order by indate desc
+            SELECT transection,uid,server_id,indate,next_send_date,msg,freq_unit,freq_val,start_date,end_date,type from broadcast_regular where type=#{type} order by indate desc
+        ]]>
+
+    </select>
+    <select id="getAllRegularTasks" resultType="com.xgame.service.manager.db.dto.BroadCastRegularDto">
+        <![CDATA[
+            SELECT transection,uid,server_id,indate,next_send_date,msg,freq_unit,freq_val,start_date,end_date,type from broadcast_regular order by indate desc
         ]]>
 
     </select>
     <insert id="saveRegularTask" parameterType="com.xgame.service.manager.db.dto.BroadCastRegularDto"  keyProperty="transection" useGeneratedKeys="true">
         <![CDATA[
-           INSERT  into broadcast_regular (uid,server_id,indate,next_send_date,msg,freq_unit,freq_val,start_date,end_date)
-           values(#{uid},#{server_id},#{indate},#{next_send_date},#{msg},#{freq_unit},#{freq_val},#{start_date},#{end_date})
+           INSERT  into broadcast_regular (uid,server_id,indate,next_send_date,msg,freq_unit,freq_val,start_date,end_date,type)
+           values(#{uid},#{server_id},#{indate},#{next_send_date},#{msg},#{freq_unit},#{freq_val},#{start_date},#{end_date},#{type})
         ]]>
     </insert>
     <update id="updateRegularTaskById" parameterType="com.xgame.service.manager.db.dto.BroadCastRegularDto">
@@ -47,4 +53,12 @@
             delete from broadcast_regular where transection=#{transection}
         ]]>
     </delete>
+
+
+    <insert id="savePush" parameterType="com.xgame.service.manager.db.dto.PushDto" >
+        <![CDATA[
+           INSERT  into push_info (msg_id,msg,indate)
+           values(#{msg_id},#{msg},#{indate})
+        ]]>
+    </insert>
 </mapper>

@@ -1,11 +1,24 @@
 package com.xgame.service.manager.biz;
 
+import cn.jiguang.common.ClientConfig;
+import cn.jiguang.common.resp.APIConnectionException;
+import cn.jiguang.common.resp.APIRequestException;
+import cn.jpush.api.JPushClient;
+import cn.jpush.api.push.PushResult;
+import cn.jpush.api.push.model.Message;
+import cn.jpush.api.push.model.Platform;
+import cn.jpush.api.push.model.PushPayload;
+import cn.jpush.api.push.model.SMS;
+import cn.jpush.api.push.model.audience.Audience;
+import cn.jpush.api.push.model.notification.Notification;
 import com.alibaba.fastjson.JSONObject;
 import com.xgame.service.common.type.TimeType;
+import com.xgame.service.manager.ServiceConfiguration;
 import com.xgame.service.manager.ServiceContextFactory;
 import com.xgame.service.manager.db.dao.BroadcastDao;
 import com.xgame.service.manager.db.dao.ServerStatusDao;
 import com.xgame.service.manager.db.dto.BroadCastRegularDto;
+import com.xgame.service.manager.db.dto.PushDto;
 import com.xgame.service.manager.db.dto.ServerStatusDto;
 import com.xgame.service.manager.rest.model.broadcast.BroadCastSendModel;
 import com.xgame.service.manager.rest.model.response.ServerRes;
@@ -39,8 +52,18 @@ public abstract class BaseBiz {
                 HttpClientBuilder.create().setDefaultRequestConfig(config).build();
 
     }
+    private static String jpushKey = ServiceConfiguration.getInstance().getConfig().getString("xgame.jpush.appkey");
+    private static String jpushSecret = ServiceConfiguration.getInstance().getConfig().getString("xgame.jpush.secret");
+    protected static JPushClient pushClient;
+    static {
+        ClientConfig config = ClientConfig.getInstance();
+        config.setMaxRetryTimes(3);
+        config.setConnectionTimeout(10 * 1000); // 10 seconds
+        config.setSSLVersion("TLSv1.1");
+        pushClient = new JPushClient(jpushSecret, jpushKey, null, config);
+    }
 
-    abstract void broadCastTaskProcess(BroadCastRegularDto dto);
+    abstract public void broadCastTaskProcess(BroadCastRegularDto dto);
     /**
      * 实际发送
      * @param dto
@@ -111,5 +134,21 @@ public abstract class BaseBiz {
             case SECOND:return 1*1000*freq_val+time;
             default:return time;
         }
+    }
+
+    protected void sendPush(String msg,String indate) throws APIConnectionException, APIRequestException {
+        PushPayload pushPayload = PushPayload.newBuilder().setPlatform(Platform.all()).setAudience(Audience.all())
+                .setNotification(Notification.alert(msg)).build();
+        PushResult pushResult = pushClient.sendPush(pushPayload);
+        if (0!=pushResult.statusCode){
+            throw new RuntimeException("[BroadcastResources] call jpush client error.status code="+pushResult.statusCode);
+        }
+
+        PushDto pushDto = new PushDto();
+        pushDto.setIndate(indate);
+        pushDto.setMsg_id(pushResult.msg_id);
+        pushDto.setMsg(msg);
+        broadcastDao.savePush(pushDto);
+
     }
 }

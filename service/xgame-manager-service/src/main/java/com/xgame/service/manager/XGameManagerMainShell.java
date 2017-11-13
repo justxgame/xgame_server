@@ -1,9 +1,11 @@
 package com.xgame.service.manager;
 
+
 import com.xgame.service.common.util.CommonUtil;
 import com.xgame.service.manager.biz.BroadCastRegularBizProcessor;
+import com.xgame.service.manager.biz.PushRegularBizProcessor;
 import com.xgame.service.manager.db.dto.BroadCastRegularDto;
-import com.xgame.service.manager.rest.resources.BroadcastResources;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -54,14 +56,17 @@ public class XGameManagerMainShell {
 }
 
 class BroadCastRegularTask implements Runnable{
-    BroadCastRegularBizProcessor processor = new BroadCastRegularBizProcessor();
+    BroadCastRegularBizProcessor broadCastProcessor = new BroadCastRegularBizProcessor();
+    PushRegularBizProcessor pushRegularBizProcessor = new PushRegularBizProcessor();
     private  Logger logger = LoggerFactory.getLogger(BroadCastRegularTask.class.getName());
+    private static final Integer BROADCAST =1;
+    private static final Integer PUSH =2;
     @Override
     public void run() {
         logger.info("[BroadCastRegularTask] start ");
         while (true){
             try {
-                List<BroadCastRegularDto> dtos = ServiceContextFactory.getBroadCastDao().getRegularTasks();
+                List<BroadCastRegularDto> dtos = ServiceContextFactory.getBroadCastDao().getAllRegularTasks();
                 if (null==dtos||0==dtos.size()){
                     logger.info("[BroadCastRegularTask] get empty task");
                     continue;
@@ -75,7 +80,13 @@ class BroadCastRegularTask implements Runnable{
                 }
                 logger.info("[BroadCastRegularTask] get need process task size is "+processTask.size());
                 for (BroadCastRegularDto dto:processTask){
-                    processor.broadCastTaskProcess(dto);
+
+                    if (BROADCAST==dto.getType()){
+                        broadCastProcessor.broadCastTaskProcess(dto);
+                    }else if(PUSH==dto.getType()){
+                        pushRegularBizProcessor.broadCastTaskProcess(dto);
+                    }
+
 
                 }
                 logger.info("[BroadCastRegularTask]  task process finished");

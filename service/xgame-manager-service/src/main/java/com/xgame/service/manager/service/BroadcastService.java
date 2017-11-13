@@ -3,6 +3,7 @@ package com.xgame.service.manager.service;
 import com.xgame.service.manager.db.dao.BroadcastDao;
 import com.xgame.service.manager.db.dto.BroadCastDto;
 import com.xgame.service.manager.db.dto.BroadCastRegularDto;
+import com.xgame.service.manager.db.dto.PushDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,8 @@ public class BroadcastService {
     public List<BroadCastDto> getAll(){
         return broadcastDao.getAll();
     }
-    public List<BroadCastRegularDto> getRegularTask(){return broadcastDao.getRegularTasks();}
+    public List<BroadCastRegularDto> getRegularTaskByType(Integer type){return broadcastDao.getRegularTasksByType(type);}
+    public List<BroadCastRegularDto> getAllRegularTask(){return broadcastDao.getAllRegularTasks();}
     public void updateRegularTaskById(BroadCastRegularDto dto){
         broadcastDao.updateRegularTaskById(dto);
     }
@@ -31,6 +33,8 @@ public class BroadcastService {
     public void saveRegularTask(BroadCastRegularDto dto){
         broadcastDao.saveRegularTask(dto);
     }
+    public void savePush(PushDto dto){ broadcastDao.savePush(dto);}
+    public List<BroadCastDto> getAllBroadCast (Integer type){return broadcastDao.getAllBroadCast(type);}
 
     public BroadcastDao getBroadcastDao() {
         return broadcastDao;
