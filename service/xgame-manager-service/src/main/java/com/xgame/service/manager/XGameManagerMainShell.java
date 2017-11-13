@@ -69,14 +69,14 @@ class BroadCastRegularTask implements Runnable{
                 List<BroadCastRegularDto> dtos = ServiceContextFactory.getBroadCastDao().getAllRegularTasks();
                 if (null==dtos||0==dtos.size()){
                     logger.info("[BroadCastRegularTask] get empty task");
-                    continue;
+
                 }
                // logger.info("[BroadCastRegularTask] get task size is "+dtos.size());
 
                 List<BroadCastRegularDto> processTask = getNeedProcessTask(dtos);
                 if (null==processTask||0==processTask.size()){
-                    //logger.info("[BroadCastRegularTask] get empty process task");
-                    continue;
+                    logger.info("[BroadCastRegularTask] get empty process task");
+
                 }
                 logger.info("[BroadCastRegularTask] get need process task size is "+processTask.size());
                 for (BroadCastRegularDto dto:processTask){
@@ -111,6 +111,9 @@ class BroadCastRegularTask implements Runnable{
     private  List<BroadCastRegularDto> getNeedProcessTask( List<BroadCastRegularDto> dtos){
         List<BroadCastRegularDto> result = new ArrayList<>();
         Long now = System.currentTimeMillis();
+        if(null==dtos){
+            return result;
+        }
         for (BroadCastRegularDto dto:dtos){
             Long nextTime = CommonUtil.parseStr2Time(dto.getNext_send_date());
             if (isNextTime(now,nextTime)){
