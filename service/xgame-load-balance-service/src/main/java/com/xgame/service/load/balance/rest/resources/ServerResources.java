@@ -16,13 +16,16 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
 
 @Path("/server")
 public class ServerResources extends BaseResources{
     private static Logger logger = LoggerFactory.getLogger(ServerResources.class.getName());
+
     @POST
     @Path("/getServerInfo")
     @Produces(MediaType.APPLICATION_JSON)
@@ -45,6 +48,7 @@ public class ServerResources extends BaseResources{
             Integer serverId = userService.getServerIdByUser(userName);
 
             ServerInfo serverInfo = new ServerInfo();
+            String host=null;
 
             //非新注册用户
             if (null!=serverId){
@@ -57,7 +61,14 @@ public class ServerResources extends BaseResources{
                 Integer userStatus = userService.getUserOnlineStatus(userName);
                 if (onlineFlag==userStatus){
                     serverInfo.setServerId(serverId);
-                    serverInfo.setServer_ip(serverDto.getIp());
+                    host = getIpHost(serverDto.getIp());
+                    if (null==host||host.isEmpty()){
+                        responseModel.setCode(errorCode);
+                        responseModel.setMsg("服务器连接错误，请稍后重试");
+                        responseModel.setMessage("[ServerResources] get ip "+serverDto.getIp()+" mapping empty,please check setting");
+                        return responseModel;
+                    }
+                    serverInfo.setServer_ip(host);
                     serverInfo.setServer_port(serverDto.getPort());
                     responseModel.setData(serverInfo);
                     responseModel.setCode(successCode);
@@ -70,7 +81,14 @@ public class ServerResources extends BaseResources{
 
                 if (userDto==null||(userDto.getUser_count()<maxOnline)){
                     serverInfo.setServerId(serverId);
-                    serverInfo.setServer_ip(serverDto.getIp());
+                    host = getIpHost(serverDto.getIp());
+                    if (null==host||host.isEmpty()){
+                        responseModel.setCode(errorCode);
+                        responseModel.setMsg("服务器连接错误，请稍后重试");
+                        responseModel.setMessage("[ServerResources] get ip "+serverDto.getIp()+" mapping empty,please check setting");
+                        return responseModel;
+                    }
+                    serverInfo.setServer_ip(host);
                     serverInfo.setServer_port(serverDto.getPort());
                     responseModel.setData(serverInfo);
                     responseModel.setCode(successCode);
@@ -115,7 +133,14 @@ public class ServerResources extends BaseResources{
                     return responseModel;
                 }
                 serverInfo.setServerId(finalServer.getServer_id());
-                serverInfo.setServer_ip(finalServer.getIp());
+                host = getIpHost(finalServer.getIp());
+                if (null==host||host.isEmpty()){
+                    responseModel.setCode(errorCode);
+                    responseModel.setMsg("服务器连接错误，请稍后重试");
+                    responseModel.setMessage("[ServerResources] get ip "+finalServer.getIp()+" mapping empty,please check setting");
+                    return responseModel;
+                }
+                serverInfo.setServer_ip(host);
                 serverInfo.setServer_port(finalServer.getPort());
                 responseModel.setCode(successCode);
                 responseModel.setData(serverInfo);
