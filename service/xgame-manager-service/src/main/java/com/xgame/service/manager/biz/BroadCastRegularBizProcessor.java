@@ -41,7 +41,7 @@ public class BroadCastRegularBizProcessor extends BaseBiz {
                     broadCastDto.setIndate(CommonUtil.getFormatDateByNow());
                     broadCastDto.setMsg(dto.getMsg());
                     //保存到 广播历史表
-                    broadcastDao.saveObject(broadCastDto);
+                    //broadcastDao.saveObject(broadCastDto);
                 }
             }
 
@@ -61,7 +61,7 @@ public class BroadCastRegularBizProcessor extends BaseBiz {
             broadCastDto.setType(dto.getType());
             broadCastDto.setMsg(dto.getMsg());
             //保存到 广播历史表
-            broadcastDao.saveObject(broadCastDto);
+            //broadcastDao.saveObject(broadCastDto);
 
             //更新上一轮任务结束时间
             dto.setEnd_date(CommonUtil.getFormatDateByNow());

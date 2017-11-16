@@ -29,7 +29,7 @@ public class PushRegularBizProcessor extends BaseBiz {
             broadCastDto.setMsg(dto.getMsg());
             broadCastDto.setType(dto.getType());
             //保存到 广播历史表
-            broadcastDao.saveObject(broadCastDto);
+            //broadcastDao.saveObject(broadCastDto);
 
             //更新上一轮任务结束时间
             dto.setEnd_date(CommonUtil.getFormatDateByNow());
