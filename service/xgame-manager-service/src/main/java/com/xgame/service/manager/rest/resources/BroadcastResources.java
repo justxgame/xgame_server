@@ -52,7 +52,9 @@ public class BroadcastResources extends BaseResources {
     private static String jpushSecret = ServiceConfiguration.getInstance().getConfig().getString("xgame.jpush.secret");
     protected static JPushClient pushClient;
     static {
+        boolean pushSwitch =  ServiceConfiguration.getInstance().getConfig().getBoolean("xgame.jpush.switch");
         ClientConfig config = ClientConfig.getInstance();
+        config.setApnsProduction(pushSwitch);
         config.setMaxRetryTimes(3);
         config.setConnectionTimeout(10 * 1000); // 10 seconds
         config.setSSLVersion("TLSv1.1");
