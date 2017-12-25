@@ -3,6 +3,7 @@ package com.xgame.service.load.balance.rest.resources;
 import com.xgame.service.load.balance.ServiceConfiguration;
 import com.xgame.service.load.balance.ServiceContextFactory;
 import com.xgame.service.load.balance.service.ServerService;
+import com.xgame.service.load.balance.service.UserLoginService;
 import com.xgame.service.load.balance.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ public class BaseResources {
     private static Logger logger = LoggerFactory.getLogger(BaseResources.class.getName());
     protected UserService userService = ServiceContextFactory.userService;
     protected ServerService serverService = ServiceContextFactory.serverService;
+    protected UserLoginService userLoginService = ServiceContextFactory.userLoginService;
     private static Map<String,String> ipHostMap = new HashMap<>();
     static {
         String ipHost = ServiceConfiguration.getInstance().getConfig().getString("xgame.ip.host.mapping");

@@ -1,6 +1,7 @@
 package com.xgame.service.load.balance.service;
 
 import com.xgame.service.load.balance.db.dao.UserDao;
+import com.xgame.service.load.balance.db.dto.UserBasicDto;
 import com.xgame.service.load.balance.db.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,4 +21,11 @@ public class UserService {
 
     public Integer getUserOnlineStatus(String userName){
         return userDao.getUserOnlineStatus(userName);}
+
+    public UserBasicDto getUserBasic(String nickName){
+        return userDao.getUserBasic(nickName);
+    }
+    public String getUserPhone(String uid,String serverId){
+        return userDao.getUserPhone(uid, serverId);
+    }
 }

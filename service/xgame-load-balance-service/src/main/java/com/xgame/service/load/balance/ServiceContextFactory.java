@@ -1,6 +1,7 @@
 package com.xgame.service.load.balance;
 
 import com.xgame.service.load.balance.service.ServerService;
+import com.xgame.service.load.balance.service.UserLoginService;
 import com.xgame.service.load.balance.service.UserService;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -15,11 +16,13 @@ public class ServiceContextFactory {
 
     public static ServerService serverService;
     public static UserService userService;
+    public static UserLoginService userLoginService;
 
     static {
 
         serverService = (ServerService) applicationContext.getBean("serverService");
         userService = (UserService) applicationContext.getBean("userService");
+        userLoginService = (UserLoginService) applicationContext.getBean("userLoginService");
     }
 
     public static ApplicationContext getApplicationContext() {

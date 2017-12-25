@@ -6,6 +6,7 @@
 
         <mapper resource="mapping/UserDao.xml"/>
         <mapper resource="mapping/ServerDao.xml"/>
+        <mapper resource="mapping/UserLogin.xml"/>
     </mappers>
 
 

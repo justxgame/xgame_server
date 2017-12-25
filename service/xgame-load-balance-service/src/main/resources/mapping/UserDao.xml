@@ -33,6 +33,18 @@ group by server_id
         ]]>
     </select>
 
+    <select id="getUserBasic" resultType="com.xgame.service.load.balance.db.dto.UserBasicDto">
+        <![CDATA[
+               SELECT uid,server_id from user_status where nick_name=#{userName}
+        ]]>
+    </select>
+
+    <select id="getUserPhone" resultType="java.lang.String">
+        <![CDATA[
+               SELECT phone_no from user_info where uid=#{0} and server_id=#{1}
+        ]]>
+    </select>
+
 
 
 

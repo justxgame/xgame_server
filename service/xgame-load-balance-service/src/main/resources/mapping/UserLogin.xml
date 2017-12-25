@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xgame.service.load.balance.db.dao.UserLoginDao">
+
+
+    <select id="saveCode">
+        <![CDATA[
+                replace into phone_verify(phone,code,in_date)
+             values(#{0},#{1},#{2})
+        ]]>
+    </select>
+
+    <select id="getPhone" resultType="com.xgame.service.load.balance.db.dto.PhoneCodeDto">
+        <![CDATA[
+                select phone,code,in_date from  phone_verify
+             where phone =#{0}
+        ]]>
+    </select>
+
+    <select id="saveLoginInfo" parameterType="com.xgame.service.load.balance.db.dto.UserLoginDto">
+        <![CDATA[
+                 replace into user_login(account_id,account,uname,type,session_token,inviter_uname,in_date)
+             values (#{account_id},#{account},#{uname},#{type},#{session_token},#{inviter_uname},#{in_date})
+        ]]>
+    </select>
+
+    <select id="getLoginInfo" resultType="com.xgame.service.load.balance.db.dto.UserLoginDto">
+          <![CDATA[
+                select * from  user_login
+             where account_id =#{0} and session_token=#{1}
+        ]]>
+    </select>
+
+    <select id="updateLoginToken">
+          <![CDATA[
+              update  user_login  set session_token=#{1}
+           where account_id =#{0}
+        ]]>
+    </select>
+
+
+
+</mapper>
