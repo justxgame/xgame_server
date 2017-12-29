@@ -1,5 +1,7 @@
 package com.xgame.service.load.balance.rest.resources;
 
+
+import com.bcloud.msg.http.HttpSender;
 import com.xgame.service.common.rest.model.WrapResponseModel;
 import com.xgame.service.common.util.CommonUtil;
 import com.xgame.service.load.balance.ServiceConfiguration;
@@ -20,7 +22,11 @@ import static java.util.Objects.requireNonNull;
 @Path("/userLogin")
 public class LoginResources extends BaseResources {
     private static Logger logger = LoggerFactory.getLogger(LoginResources.class.getName());
-    private static Integer PHONE_INTERVAL = ServiceConfiguration.getInstance().getConfig().getInt("xgame.phone.interval");
+    private static final Integer PHONE_INTERVAL = ServiceConfiguration.getInstance().getConfig().getInt("xgame.phone.interval");
+    private static final String SMS_URI=ServiceConfiguration.getInstance().getConfig().getString("xgame.sms.uri");
+    private static final String SMS_USER=ServiceConfiguration.getInstance().getConfig().getString("xgame.sms.user");
+    private static final String SMS_PWD= ServiceConfiguration.getInstance().getConfig().getString("xgame.sms.pwd");
+    private static final String SMS_CONTENT = "验证码%s（15分钟内有效，如非本人操作请忽略.)";
     @GET
     @Path("/getSmsCode")
     @Produces(MediaType.APPLICATION_JSON)
@@ -40,10 +46,12 @@ public class LoginResources extends BaseResources {
             }
 
             String code = getVerificationCode();
-            //send code //TODO
+            //send code
+            sendSms(phone,code,SMS_USER,SMS_PWD,SMS_URI);
             String date = CommonUtil.getFormatDateByNow();
             userLoginService.saveCode(phone,code,date);
             responseModel.setCode(successCode);
+            responseModel.setData(code);
 
 
         }catch (Throwable t){
@@ -162,10 +170,10 @@ public class LoginResources extends BaseResources {
             PhoneCodeDto dto = userLoginService.getPhone(phone);
             CheckPhoneInfo checkPhoneInfo = new CheckPhoneInfo();
             if (null==dto){
-                checkPhoneInfo.setResult(0);
+                checkPhoneInfo.setResult(1);
 
             }else {
-                checkPhoneInfo.setResult(1);
+                checkPhoneInfo.setResult(0);
             }
             responseModel.setData(checkPhoneInfo);
             responseModel.setCode(successCode);
@@ -240,6 +248,15 @@ public class LoginResources extends BaseResources {
             return false;
         }
         return true;
+    }
+
+    private void sendSms(String phone,String code,String user,String pwd,String uri) throws Exception {
+        boolean needstatus = true;
+        String content=String.format(SMS_CONTENT,code);
+        String product = "";//产品ID(不用填写)
+        String extno = "";//扩展码(请登陆网站用户中心——>服务管理找到签名对应的extno并填写，线下用户请为空)
+        String returnString = HttpSender.batchSend(uri, user, pwd, phone, content, needstatus, product, extno);
+
     }
 
 

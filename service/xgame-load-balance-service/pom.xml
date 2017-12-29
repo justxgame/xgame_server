@@ -205,6 +205,13 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.bcloud.msg</groupId>
+            <artifactId>http</artifactId>
+            <version>0.0.1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/http.jar</systemPath>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
