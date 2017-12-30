@@ -27,11 +27,14 @@ public class LoginResources extends BaseResources {
     private static final String SMS_USER=ServiceConfiguration.getInstance().getConfig().getString("xgame.sms.user");
     private static final String SMS_PWD= ServiceConfiguration.getInstance().getConfig().getString("xgame.sms.pwd");
     private static final String SMS_CONTENT = "验证码%s（15分钟内有效，如非本人操作请忽略.)";
+    private static final Integer LOGIN = 0;
+    private static final Integer REGISTER = 1;
     @GET
     @Path("/getSmsCode")
     @Produces(MediaType.APPLICATION_JSON)
     public WrapResponseModel getSmsCode(@QueryParam("phone")String phone,@QueryParam("type") String type){
         WrapResponseModel responseModel = new WrapResponseModel();
+
 
         logger.info("[LoginResources] getSmsCode. phone= "+phone+" type="+type);
         try {
@@ -66,15 +69,16 @@ public class LoginResources extends BaseResources {
     @Path("/login")
     @Produces(MediaType.APPLICATION_JSON)
     public WrapResponseModel login(@QueryParam("account") String account, @QueryParam("code") String code,
-                                   @QueryParam("type") Integer type, @QueryParam("inviter_uname") String inviter_uname) {
+                                   @QueryParam("type") Integer type, @QueryParam("inviter_uname") String inviter_uname,@QueryParam("login_type")Integer loginType) {
         WrapResponseModel responseModel = new WrapResponseModel();
-        logger.info("[LoginResources] login.account="+account+" code="+code+" type="+type+" inviter_uname="+inviter_uname);
-        if (!isValidLoginParam(account,code,type)){
+        logger.info("[LoginResources] login.account="+account+" code="+code+" type="+type+" inviter_uname="+inviter_uname+" loginType="+loginType);
+        if (!isValidLoginParam(account,code,type,loginType)){
             responseModel.setCode(errorCode);
             responseModel.setMsg("error login param");
         }
         try {
             String phone = "";
+            String accountId = generateAccountId(account,type);
             //手机登陆
             if (type==0){
                 phone=account;
@@ -88,8 +92,17 @@ public class LoginResources extends BaseResources {
                     throw new RuntimeException("get empty phone by account");
                 }
             }
+            if (loginType.equals(REGISTER)){
+
+                UserLoginDto dto = userLoginService.checkLogin(accountId);
+                if (null!=dto){
+                    responseModel.setCode(errorCode);
+                    responseModel.setMsg("手机已被注册,请更换号码");
+                    return responseModel;
+                }
+            }
             if (isValidPhoneCode(phone,code)){
-                String accountId = generateAccountId(account,type);
+
                 String token = generateSessionToken(accountId);
                 String indate = CommonUtil.getFormatDateByNow();
                 UserLoginDto dto = new UserLoginDto();
@@ -114,7 +127,7 @@ public class LoginResources extends BaseResources {
             }else {
 
                 responseModel.setCode(errorCode);
-                responseModel.setMsg("invalid phone code");
+                responseModel.setMsg("invalid code");
             }
 
 
@@ -167,7 +180,8 @@ public class LoginResources extends BaseResources {
         logger.info("[LoginResources] checkregister. phone="+phone);
         try {
             requireNonNull(phone, "phone is empty");
-            PhoneCodeDto dto = userLoginService.getPhone(phone);
+            String accountId = generateAccountId(phone,0);
+            UserLoginDto dto = userLoginService.checkLogin(accountId);
             CheckPhoneInfo checkPhoneInfo = new CheckPhoneInfo();
             if (null==dto){
                 checkPhoneInfo.setResult(1);
@@ -262,8 +276,8 @@ public class LoginResources extends BaseResources {
 
 
 
-    private boolean isValidLoginParam(String account,String code,Integer type){
-        if(StringUtils.isEmpty(account)||StringUtils.isEmpty(code)||null==type){
+    private boolean isValidLoginParam(String account,String code,Integer type,Integer loginType){
+        if(StringUtils.isEmpty(account)||StringUtils.isEmpty(code)||null==type||null==loginType){
             return false;
         }
         return true;

@@ -41,6 +41,13 @@
         ]]>
     </select>
 
+    <select id="checkLogin" resultType="com.xgame.service.load.balance.db.dto.UserLoginDto">
+        <![CDATA[
+               select * from  user_login
+             where account_id =#{0}
+        ]]>
+    </select>
+
 
 
 </mapper>
