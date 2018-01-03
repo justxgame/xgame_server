@@ -5,6 +5,9 @@ import com.xgame.service.load.balance.ServiceContextFactory;
 import com.xgame.service.load.balance.service.ServerService;
 import com.xgame.service.load.balance.service.UserLoginService;
 import com.xgame.service.load.balance.service.UserService;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +22,7 @@ public class BaseResources {
     protected ServerService serverService = ServiceContextFactory.serverService;
     protected UserLoginService userLoginService = ServiceContextFactory.userLoginService;
     private static Map<String,String> ipHostMap = new HashMap<>();
+    protected static CloseableHttpClient httpclient;
     static {
         String ipHost = ServiceConfiguration.getInstance().getConfig().getString("xgame.ip.host.mapping");
         String[] ipHostArr = ipHost.split(",");
@@ -26,6 +30,16 @@ public class BaseResources {
             String[] iparr = iphost.split(":");
             ipHostMap.put(iparr[0],iparr[1]);
         }
+        RequestConfig config = RequestConfig.custom()
+                .setConnectTimeout(20 * 1000)
+                .setConnectionRequestTimeout(20 * 1000)
+                .setSocketTimeout(20 * 1000).build();
+        httpclient =
+                HttpClientBuilder.create().setDefaultRequestConfig(config).build();
+
+
+
+
     }
     @Inject
     ContainerRequestContext requestContext;

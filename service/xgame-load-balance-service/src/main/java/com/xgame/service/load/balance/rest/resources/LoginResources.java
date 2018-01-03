@@ -1,7 +1,10 @@
 package com.xgame.service.load.balance.rest.resources;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.bcloud.msg.http.HttpSender;
+import com.google.common.base.Charsets;
+import com.google.common.hash.Hashing;
 import com.xgame.service.common.rest.model.WrapResponseModel;
 import com.xgame.service.common.util.CommonUtil;
 import com.xgame.service.load.balance.ServiceConfiguration;
@@ -11,11 +14,21 @@ import com.xgame.service.load.balance.db.dto.UserLoginDto;
 import com.xgame.service.load.balance.rest.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
@@ -29,6 +42,9 @@ public class LoginResources extends BaseResources {
     private static final String SMS_CONTENT = "验证码%s（15分钟内有效，如非本人操作请忽略.)";
     private static final Integer LOGIN = 0;
     private static final Integer REGISTER = 1;
+    private static final String XY_URL = ServiceConfiguration.getInstance().getConfig().getString("xgame.xy.url");
+    private static final String APPID = ServiceConfiguration.getInstance().getConfig().getString("xgame.xy.appid");
+    private static final String XY_APP_KEY = ServiceConfiguration.getInstance().getConfig().getString("xgame.xy.appkey");
     @GET
     @Path("/getSmsCode")
     @Produces(MediaType.APPLICATION_JSON)
@@ -69,65 +85,154 @@ public class LoginResources extends BaseResources {
     @Path("/login")
     @Produces(MediaType.APPLICATION_JSON)
     public WrapResponseModel login(@QueryParam("account") String account, @QueryParam("code") String code,
-                                   @QueryParam("type") Integer type, @QueryParam("inviter_uname") String inviter_uname,@QueryParam("login_type")Integer loginType) {
+                                   @QueryParam("type") Integer type, @QueryParam("inviter_uname") String inviter_uname,
+                                   @QueryParam("login_type")Integer loginType,@QueryParam("inviter_type")Integer inviteType) {
         WrapResponseModel responseModel = new WrapResponseModel();
-        logger.info("[LoginResources] login.account="+account+" code="+code+" type="+type+" inviter_uname="+inviter_uname+" loginType="+loginType);
+        logger.info("[LoginResources] login.account="+account+" code="+code+" type="+type+" inviter_uname="+
+                inviter_uname+" loginType="+loginType+" inviter_type="+inviteType);
         if (!isValidLoginParam(account,code,type,loginType)){
             responseModel.setCode(errorCode);
             responseModel.setMsg("error login param");
         }
         try {
             String phone = "";
-            String accountId = generateAccountId(account,type);
+
+            UserLoginDto userLoginDto = userLoginService.getLogInfoByUname(account);
+            String token = generateSessionToken(account);
+            String indate = CommonUtil.getFormatDateByNow();
+            UserLoginDto dto = new UserLoginDto();
+            dto.setUname(account);
+            dto.setSession_token(token);
+            dto.setType(type);
+            dto.setInviter_uname(inviter_uname);
+            dto.setIn_date(indate);
+            dto.setInviter_type(inviteType);
             //手机登陆
             if (type==0){
                 phone=account;
-            }else {
-                UserBasicDto userBasicDto = userService.getUserBasic(account);
-                if (null==userBasicDto){
-                    throw new RuntimeException("get null userInfo by account");
-                }
-                phone = userService.getUserPhone(userBasicDto.getUid().toString(), userBasicDto.getServer_id().toString());
-                if (StringUtils.isEmpty(phone)) {
-                    throw new RuntimeException("get empty phone by account");
-                }
-            }
-            if (loginType.equals(REGISTER)){
+                //注册验证是否注册过
+                if (loginType.equals(REGISTER)){
 
-                UserLoginDto dto = userLoginService.checkLogin(accountId);
-                if (null!=dto){
+
+                    if (null!=userLoginDto){
+                        responseModel.setCode(errorCode);
+                        responseModel.setMsg("手机已被注册,请更换号码");
+                        return responseModel;
+                    }
+                }
+                //验证成功
+                if (isValidPhoneCode(phone,code)){
+
+
+                    //注册
+                    if (loginType.equals(REGISTER)){
+
+                        userLoginService.saveUserLoginInfo(dto);
+                    }else {
+                        //登陆
+                        //如果没有注册则注册否则只更改状态
+                        if(null==userLoginDto){
+                            userLoginService.saveUserLoginInfo(dto);
+                        }else {
+                            userLoginDto = userLoginService.getLogInfoByUname(account);
+                            userLoginService.updateLoginToken(userLoginDto.getAccount_id(),token);
+
+                        }
+
+                    }
+                    //获取 account id
+                    userLoginDto = userLoginService.getLogInfoByUname(account);
+
+                    LoginUser loginUser = new LoginUser();
+                    loginUser.setAccountid(userLoginDto.getAccount_id());
+                    loginUser.setUname(account);
+                    UserLogInInfo userLogInInfo = new UserLogInInfo();
+                    userLogInInfo.setU_info(loginUser);
+                    userLogInInfo.setSession_token(token);
+                    responseModel.setData(userLogInInfo);
+                    responseModel.setCode(successCode);
+                }else {
+
                     responseModel.setCode(errorCode);
-                    responseModel.setMsg("手机已被注册,请更换号码");
+                    responseModel.setMsg("invalid code");
+                    return responseModel;
+                }
+            }else if (5==type){
+                //xy 验证
+
+                HttpEntity entity =null;
+                CloseableHttpResponse response=null;
+                try {
+
+                    String sign = getSign(APPID, account, code,XY_APP_KEY);
+                    HttpPost httpPost = new HttpPost(XY_URL);
+                    httpPost.setHeader("Content-type","application/x-www-form-urlencoded");
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("appid", APPID));
+                    params.add(new BasicNameValuePair("uid", account));
+                    params.add(new BasicNameValuePair("token", code));
+                    params.add(new BasicNameValuePair("sign", sign));
+                    logger.info("[LoginResources] request params = " + getParameterStr(params));
+                    httpPost.setEntity(new UrlEncodedFormEntity(params));
+                    logger.info("[LoginResources] request=" + httpPost.getParams());
+                    response = httpclient.execute(httpPost);
+                    entity = response.getEntity();
+                    String res = EntityUtils.toString(entity);
+                    XyResponse xyResponse = JSONObject.parseObject(res, XyResponse.class);
+                    if (null==xyResponse||xyResponse.getCode()!="200"){
+                        responseModel.setCode(404);
+                        responseModel.setMsg("登陆失败");
+                        responseModel.setMessage(xyResponse.getMsg());
+                        return responseModel;
+                    }else {
+                        //其他方式登录且没注册
+                        if(null==userLoginDto){
+                            userLoginService.saveUserLoginInfo(dto);
+                        }else {
+                            userLoginDto = userLoginService.getLogInfoByUname(account);
+                            userLoginService.updateLoginToken(userLoginDto.getAccount_id(),token);
+
+                        }
+                        //获取 account id
+                        userLoginDto = userLoginService.getLogInfoByUname(account);
+
+                        LoginUser loginUser = new LoginUser();
+                        loginUser.setAccountid(userLoginDto.getAccount_id());
+                        loginUser.setUname(account);
+                        UserLogInInfo userLogInInfo = new UserLogInInfo();
+                        userLogInInfo.setU_info(loginUser);
+                        userLogInInfo.setSession_token(token);
+                        responseModel.setData(userLogInInfo);
+                        responseModel.setCode(successCode);
+                    }
+                }catch (Throwable t){
+                    responseModel.setCode(404);
+                    responseModel.setMessage(ExceptionUtils.getMessage(t));
+                    responseModel.setMsg("登陆失败");
+                    logger.error("[LoginResources]  login  error. "+ExceptionUtils.getMessage(t));
                     return responseModel;
                 }
             }
-            if (isValidPhoneCode(phone,code)){
+            else {
+                //其他方式登录且没注册
+                if(null==userLoginDto){
+                    userLoginService.saveUserLoginInfo(dto);
+                }else {
+                    userLoginDto = userLoginService.getLogInfoByUname(account);
+                    userLoginService.updateLoginToken(userLoginDto.getAccount_id(),token);
 
-                String token = generateSessionToken(accountId);
-                String indate = CommonUtil.getFormatDateByNow();
-                UserLoginDto dto = new UserLoginDto();
-
-                dto.setAccount(account);
-                dto.setUname(account);
-                dto.setAccount_id(accountId);
-                dto.setSession_token(token);
-                dto.setType(type);
-                dto.setInviter_uname(inviter_uname);
-                dto.setIn_date(indate);
-                userLoginService.saveUserLoginInfo(dto);
+                }
+                //获取 account id
+                userLoginDto = userLoginService.getLogInfoByUname(account);
 
                 LoginUser loginUser = new LoginUser();
-                loginUser.setAccountid(accountId);
+                loginUser.setAccountid(userLoginDto.getAccount_id());
                 loginUser.setUname(account);
                 UserLogInInfo userLogInInfo = new UserLogInInfo();
                 userLogInInfo.setU_info(loginUser);
                 userLogInInfo.setSession_token(token);
                 responseModel.setData(userLogInInfo);
                 responseModel.setCode(successCode);
-            }else {
-
-                responseModel.setCode(errorCode);
-                responseModel.setMsg("invalid code");
             }
 
 
@@ -139,6 +244,7 @@ public class LoginResources extends BaseResources {
 
         return responseModel;
     }
+
 
     @GET
     @Path("/autologin")
@@ -152,6 +258,7 @@ public class LoginResources extends BaseResources {
             UserLoginDto dto = userLoginService.getLoginInfo(accountId, sessionToken);
             requireNonNull(dto, "get null login info by token and accountid,token is invalid");
 
+            String indate = CommonUtil.getFormatDateByNow();
             LoginUser loginUser = new LoginUser();
             loginUser.setAccountid(accountId);
             loginUser.setUname(dto.getUname());
@@ -180,8 +287,7 @@ public class LoginResources extends BaseResources {
         logger.info("[LoginResources] checkregister. phone="+phone);
         try {
             requireNonNull(phone, "phone is empty");
-            String accountId = generateAccountId(phone,0);
-            UserLoginDto dto = userLoginService.checkLogin(accountId);
+            UserLoginDto dto = userLoginService.getLogInfoByUname(phone);
             CheckPhoneInfo checkPhoneInfo = new CheckPhoneInfo();
             if (null==dto){
                 checkPhoneInfo.setResult(1);
@@ -248,6 +354,12 @@ public class LoginResources extends BaseResources {
         }
         return false;
     }
+    private String getSign(String appid, String account, String code,String appkey) {
+        String unionStr = appkey+"appid="+appid+"&"+"token="+code+"&"+"uid="+account;
+        String sign = Hashing.md5().hashString(unionStr, Charsets.UTF_8).toString();
+        return sign;
+    }
+
 
     /**
      * 判断发送 code 请求是否在指定间隔时间外
@@ -290,6 +402,17 @@ public class LoginResources extends BaseResources {
     private String generateSessionToken(String accountId){
         return accountId+"_"+System.currentTimeMillis();
     }
-
+    protected String getParameterStr(List<NameValuePair> params) {
+        if (null == params) {
+            return "";
+        }
+        String paramsStr = "";
+        for (NameValuePair pair : params) {
+            if (null != pair) {
+                paramsStr = paramsStr +","+ pair.toString();
+            }
+        }
+        return paramsStr;
+    }
 
 }

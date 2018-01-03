@@ -6,12 +6,12 @@
 <mapper namespace="com.xgame.service.load.balance.db.dao.UserLoginDao">
 
 
-    <select id="saveCode">
+    <insert id="saveCode">
         <![CDATA[
                 replace into phone_verify(phone,code,in_date)
              values(#{0},#{1},#{2})
         ]]>
-    </select>
+    </insert>
 
     <select id="getPhone" resultType="com.xgame.service.load.balance.db.dto.PhoneCodeDto">
         <![CDATA[
@@ -20,12 +20,12 @@
         ]]>
     </select>
 
-    <select id="saveLoginInfo" parameterType="com.xgame.service.load.balance.db.dto.UserLoginDto">
+    <insert id="saveLoginInfo" parameterType="com.xgame.service.load.balance.db.dto.UserLoginDto" keyProperty="account_id" useGeneratedKeys="true" >
         <![CDATA[
-                 replace into user_login(account_id,account,uname,type,session_token,inviter_uname,in_date)
-             values (#{account_id},#{account},#{uname},#{type},#{session_token},#{inviter_uname},#{in_date})
+                 INSERT into user_login(uname,type,session_token,inviter_uname,inviter_type,in_date)
+             values (#{uname},#{type},#{session_token},#{inviter_uname},#{inviter_type},#{in_date})
         ]]>
-    </select>
+    </insert>
 
     <select id="getLoginInfo" resultType="com.xgame.service.load.balance.db.dto.UserLoginDto">
           <![CDATA[
@@ -34,17 +34,17 @@
         ]]>
     </select>
 
-    <select id="updateLoginToken">
+    <update id="updateLoginToken">
           <![CDATA[
               update  user_login  set session_token=#{1}
            where account_id =#{0}
         ]]>
-    </select>
+    </update>
 
-    <select id="checkLogin" resultType="com.xgame.service.load.balance.db.dto.UserLoginDto">
+    <select id="getLogInfoByUname" resultType="com.xgame.service.load.balance.db.dto.UserLoginDto">
         <![CDATA[
                select * from  user_login
-             where account_id =#{0}
+             where uname =#{0}
         ]]>
     </select>
 

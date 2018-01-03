@@ -25,8 +25,8 @@ public class UserLoginService {
     public UserLoginDto getLoginInfo(String accountId, String token) {
         return userLoginDao.getLoginInfo(accountId, token);
     }
-    public UserLoginDto checkLogin(String accountId){
-        return userLoginDao.checkLogin(accountId);
+    public UserLoginDto getLogInfoByUname(String uname){
+        return userLoginDao.getLogInfoByUname(uname);
     }
 
     public void updateLoginToken(String accountId, String token) {
