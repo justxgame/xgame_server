@@ -46,6 +46,8 @@ public class ServerStatusResources extends BaseResources {
         String url = model.getIp() + ":" + model.getGm_port();
         dto.setUrl(url);
         dto.setIndate(CommonUtil.getFormatDateByNow());
+        dto.setVersion(model.getVersion());
+        dto.setPlatform(model.getPlatform());
         return dto;
     }
 
