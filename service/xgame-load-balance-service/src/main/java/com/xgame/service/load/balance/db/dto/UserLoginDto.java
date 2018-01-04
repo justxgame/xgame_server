@@ -2,11 +2,11 @@ package com.xgame.service.load.balance.db.dto;
 
 public class UserLoginDto {
     private String account_id;
-    private String account;
     private String uname;
     private Integer type;
     private String session_token;
     private String inviter_uname;
+    private Integer inviter_type;
     private String in_date;
 
     public String getAccount_id() {
@@ -15,14 +15,6 @@ public class UserLoginDto {
 
     public void setAccount_id(String account_id) {
         this.account_id = account_id;
-    }
-
-    public String getAccount() {
-        return account;
-    }
-
-    public void setAccount(String account) {
-        this.account = account;
     }
 
     public String getUname() {
@@ -63,5 +55,13 @@ public class UserLoginDto {
 
     public void setIn_date(String in_date) {
         this.in_date = in_date;
+    }
+
+    public Integer getInviter_type() {
+        return inviter_type;
+    }
+
+    public void setInviter_type(Integer inviter_type) {
+        this.inviter_type = inviter_type;
     }
 }

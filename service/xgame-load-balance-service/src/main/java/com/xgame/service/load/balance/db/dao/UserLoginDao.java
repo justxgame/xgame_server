@@ -9,4 +9,6 @@ public interface UserLoginDao extends BaseDao {
     public void saveLoginInfo(UserLoginDto dto);
     public void updateLoginToken(String accountId,String session_token);
     public UserLoginDto getLoginInfo(String accountId,String token);
+
+    public UserLoginDto getLogInfoByUname(String accountId);
 }
