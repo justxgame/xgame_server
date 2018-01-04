@@ -12,5 +12,5 @@ public class ServerService {
     @Inject
     ServerDao serverDao;
     public ServerDto getServerInfoById(Integer serverId){return serverDao.getServerInfoById(serverId);}
-    public List<ServerDto> getActiveServer(){return serverDao.getActiveServer();}
+    public List<ServerDto> getActiveServer(String ver,String plaform){return serverDao.getActiveServer(ver,plaform);}
 }

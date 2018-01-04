@@ -15,6 +15,7 @@
     <select id="getActiveServer" resultType="com.xgame.service.load.balance.db.dto.ServerDto">
         <![CDATA[
                SELECT server_id,ip,port  from server_info where status=1
+                and version=#{0} and platform=#{1}
 
         ]]>
     </select>

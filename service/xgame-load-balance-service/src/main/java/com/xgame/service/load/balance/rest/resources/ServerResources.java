@@ -36,18 +36,28 @@ public class ServerResources extends BaseResources{
             requireNonNull(userInfo,"[ServerResources] get null userinfo");
 
             String userName = userInfo.getUserName();
-            logger.info("[ServerResources] get server info by user:"+userName);
+            logger.info("[ServerResources] get server info by user:"+userInfo);
             if (StringUtils.isEmpty(userName)){
                 responseModel.setCode(errorCode);
                 responseModel.setMessage("[ServerResources] get empty user name");
                 responseModel.setMsg("服务器连接错误，请稍后重试");
                 return responseModel;
             }
+            ServerInfo serverInfo = new ServerInfo();
+            if (null==userInfo.getVer()){
+                logger.info("[ServerResources] can't get ver.return default ip and port");
+
+                serverInfo.setServer_ip("appstore.zhizhangame.com");
+                serverInfo.setServer_port(10018);
+                responseModel.setData(serverInfo);
+                responseModel.setCode(successCode);
+                return responseModel;
+            }
             int maxOnline = ServiceConfiguration.getInstance().getConfig().getInt("xgame.server.max.online");
             //查询数据库 判断是否是新用户
             Integer serverId = userService.getServerIdByUser(userName);
 
-            ServerInfo serverInfo = new ServerInfo();
+
             String host=null;
 
             //非新注册用户
@@ -104,7 +114,7 @@ public class ServerResources extends BaseResources{
             }else {
 
                 //获取 active server
-                List<ServerDto> activeServer = serverService.getActiveServer();
+                List<ServerDto> activeServer = serverService.getActiveServer(userInfo.getVer(),userInfo.getPlatform());
                 if (null==activeServer||activeServer.isEmpty()){
                     responseModel.setCode(errorCode);
                     responseModel.setMessage("[ServerResources] Can't get active server.");

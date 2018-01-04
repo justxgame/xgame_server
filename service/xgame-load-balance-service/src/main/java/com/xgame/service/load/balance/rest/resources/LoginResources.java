@@ -179,7 +179,7 @@ public class LoginResources extends BaseResources {
                     entity = response.getEntity();
                     String res = EntityUtils.toString(entity);
                     XyResponse xyResponse = JSONObject.parseObject(res, XyResponse.class);
-                    if (null==xyResponse||xyResponse.getCode()!="200"){
+                    if (null==xyResponse||!xyResponse.getCode().equals("200")){
                         responseModel.setCode(404);
                         responseModel.setMsg("登陆失败");
                         responseModel.setMessage(xyResponse.getMsg());
