@@ -9,7 +9,7 @@
 
     <insert id="saveObject" parameterType="com.xgame.service.game.receive.db.dto.UserStatusDto">
         <![CDATA[
-            insert into user_status(uid,server_id,nick_name,online_flag,indate)
+            replace into user_status(uid,server_id,nick_name,online_flag,indate)
              values(#{uid},#{server_id},#{nick_name},#{online_flag},#{indate})
         ]]>
     </insert>
