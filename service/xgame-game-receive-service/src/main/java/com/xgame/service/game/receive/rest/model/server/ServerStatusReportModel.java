@@ -15,6 +15,12 @@ public class ServerStatusReportModel {
     @JsonProperty("Status")
     private Boolean status;
 
+    @JsonProperty("Version")
+    private String version;
+
+    @JsonProperty("PlatForm")
+    private String platform;
+
     public Integer getServer_id() {
         return server_id;
     }
@@ -55,9 +61,32 @@ public class ServerStatusReportModel {
         this.status = status;
     }
 
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
     @Override
-    public String toString(){
-        return "ServerStatusReportModel[server_id=" + server_id + " ip=" + ip + " port=" + port
-                + " gm_port=" + gm_port + "status="+status+"]";
+    public String toString() {
+        return "ServerStatusReportModel{" +
+                "server_id=" + server_id +
+                ", ip='" + ip + '\'' +
+                ", port=" + port +
+                ", gm_port=" + gm_port +
+                ", status=" + status +
+                ", version='" + version + '\'' +
+                ", platform='" + platform + '\'' +
+                '}';
+    }
+
+    public String getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(String platform) {
+        this.platform = platform;
     }
 }

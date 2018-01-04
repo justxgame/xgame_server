@@ -17,6 +17,9 @@ public class ServerStatusDto {
     private String url;
     private String indate;
 
+    private String version;
+
+    private String platform;
 
     public Integer getServer_id() {
         return server_id;
@@ -72,5 +75,21 @@ public class ServerStatusDto {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public String getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(String platform) {
+        this.platform = platform;
     }
 }

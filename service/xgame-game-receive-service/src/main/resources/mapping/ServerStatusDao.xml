@@ -9,8 +9,8 @@
 
     <insert id="saveObject" parameterType="com.xgame.service.game.receive.db.dto.ServerStatusDto">
         <![CDATA[
-            insert into server_info(server_id,ip,port,gm_port,url,status,indate)
-             values(#{server_id},#{ip},#{port},#{gm_port},#{url},#{status},#{indate})
+            insert into server_info(server_id,ip,port,gm_port,url,status,indate,version,platform)
+             values(#{server_id},#{ip},#{port},#{gm_port},#{url},#{status},#{indate},#{version},#{platform})
         ]]>
     </insert>
 
