@@ -25,7 +25,7 @@ public class BaseResources {
     protected static CloseableHttpClient httpclient;
     static {
         String ipHost = ServiceConfiguration.getInstance().getConfig().getString("xgame.ip.host.mapping");
-        String[] ipHostArr = ipHost.split(",");
+        String[] ipHostArr = ipHost.split("#");
         for (String iphost :ipHostArr){
             String[] iparr = iphost.split(":");
             ipHostMap.put(iparr[0],iparr[1]);
