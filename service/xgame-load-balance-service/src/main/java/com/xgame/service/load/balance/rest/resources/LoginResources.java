@@ -1,6 +1,7 @@
 package com.xgame.service.load.balance.rest.resources;
 
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.bcloud.msg.http.HttpSender;
 import com.google.common.base.Charsets;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +47,7 @@ public class LoginResources extends BaseResources {
     private static final String XY_URL = ServiceConfiguration.getInstance().getConfig().getString("xgame.xy.url");
     private static final String APPID = ServiceConfiguration.getInstance().getConfig().getString("xgame.xy.appid");
     private static final String XY_APP_KEY = ServiceConfiguration.getInstance().getConfig().getString("xgame.xy.appkey");
+    private static final String WAN_URL = ServiceConfiguration.getInstance().getConfig().getString("xgame.9wan.url");
     @GET
     @Path("/getSmsCode")
     @Produces(MediaType.APPLICATION_JSON)
@@ -211,6 +214,74 @@ public class LoginResources extends BaseResources {
                     responseModel.setMsg("登陆失败");
                     logger.error("[LoginResources]  login  error. "+ExceptionUtils.getMessage(t));
                     return responseModel;
+                }finally {
+                    try {
+                        if (response!=null){
+                            response.close();
+                        }
+                        EntityUtils.consume(entity);
+
+                    } catch (IOException e) {
+                        logger.error("[LoginResources]  login  error");
+                    }
+                }
+            }else if (4==type){
+                HttpEntity entity =null;
+                CloseableHttpResponse response=null;
+                try {
+                    HttpPost httpPost = new HttpPost(WAN_URL);
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("user_id", account));
+                    params.add(new BasicNameValuePair("token", code));
+                    logger.info("[LoginResources] request params = " + getParameterStr(params));
+                    httpPost.setEntity(new UrlEncodedFormEntity(params));
+                    logger.info("[LoginResources] request=" + httpPost.getParams());
+                    response = httpclient.execute(httpPost);
+                    entity = response.getEntity();
+                    String res = CommonUtil.unicodeToString(EntityUtils.toString(entity));
+                    WanResponse wanResponse = JSONObject.parseObject(res,WanResponse.class);
+                    if (null==wanResponse||1!=wanResponse.getStatus()){
+                        responseModel.setCode(404);
+                        responseModel.setMsg("登陆失败");
+                        responseModel.setMessage(wanResponse.getMsg());
+                        return responseModel;
+                    }else {
+                        if(null==userLoginDto){
+                            userLoginService.saveUserLoginInfo(dto);
+                        }else {
+                            userLoginDto = userLoginService.getLogInfoByUname(account);
+                            userLoginService.updateLoginToken(userLoginDto.getAccount_id(),token);
+
+                        }
+                        //获取 account id
+                        userLoginDto = userLoginService.getLogInfoByUname(account);
+
+                        LoginUser loginUser = new LoginUser();
+                        loginUser.setAccountid(userLoginDto.getAccount_id());
+                        loginUser.setUname(account);
+                        UserLogInInfo userLogInInfo = new UserLogInInfo();
+                        userLogInInfo.setU_info(loginUser);
+                        userLogInInfo.setSession_token(token);
+                        responseModel.setData(userLogInInfo);
+                        responseModel.setCode(successCode);
+                    }
+
+                }catch (Throwable t){
+                    responseModel.setCode(404);
+                    responseModel.setMessage(ExceptionUtils.getMessage(t));
+                    responseModel.setMsg("登陆失败");
+                    logger.error("[LoginResources]  login  error. "+ExceptionUtils.getMessage(t));
+                    return responseModel;
+                }finally {
+                    try {
+                        if (response!=null){
+                            response.close();
+                        }
+                        EntityUtils.consume(entity);
+
+                    } catch (IOException e) {
+                        logger.error("[LoginResources]  login  error");
+                    }
                 }
             }
             else {
@@ -414,5 +485,7 @@ public class LoginResources extends BaseResources {
         }
         return paramsStr;
     }
+
+
 
 }
