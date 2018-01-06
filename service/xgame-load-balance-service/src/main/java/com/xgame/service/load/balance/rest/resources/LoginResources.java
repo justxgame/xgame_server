@@ -20,6 +20,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
@@ -29,6 +30,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -225,17 +227,20 @@ public class LoginResources extends BaseResources {
                         logger.error("[LoginResources]  login  error");
                     }
                 }
-            }else if (4==type){
+            }else if (3==type){
+                //9wan
                 HttpEntity entity =null;
                 CloseableHttpResponse response=null;
                 try {
                     HttpPost httpPost = new HttpPost(WAN_URL);
-                    List<NameValuePair> params = new ArrayList<NameValuePair>();
-                    params.add(new BasicNameValuePair("user_id", account));
-                    params.add(new BasicNameValuePair("token", code));
-                    logger.info("[LoginResources] request params = " + getParameterStr(params));
-                    httpPost.setEntity(new UrlEncodedFormEntity(params));
-                    logger.info("[LoginResources] request=" + httpPost.getParams());
+                    WanModel wanModel = new WanModel();
+                    wanModel.setUser_id(account);
+                    wanModel.setToken(code);
+                    String jsonStr = JSONObject.toJSONString(wanModel);
+                    StringEntity reqEntity = new StringEntity(jsonStr, Charset.forName("UTF-8"));
+                    reqEntity.setContentEncoding("UTF-8");
+                    reqEntity.setContentType("application/json");
+                    httpPost.setEntity(reqEntity);
                     response = httpclient.execute(httpPost);
                     entity = response.getEntity();
                     String res = CommonUtil.unicodeToString(EntityUtils.toString(entity));
