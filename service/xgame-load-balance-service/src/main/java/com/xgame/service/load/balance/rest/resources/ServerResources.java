@@ -53,6 +53,13 @@ public class ServerResources extends BaseResources{
                 responseModel.setCode(successCode);
                 return responseModel;
             }
+            if("xy".equals(userInfo.getPlatform())){
+                serverInfo.setServer_ip("xy13.zhizhangame.com");
+                serverInfo.setServer_port(13008);
+                responseModel.setData(serverInfo);
+                responseModel.setCode(successCode);
+                return responseModel;
+            }
             int maxOnline = ServiceConfiguration.getInstance().getConfig().getInt("xgame.server.max.online");
             //查询数据库 判断是否是新用户
             Integer serverId = userService.getServerIdByUser(userName);
