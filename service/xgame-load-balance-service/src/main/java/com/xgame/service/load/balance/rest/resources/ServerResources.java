@@ -53,7 +53,7 @@ public class ServerResources extends BaseResources{
                 responseModel.setCode(successCode);
                 return responseModel;
             }
-            if("xy".equals(userInfo.getPlatform())){
+            if("xy".equalsIgnoreCase(userInfo.getPlatform())){
                 serverInfo.setServer_ip("xy13.zhizhangame.com");
                 serverInfo.setServer_port(13008);
                 responseModel.setData(serverInfo);
